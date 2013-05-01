@@ -84,13 +84,7 @@ class Lexer
         $char = $this->inputBuffer;
         $this->inputBuffer = '';
 
-        if ($this->isWhitespace($char) && $this->ignoreWhitespace()) {
-            return;
-        }
-
         switch ($this->state) {
-            case LexerState::BEGIN():
-                return $this->doBegin($char);
             case LexerState::STRING_VALUE():
                 return $this->doStringValue($char);
             case LexerState::STRING_VALUE_ESCAPED():
@@ -116,6 +110,8 @@ class Lexer
             case LexerState::NULL_VALUE():
                 return $this->doNullValue($char);
         }
+
+        return $this->doBegin($char);
     }
 
     protected function doBegin($char)
@@ -145,7 +141,7 @@ class Lexer
                 TokenType::instanceByValue($char),
                 $char
             );
-        } else {
+        } elseif (!$this->isWhitespace($char)) {
             throw new Exception\LexerException('Unexpected character: "' . $char . '".');
         }
     }
@@ -222,6 +218,7 @@ class Lexer
             $this->state = LexerState::NUMBER_VALUE_EXPONENT_START();
         } else {
             $this->emit(TokenType::SCALAR(), intval($this->tokenBuffer));
+            $this->doBegin($char);
         }
     }
 
@@ -247,7 +244,8 @@ class Lexer
             $this->tokenBuffer .= 'e';
             $this->state = LexerState::NUMBER_VALUE_EXPONENT_START();
         } else {
-            $this->emit(TokenType::SCALAR, intval($this->tokenBuffer));
+            $this->emit(TokenType::SCALAR(), intval($this->tokenBuffer));
+            $this->doBegin($char);
         }
     }
 
@@ -258,8 +256,11 @@ class Lexer
         } elseif ('e' === $char || 'E' === $char) {
             $this->tokenBuffer .= 'e';
             $this->state = LexerState::NUMBER_VALUE_EXPONENT_START();
+        } elseif ('.' === substr($this->tokenBuffer, -1)) {
+            throw new Exception\LexerException('Expected digit after decimal point.');
         } else {
-            $this->emit(TokenType::SCALAR, floatval($this->tokenBuffer));
+            $this->emit(TokenType::SCALAR(), floatval($this->tokenBuffer));
+            $this->doBegin($char);
         }
     }
 
@@ -272,7 +273,7 @@ class Lexer
             $this->tokenBuffer .= $char;
             $this->state = LexerState::NUMBER_VALUE_EXPONENT();
         } else {
-            throw new Exception\LexerException('Expected digit or +/- for exponent of "' . $this->tokenBuffer . '...".');
+            throw new Exception\LexerException('Expected digit or +/- as exponent.');
         }
     }
 
@@ -281,7 +282,8 @@ class Lexer
         if (ctype_digit($char)) {
             $this->tokenBuffer .= $char;
         } else {
-            $this->emit(TokenType::SCALAR, floatval($this->tokenBuffer));
+            $this->emit(TokenType::SCALAR(), floatval($this->tokenBuffer));
+            $this->doBegin($char);
         }
     }
 
@@ -315,11 +317,6 @@ class Lexer
     protected function isWhitespace($char)
     {
         return preg_match('/\s/u', $char);
-    }
-
-    protected function ignoreWhitespace()
-    {
-        return $this->state === LexerState::BEGIN();
     }
 
     protected function emit(TokenType $type, $content)
