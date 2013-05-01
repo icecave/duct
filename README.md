@@ -5,7 +5,7 @@
 
 ---
 
-**Duct** is a PHP library for parsing continuous streams of JSON values.
+**Duct** is a PHP library for parsing continuous streams of JSON objects.
 
 ## Installation
 

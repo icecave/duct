@@ -1,6 +1,6 @@
 {
     "name": "icecave/duct",
-    "description": "Parse continuous streams of JSON values.",
+    "description": "Parse continuous streams of JSON objects.",
     "keywords": ["json", "parse", "parser", "stream"],
     "homepage": "https://github.com/IcecaveStudios/duct",
     "license": "MIT",
@@ -11,7 +11,8 @@
         }
     ],
     "require": {
-        "php": ">=5.3.3"
+        "php": ">=5.3.3",
+        "eloquent/enumeration": "~3"
     },
     "require-dev": {
         "eloquent/typhoon": "~0.9",
