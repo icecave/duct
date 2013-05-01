@@ -23,6 +23,7 @@ class Lexer
 
     public function lex($buffer)
     {
+        $this->reset();
         $this->feed($buffer);
         $this->finalize();
 
@@ -57,12 +58,12 @@ class Lexer
 
             case LexerState::NUMBER_VALUE():
             case LexerState::NUMBER_VALUE_LEADING_ZERO():
-                $this->emit(TokenType::SCALAR(), intval($this->tokenBuffer));
+                $this->emit(TokenType::NUMBER_LITERAL(), intval($this->tokenBuffer));
                 break;
 
             case LexerState::NUMBER_VALUE_DECIMAL():
             case LexerState::NUMBER_VALUE_EXPONENT():
-                $this->emit(TokenType::SCALAR(), floatval($this->tokenBuffer));
+                $this->emit(TokenType::NUMBER_LITERAL(), floatval($this->tokenBuffer));
                 break;
         }
     }
@@ -148,10 +149,12 @@ class Lexer
 
     protected function doStringValue($char)
     {
-        if ('"' === $char) {
-            $this->emit(TokenType::SCALAR(), $this->tokenBuffer);
-        } elseif ('\\' === $char) {
+        if ('\\' === $char) {
             $this->state = LexerState::STRING_VALUE_ESCAPED();
+        } elseif (null !== $this->unicodeHighSurrogate) {
+            throw new Exception\LexerException('Missing low surrogate for unicode surrogate pair.');
+        } elseif ('"' === $char) {
+            $this->emit(TokenType::STRING_LITERAL(), $this->tokenBuffer);
         } else {
             $this->tokenBuffer .= $char;
         }
@@ -162,6 +165,8 @@ class Lexer
         if ('u' === $char) {
             $this->unicodeBuffer = '';
             $this->state = LexerState::STRING_VALUE_UNICODE();
+        } elseif (null !== $this->unicodeHighSurrogate) {
+            throw new Exception\LexerException('Missing low surrogate for unicode surrogate pair.');
         } elseif (array_key_exists($char, self::$escapeSequences)) {
             $this->tokenBuffer .= self::$escapeSequences[$char];
             $this->state = LexerState::STRING_VALUE();
@@ -217,7 +222,7 @@ class Lexer
             $this->tokenBuffer .= 'e';
             $this->state = LexerState::NUMBER_VALUE_EXPONENT_START();
         } else {
-            $this->emit(TokenType::SCALAR(), intval($this->tokenBuffer));
+            $this->emit(TokenType::NUMBER_LITERAL(), intval($this->tokenBuffer));
             $this->doBegin($char);
         }
     }
@@ -244,7 +249,7 @@ class Lexer
             $this->tokenBuffer .= 'e';
             $this->state = LexerState::NUMBER_VALUE_EXPONENT_START();
         } else {
-            $this->emit(TokenType::SCALAR(), intval($this->tokenBuffer));
+            $this->emit(TokenType::NUMBER_LITERAL(), intval($this->tokenBuffer));
             $this->doBegin($char);
         }
     }
@@ -259,7 +264,7 @@ class Lexer
         } elseif ('.' === substr($this->tokenBuffer, -1)) {
             throw new Exception\LexerException('Expected digit after decimal point.');
         } else {
-            $this->emit(TokenType::SCALAR(), floatval($this->tokenBuffer));
+            $this->emit(TokenType::NUMBER_LITERAL(), floatval($this->tokenBuffer));
             $this->doBegin($char);
         }
     }
@@ -282,7 +287,7 @@ class Lexer
         if (ctype_digit($char)) {
             $this->tokenBuffer .= $char;
         } else {
-            $this->emit(TokenType::SCALAR(), floatval($this->tokenBuffer));
+            $this->emit(TokenType::NUMBER_LITERAL(), floatval($this->tokenBuffer));
             $this->doBegin($char);
         }
     }
@@ -292,7 +297,7 @@ class Lexer
         $this->tokenBuffer .= $char;
 
         if ($this->expectString('true')) {
-            $this->emit(TokenType::SCALAR(), true);
+            $this->emit(TokenType::BOOLEAN_LITERAL(), true);
         }
     }
 
@@ -301,7 +306,7 @@ class Lexer
         $this->tokenBuffer .= $char;
 
         if ($this->expectString('false')) {
-            $this->emit(TokenType::SCALAR(), false);
+            $this->emit(TokenType::BOOLEAN_LITERAL(), false);
         }
     }
 
@@ -310,7 +315,7 @@ class Lexer
         $this->tokenBuffer .= $char;
 
         if ($this->expectString('null')) {
-            $this->emit(TokenType::SCALAR(), null);
+            $this->emit(TokenType::NULL_LITERAL(), null);
         }
     }
 

@@ -15,7 +15,7 @@ class LexerTest extends PHPUnit_Framework_TestCase
         $this->lexer->feed(' 1 ');
 
         $tokens = $this->lexer->tokens();
-        $this->assertSame(TokenType::SCALAR(), $tokens->back()->type());
+        $this->assertSame(TokenType::NUMBER_LITERAL(), $tokens->back()->type());
         $this->assertSame(1, $tokens->back()->value());
     }
 
@@ -130,6 +130,24 @@ class LexerTest extends PHPUnit_Framework_TestCase
         $this->lexer->feed('"\\udD1E"');
     }
 
+    public function testFeedFailsOnMissingLowSurrogateEndString()
+    {
+        $this->setExpectedException(__NAMESPACE__ . '\Exception\LexerException', 'Missing low surrogate for unicode surrogate pair.');
+        $this->lexer->feed('"\\ud834"');
+    }
+
+    public function testFeedFailsOnMissingLowSurrogateRegularCharacter()
+    {
+        $this->setExpectedException(__NAMESPACE__ . '\Exception\LexerException', 'Missing low surrogate for unicode surrogate pair.');
+        $this->lexer->feed('"\\ud834_"');
+    }
+
+    public function testFeedFailsOnMissingLowSurrogateRegularNonUnicodeEscape()
+    {
+        $this->setExpectedException(__NAMESPACE__ . '\Exception\LexerException', 'Missing low surrogate for unicode surrogate pair.');
+        $this->lexer->feed('"\\ud834\t"');
+    }
+
     public function testFeedPartialMultibyteCharacter()
     {
         $this->lexer->feed("\"\xc3");
@@ -188,60 +206,60 @@ class LexerTest extends PHPUnit_Framework_TestCase
             array(':',                new Token(TokenType::COLON(), ':')),
             array(',',                new Token(TokenType::COMMA(), ',')),
 
-            array('true',             new Token(TokenType::SCALAR(), true)),
-            array('false',            new Token(TokenType::SCALAR(), false)),
-            array('null',             new Token(TokenType::SCALAR(), null)),
+            array('true',             new Token(TokenType::BOOLEAN_LITERAL(), true)),
+            array('false',            new Token(TokenType::BOOLEAN_LITERAL(), false)),
+            array('null',             new Token(TokenType::NULL_LITERAL(), null)),
 
-            array('0',                new Token(TokenType::SCALAR(), 0)),
-            array('-0',               new Token(TokenType::SCALAR(), 0)),
-            array('1',                new Token(TokenType::SCALAR(), 1)),
-            array('-1',               new Token(TokenType::SCALAR(), -1)),
-            array('12345',            new Token(TokenType::SCALAR(), 12345)),
-            array('-12345',           new Token(TokenType::SCALAR(), -12345)),
+            array('0',                new Token(TokenType::NUMBER_LITERAL(), 0)),
+            array('-0',               new Token(TokenType::NUMBER_LITERAL(), 0)),
+            array('1',                new Token(TokenType::NUMBER_LITERAL(), 1)),
+            array('-1',               new Token(TokenType::NUMBER_LITERAL(), -1)),
+            array('12345',            new Token(TokenType::NUMBER_LITERAL(), 12345)),
+            array('-12345',           new Token(TokenType::NUMBER_LITERAL(), -12345)),
 
-            array('0.0',              new Token(TokenType::SCALAR(), 0.0)),
-            array('-0.0',             new Token(TokenType::SCALAR(), 0.0)),
-            array('1.1',              new Token(TokenType::SCALAR(), 1.1)),
-            array('-1.1',             new Token(TokenType::SCALAR(), -1.1)),
-            array('123.123',          new Token(TokenType::SCALAR(), 123.123)),
-            array('-123.123',         new Token(TokenType::SCALAR(), -123.123)),
+            array('0.0',              new Token(TokenType::NUMBER_LITERAL(), 0.0)),
+            array('-0.0',             new Token(TokenType::NUMBER_LITERAL(), 0.0)),
+            array('1.1',              new Token(TokenType::NUMBER_LITERAL(), 1.1)),
+            array('-1.1',             new Token(TokenType::NUMBER_LITERAL(), -1.1)),
+            array('123.123',          new Token(TokenType::NUMBER_LITERAL(), 123.123)),
+            array('-123.123',         new Token(TokenType::NUMBER_LITERAL(), -123.123)),
 
-            array('0e5',              new Token(TokenType::SCALAR(), 0e5)),
-            array('0E5',              new Token(TokenType::SCALAR(), 0e5)),
+            array('0e5',              new Token(TokenType::NUMBER_LITERAL(), 0e5)),
+            array('0E5',              new Token(TokenType::NUMBER_LITERAL(), 0e5)),
 
-            array('1e5',              new Token(TokenType::SCALAR(), 1e5)),
-            array('1E5',              new Token(TokenType::SCALAR(), 1e5)),
-            array('1e10',             new Token(TokenType::SCALAR(), 1e10)),
-            array('1E10',             new Token(TokenType::SCALAR(), 1e10)),
+            array('1e5',              new Token(TokenType::NUMBER_LITERAL(), 1e5)),
+            array('1E5',              new Token(TokenType::NUMBER_LITERAL(), 1e5)),
+            array('1e10',             new Token(TokenType::NUMBER_LITERAL(), 1e10)),
+            array('1E10',             new Token(TokenType::NUMBER_LITERAL(), 1e10)),
 
-            array('1e+5',             new Token(TokenType::SCALAR(), 1e5)),
-            array('1E+5',             new Token(TokenType::SCALAR(), 1e5)),
-            array('1e+10',            new Token(TokenType::SCALAR(), 1e10)),
-            array('1E+10',            new Token(TokenType::SCALAR(), 1e10)),
+            array('1e+5',             new Token(TokenType::NUMBER_LITERAL(), 1e5)),
+            array('1E+5',             new Token(TokenType::NUMBER_LITERAL(), 1e5)),
+            array('1e+10',            new Token(TokenType::NUMBER_LITERAL(), 1e10)),
+            array('1E+10',            new Token(TokenType::NUMBER_LITERAL(), 1e10)),
 
-            array('1e-5',             new Token(TokenType::SCALAR(), 1e-5)),
-            array('1E-5',             new Token(TokenType::SCALAR(), 1e-5)),
-            array('1e-10',            new Token(TokenType::SCALAR(), 1e-10)),
-            array('1E-10',            new Token(TokenType::SCALAR(), 1e-10)),
+            array('1e-5',             new Token(TokenType::NUMBER_LITERAL(), 1e-5)),
+            array('1E-5',             new Token(TokenType::NUMBER_LITERAL(), 1e-5)),
+            array('1e-10',            new Token(TokenType::NUMBER_LITERAL(), 1e-10)),
+            array('1E-10',            new Token(TokenType::NUMBER_LITERAL(), 1e-10)),
 
-            array('0.1e10',           new Token(TokenType::SCALAR(), 0.1e10)),
-            array('0.1E10',           new Token(TokenType::SCALAR(), 0.1e10)),
+            array('0.1e10',           new Token(TokenType::NUMBER_LITERAL(), 0.1e10)),
+            array('0.1E10',           new Token(TokenType::NUMBER_LITERAL(), 0.1e10)),
 
-            array('""',               new Token(TokenType::SCALAR(), '')),
-            array('"foo"',            new Token(TokenType::SCALAR(), 'foo')),
-            array('"foo bar"',        new Token(TokenType::SCALAR(), 'foo bar')),
+            array('""',               new Token(TokenType::STRING_LITERAL(), '')),
+            array('"foo"',            new Token(TokenType::STRING_LITERAL(), 'foo')),
+            array('"foo bar"',        new Token(TokenType::STRING_LITERAL(), 'foo bar')),
 
-            array('"\\""',            new Token(TokenType::SCALAR(), '"')),
-            array('"\\\\"',           new Token(TokenType::SCALAR(), '\\')),
-            array('"\\/"',            new Token(TokenType::SCALAR(), '/')),
-            array('"\\b"',            new Token(TokenType::SCALAR(), "\x08")),
-            array('"\\f"',            new Token(TokenType::SCALAR(), "\f")),
-            array('"\\n"',            new Token(TokenType::SCALAR(), "\n")),
-            array('"\\r"',            new Token(TokenType::SCALAR(), "\r")),
-            array('"\\t"',            new Token(TokenType::SCALAR(), "\t")),
+            array('"\\""',            new Token(TokenType::STRING_LITERAL(), '"')),
+            array('"\\\\"',           new Token(TokenType::STRING_LITERAL(), '\\')),
+            array('"\\/"',            new Token(TokenType::STRING_LITERAL(), '/')),
+            array('"\\b"',            new Token(TokenType::STRING_LITERAL(), "\x08")),
+            array('"\\f"',            new Token(TokenType::STRING_LITERAL(), "\f")),
+            array('"\\n"',            new Token(TokenType::STRING_LITERAL(), "\n")),
+            array('"\\r"',            new Token(TokenType::STRING_LITERAL(), "\r")),
+            array('"\\t"',            new Token(TokenType::STRING_LITERAL(), "\t")),
 
-            array('"\\u00a9"',        new Token(TokenType::SCALAR(), json_decode('"\\u00a9"'))),
-            array('"\\ud834\\udD1E"', new Token(TokenType::SCALAR(), json_decode('"\\ud834\\udD1E"'))),
+            array('"\\u00a9"',        new Token(TokenType::STRING_LITERAL(), json_decode('"\\u00a9"'))),
+            array('"\\ud834\\udD1E"', new Token(TokenType::STRING_LITERAL(), json_decode('"\\ud834\\udD1E"'))),
         );
     }
 }
