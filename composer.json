@@ -1,0 +1,33 @@
+{
+    "name": "icecave/duct",
+    "description": "Parse continuous streams of JSON values.",
+    "keywords": ["json", "parse", "parser", "stream"],
+    "homepage": "https://github.com/IcecaveStudios/duct",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "James Harris",
+            "email": "james.harris@icecave.com.au"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "require-dev": {
+        "eloquent/typhoon": "~0.9",
+        "icecave/archer": "~0.3"
+    },
+    "autoload": {
+        "psr-0": {
+            "Icecave\\Duct": "lib",
+            "Icecave\\Duct\\TypeCheck": "lib-typhoon"
+        }
+    },
+    "extra": {
+        "typhoon": {
+            "output-path": "lib-typhoon",
+            "validator-namespace": "Icecave\\Duct\\TypeCheck",
+            "use-native-callable": false
+        }
+    }
+}
