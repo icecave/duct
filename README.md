@@ -19,15 +19,33 @@ $parser = new Parser;
 
 // JSON data can be fed to the parser incrementally ...
 $parser->feed('[ 1, ');
-$parser->feed('2, 3');
-$parser->feed('][ 4, 5, 6 ]');
 
-// Any completed values can be retrieved from the parser at any time ...
-$result = $parser->values();
-assert($result[0] == array(1, 2, 3));
-assert($result[1] == array(4, 5, 6));
+// Completed values can be retreived using the values() method, which returns an Icecave\Collections\Vector.
+// At this point no complete object has been parsed so the vector is empty.
+$values = $parser->values();
+assert($values->isEmpty());
+
+// As more data is fed to the parser, we now have one value available, an array of elements 1, 2, 3.
+// Note that calling values() is destructive, in that any complete objects are removed from the parser and will not be
+// returned by future calls to values().
+$parser->feed('2, 3 ][ 4, 5');
+$values = $parser->values();
+assert($values->size() === 1);
+assert($values[0] == array(1, 2, 3));
+
+// Finally we feed the remaining part of the second object to the parser and the second value becomes available.
+$parser->feed(', 6 ]');
+$values = $parser->values();
+assert($values->size() === 1);
+assert($values[0] == array(4, 5, 6));
 ```
+
+## Notes
+
+Please note that **Duct** does not provide an evented (SAX-like) JSON parser, instead it allows incremental parsing of
+sequential JSON strings, for example when streaming JSON over a network connection.
 
 <!-- references -->
 [Build Status]: https://raw.github.com/IcecaveStudios/duct/gh-pages/artifacts/images/icecave/regular/build-status.png
 [Test Coverage]: https://raw.github.com/IcecaveStudios/duct/gh-pages/artifacts/images/icecave/regular/coverage.png
+
