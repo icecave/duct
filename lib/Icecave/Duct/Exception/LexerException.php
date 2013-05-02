@@ -3,6 +3,6 @@ namespace Icecave\Duct\Exception;
 
 use RuntimeException;
 
-class LexerException extends RuntimeException
+class LexerException extends RuntimeException implements SyntaxExceptionInterface
 {
 }

@@ -54,16 +54,16 @@ class Lexer
             case LexerState::TRUE_VALUE():
             case LexerState::FALSE_VALUE():
             case LexerState::NULL_VALUE():
-                throw new Exception\LexerException('Lexing terminated while scanning literal value.');
+                throw new Exception\LexerException('Character stream ended while scanning literal value.');
 
             case LexerState::NUMBER_VALUE():
             case LexerState::NUMBER_VALUE_LEADING_ZERO():
-                $this->emit(TokenType::NUMBER_LITERAL(), intval($this->tokenBuffer));
+                $this->emitLiteral(intval($this->tokenBuffer));
                 break;
 
             case LexerState::NUMBER_VALUE_DECIMAL():
             case LexerState::NUMBER_VALUE_EXPONENT():
-                $this->emit(TokenType::NUMBER_LITERAL(), floatval($this->tokenBuffer));
+                $this->emitLiteral(floatval($this->tokenBuffer));
                 break;
         }
     }
@@ -138,10 +138,7 @@ class Lexer
             $this->tokenBuffer = $char;
             $this->state = LexerState::NULL_VALUE();
         } elseif (false !== strpos('{}[]:,', $char)) {
-            $this->emit(
-                TokenType::instanceByValue($char),
-                $char
-            );
+            $this->emitSpecial($char);
         } elseif (!$this->isWhitespace($char)) {
             throw new Exception\LexerException('Unexpected character: "' . $char . '".');
         }
@@ -154,7 +151,7 @@ class Lexer
         } elseif (null !== $this->unicodeHighSurrogate) {
             throw new Exception\LexerException('Missing low surrogate for unicode surrogate pair.');
         } elseif ('"' === $char) {
-            $this->emit(TokenType::STRING_LITERAL(), $this->tokenBuffer);
+            $this->emitLiteral($this->tokenBuffer);
         } else {
             $this->tokenBuffer .= $char;
         }
@@ -222,7 +219,7 @@ class Lexer
             $this->tokenBuffer .= 'e';
             $this->state = LexerState::NUMBER_VALUE_EXPONENT_START();
         } else {
-            $this->emit(TokenType::NUMBER_LITERAL(), intval($this->tokenBuffer));
+            $this->emitLiteral(intval($this->tokenBuffer));
             $this->doBegin($char);
         }
     }
@@ -249,7 +246,7 @@ class Lexer
             $this->tokenBuffer .= 'e';
             $this->state = LexerState::NUMBER_VALUE_EXPONENT_START();
         } else {
-            $this->emit(TokenType::NUMBER_LITERAL(), intval($this->tokenBuffer));
+            $this->emitLiteral(intval($this->tokenBuffer));
             $this->doBegin($char);
         }
     }
@@ -264,7 +261,7 @@ class Lexer
         } elseif ('.' === substr($this->tokenBuffer, -1)) {
             throw new Exception\LexerException('Expected digit after decimal point.');
         } else {
-            $this->emit(TokenType::NUMBER_LITERAL(), floatval($this->tokenBuffer));
+            $this->emitLiteral(floatval($this->tokenBuffer));
             $this->doBegin($char);
         }
     }
@@ -287,7 +284,7 @@ class Lexer
         if (ctype_digit($char)) {
             $this->tokenBuffer .= $char;
         } else {
-            $this->emit(TokenType::NUMBER_LITERAL(), floatval($this->tokenBuffer));
+            $this->emitLiteral(floatval($this->tokenBuffer));
             $this->doBegin($char);
         }
     }
@@ -297,7 +294,7 @@ class Lexer
         $this->tokenBuffer .= $char;
 
         if ($this->expectString('true')) {
-            $this->emit(TokenType::BOOLEAN_LITERAL(), true);
+            $this->emitLiteral(true);
         }
     }
 
@@ -306,7 +303,7 @@ class Lexer
         $this->tokenBuffer .= $char;
 
         if ($this->expectString('false')) {
-            $this->emit(TokenType::BOOLEAN_LITERAL(), false);
+            $this->emitLiteral(false);
         }
     }
 
@@ -315,7 +312,7 @@ class Lexer
         $this->tokenBuffer .= $char;
 
         if ($this->expectString('null')) {
-            $this->emit(TokenType::NULL_LITERAL(), null);
+            $this->emitLiteral(null);
         }
     }
 
@@ -324,9 +321,16 @@ class Lexer
         return preg_match('/\s/u', $char);
     }
 
-    protected function emit(TokenType $type, $content)
+    protected function emitSpecial($char)
     {
-        $this->tokens->pushBack(new Token($type, $content));
+        $this->tokens->pushBack(Token::createSpecial($char));
+        $this->tokenBuffer = '';
+        $this->state = LexerState::BEGIN();
+    }
+
+    protected function emitLiteral($value)
+    {
+        $this->tokens->pushBack(Token::createLiteral($value));
         $this->tokenBuffer = '';
         $this->state = LexerState::BEGIN();
     }

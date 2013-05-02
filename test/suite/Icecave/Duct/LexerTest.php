@@ -3,11 +3,15 @@ namespace Icecave\Duct;
 
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @covers Icecave\Duct\Token
+ * @covers Icecave\Duct\Lexer
+ */
 class LexerTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->lexer = new Lexer();
+        $this->lexer = new Lexer;
     }
 
     public function testFeedEmitsIntegerAfterNonDigit()
@@ -166,7 +170,7 @@ class LexerTest extends PHPUnit_Framework_TestCase
     {
         $this->lexer->feed($literal);
 
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\LexerException', 'Lexing terminated while scanning literal value.');
+        $this->setExpectedException(__NAMESPACE__ . '\Exception\LexerException', 'Character stream ended while scanning literal value.');
         $this->lexer->finalize();
     }
 
