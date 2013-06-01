@@ -16,12 +16,20 @@
         "icecave/collections": "~0.6"
     },
     "require-dev": {
+        "eloquent/typhoon": "~0.9",
         "icecave/archer": "~0.4"
     },
     "autoload": {
         "psr-0": {
             "Icecave\\Duct": "lib",
             "Icecave\\Duct\\TypeCheck": "lib-typhoon"
+        }
+    },
+    "extra": {
+        "typhoon": {
+            "output-path": "lib-typhoon",
+            "validator-namespace": "Icecave\\Duct\\TypeCheck",
+            "use-native-callable": false
         }
     }
 }

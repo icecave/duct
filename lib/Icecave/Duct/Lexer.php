@@ -2,18 +2,34 @@
 namespace Icecave\Duct;
 
 use Icecave\Collections\Vector;
+use Icecave\Duct\TypeCheck\TypeCheck;
 
+/**
+ * Streaming JSON lexer.
+ *
+ * Converts incoming streams of JSON data into tokens.
+ */
 class Lexer
 {
+    /**
+     * @param string $encoding The encoding of the incoming JSON data stream.
+     */
     public function __construct($encoding = 'UTF-8')
     {
+        $this->typeCheck = TypeCheck::get(__CLASS__, func_get_args());
+
         $this->encoding = $encoding;
 
         $this->reset();
     }
 
+    /**
+     * Reset the lexer, discarding any untokened input.
+     */
     public function reset()
     {
+        $this->typeCheck->reset(func_get_args());
+
         $this->state = LexerState::BEGIN();
         $this->inputBuffer = '';
         $this->tokenBuffer = '';
@@ -21,8 +37,18 @@ class Lexer
         $this->tokens = new Vector;
     }
 
+    /**
+     * Tokenize JSON data.
+     *
+     * @param string $buffer The JSON data.
+     *
+     * @return Vector<Token>            The sequence of tokens representing the JSON data.
+     * @throws Exception\LexerException Indicates that the input terminated midway through a token.
+     */
     public function lex($buffer)
     {
+        $this->typeCheck->lex(func_get_args());
+
         $this->reset();
         $this->feed($buffer);
         $this->finalize();
@@ -31,10 +57,14 @@ class Lexer
     }
 
     /**
-     * @param string $buffer
+     * Feed JSON data to the lexer.
+     *
+     * @param string $buffer The JSON data.
      */
     public function feed($buffer)
     {
+        $this->typeCheck->feed(func_get_args());
+
         $length = strlen($buffer);
 
         for ($index = 0; $index < $length; ++$index) {
@@ -43,8 +73,15 @@ class Lexer
         }
     }
 
+    /**
+     * Complete tokenization.
+     *
+     * @throws Exception\LexerException Indicates that the input terminated midway through a token.
+     */
     public function finalize()
     {
+        $this->typeCheck->finalize(func_get_args());
+
         switch ($this->state) {
             case LexerState::NUMBER_VALUE_NEGATIVE():
             case LexerState::NUMBER_VALUE_EXPONENT_START():
@@ -68,15 +105,22 @@ class Lexer
         }
     }
 
+    /**
+     * Fetch the tokens produced by the lexer so far and remove them from the internal token sequence.
+     *
+     * @return Vector<Token> The sequence of tokens representing the JSON value.
+     */
     public function tokens()
     {
+        $this->typeCheck->tokens(func_get_args());
+
         $tokens = clone $this->tokens;
         $this->tokens->clear();
 
         return $tokens;
     }
 
-    protected function consume()
+    private function consume()
     {
         if (!mb_check_encoding($this->inputBuffer, $this->encoding)) {
             return;
@@ -115,7 +159,10 @@ class Lexer
         return $this->doBegin($char);
     }
 
-    protected function doBegin($char)
+    /**
+     * @param string $char
+     */
+    private function doBegin($char)
     {
         if ('"' === $char) {
             $this->state = LexerState::STRING_VALUE();
@@ -144,7 +191,10 @@ class Lexer
         }
     }
 
-    protected function doStringValue($char)
+    /**
+     * @param string $char
+     */
+    private function doStringValue($char)
     {
         if ('\\' === $char) {
             $this->state = LexerState::STRING_VALUE_ESCAPED();
@@ -157,7 +207,10 @@ class Lexer
         }
     }
 
-    protected function doStringValueEscaped($char)
+    /**
+     * @param string $char
+     */
+    private function doStringValueEscaped($char)
     {
         if ('u' === $char) {
             $this->unicodeBuffer = '';
@@ -172,7 +225,10 @@ class Lexer
         }
     }
 
-    protected function doStringValueUnicode($char)
+    /**
+     * @param string $char
+     */
+    private function doStringValueUnicode($char)
     {
         if (!ctype_xdigit($char)) {
             throw new Exception\LexerException('Invalid escape sequence.');
@@ -208,7 +264,10 @@ class Lexer
         }
     }
 
-    protected function doNumberValue($char)
+    /**
+     * @param string $char
+     */
+    private function doNumberValue($char)
     {
         if (ctype_digit($char)) {
             $this->tokenBuffer .= $char;
@@ -224,7 +283,10 @@ class Lexer
         }
     }
 
-    protected function doNumberValueNegative($char)
+    /**
+     * @param string $char
+     */
+    private function doNumberValueNegative($char)
     {
         if ('0' === $char) {
             $this->tokenBuffer .= $char;
@@ -237,7 +299,10 @@ class Lexer
         }
     }
 
-    protected function doNumberValueLeadingZero($char)
+    /**
+     * @param string $char
+     */
+    private function doNumberValueLeadingZero($char)
     {
         if ('.' === $char) {
             $this->tokenBuffer .= '.';
@@ -251,7 +316,10 @@ class Lexer
         }
     }
 
-    protected function doNumberValueDecimal($char)
+    /**
+     * @param string $char
+     */
+    private function doNumberValueDecimal($char)
     {
         if (ctype_digit($char)) {
             $this->tokenBuffer .= $char;
@@ -266,7 +334,10 @@ class Lexer
         }
     }
 
-    protected function doNumberValueExponentStart($char)
+    /**
+     * @param string $char
+     */
+    private function doNumberValueExponentStart($char)
     {
         if ('+' === $char || '-' === $char) {
             $this->tokenBuffer .= $char;
@@ -279,7 +350,10 @@ class Lexer
         }
     }
 
-    protected function doNumberValueExponent($char)
+    /**
+     * @param string $char
+     */
+    private function doNumberValueExponent($char)
     {
         if (ctype_digit($char)) {
             $this->tokenBuffer .= $char;
@@ -289,7 +363,10 @@ class Lexer
         }
     }
 
-    protected function doTrueValue($char)
+    /**
+     * @param string $char
+     */
+    private function doTrueValue($char)
     {
         $this->tokenBuffer .= $char;
 
@@ -298,7 +375,10 @@ class Lexer
         }
     }
 
-    protected function doFalseValue($char)
+    /**
+     * @param string $char
+     */
+    private function doFalseValue($char)
     {
         $this->tokenBuffer .= $char;
 
@@ -307,7 +387,10 @@ class Lexer
         }
     }
 
-    protected function doNullValue($char)
+    /**
+     * @param string $char
+     */
+    private function doNullValue($char)
     {
         $this->tokenBuffer .= $char;
 
@@ -316,26 +399,38 @@ class Lexer
         }
     }
 
-    protected function isWhitespace($char)
+    /**
+     * @param string $char
+     */
+    private function isWhitespace($char)
     {
         return preg_match('/\s/u', $char);
     }
 
-    protected function emitSpecial($char)
+    /**
+     * @param string $char
+     */
+    private function emitSpecial($char)
     {
         $this->tokens->pushBack(Token::createSpecial($char));
         $this->tokenBuffer = '';
         $this->state = LexerState::BEGIN();
     }
 
-    protected function emitLiteral($value)
+    /**
+     * @param string $value
+     */
+    private function emitLiteral($value)
     {
         $this->tokens->pushBack(Token::createLiteral($value));
         $this->tokenBuffer = '';
         $this->state = LexerState::BEGIN();
     }
 
-    protected function expectString($string)
+    /**
+     * @param string $string
+     */
+    private function expectString($string)
     {
         if ($this->tokenBuffer === $string) {
             return true;
@@ -346,22 +441,35 @@ class Lexer
         throw new Exception\LexerException('Expected "' . $string . '", got "' . $this->tokenBuffer . '".');
     }
 
-    protected function isUnicodeHighSurrogate($codepoint)
+    /**
+     * @param integer $codepoint
+     */
+    private function isUnicodeHighSurrogate($codepoint)
     {
         return $codepoint >= 0xd800 && $codepoint < 0xdbff;
     }
 
-    protected function isUnicodeLowSurrogate($codepoint)
+    /**
+     * @param integer $codepoint
+     */
+    private function isUnicodeLowSurrogate($codepoint)
     {
         return $codepoint >= 0xdc00 && $codepoint < 0xdfff;
     }
 
-    protected function combineUnicodeSurrogateCodepoints($highSurrogate, $lowSurrogate)
+    /**
+     * @param integer $highSurrogate
+     * @param integer $lowSurrogate
+     */
+    private function combineUnicodeSurrogateCodepoints($highSurrogate, $lowSurrogate)
     {
         return 0x10000 + ($highSurrogate - 0xd800) * 0x400 + ($lowSurrogate - 0xdc00);
     }
 
-    protected function convertUnicodeCodepoint($codepoint)
+    /**
+     * @param integer $codepoint
+     */
+    private function convertUnicodeCodepoint($codepoint)
     {
         return mb_convert_encoding(
             sprintf('&#%04d;', $codepoint),
@@ -381,6 +489,7 @@ class Lexer
         '\\' => '\\',
     );
 
+    private $typeCheck;
     private $encoding;
     private $state;
     private $inputBuffer;
