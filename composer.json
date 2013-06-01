@@ -16,7 +16,7 @@
         "icecave/collections": "~0.6"
     },
     "require-dev": {
-        "icecave/archer": "~0.3"
+        "icecave/archer": "~0.4"
     },
     "autoload": {
         "psr-0": {
