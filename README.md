@@ -5,9 +5,8 @@
 
 **Duct** is a PHP library for parsing continuous streams of JSON values.
 
-## Installation
-
-* [Composer](http://getcomposer.org) package [icecave/duct](https://packagist.org/packages/icecave/duct)
+* Install via [Composer](http://getcomposer.org) package [icecave/duct](https://packagist.org/packages/icecave/duct)
+* Read the [API documentation](http://icecavestudios.github.io/duct/artifacts/documentation/api/)
 
 ## Example
 
