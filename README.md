@@ -3,7 +3,13 @@
 [![Build Status]](http://travis-ci.org/IcecaveStudios/duct)
 [![Test Coverage]](http://icecave.com.au/duct/artifacts/tests/coverage)
 
-**Duct** is a PHP library for parsing continuous streams of JSON values.
+**Duct** is a PHP library for incrementally parsing continuous streams of JSON values.
+
+**Duct** is designed to parse sequential JSON values from data streams, without framing or demarcation outside of the
+JSON specification.
+
+Please note that **Duct** does not current provide an evented (SAX-like) JSON parser, though there are plans to introduce
+such functionality in the future.
 
 * Install via [Composer](http://getcomposer.org) package [icecave/duct](https://packagist.org/packages/icecave/duct)
 * Read the [API documentation](http://icecavestudios.github.io/duct/artifacts/documentation/api/)
@@ -43,11 +49,6 @@ $values = $parser->values();
 assert($values->size() === 1);
 assert($values[0] == array(4, 5, 6));
 ```
-
-## Notes
-
-Please note that **Duct** does not provide an evented (SAX-like) JSON parser, instead it allows incremental parsing of
-sequential JSON strings, for example when streaming JSON over a network connection.
 
 <!-- references -->
 [Build Status]: https://raw.github.com/IcecaveStudios/duct/gh-pages/artifacts/images/icecave/regular/build-status.png
