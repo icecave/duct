@@ -1,6 +1,6 @@
 {
     "name": "icecave/duct",
-    "description": "Parse continuous streams of JSON objects.",
+    "description": "An incremental streaming JSON parser.",
     "keywords": ["json", "parse", "parser", "stream"],
     "homepage": "https://github.com/IcecaveStudios/duct",
     "license": "MIT",

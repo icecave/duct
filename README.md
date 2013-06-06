@@ -1,7 +1,7 @@
 # Duct
 
 [![Build Status]](http://travis-ci.org/IcecaveStudios/duct)
-[![Test Coverage]](http://icecave.com.au/duct/artifacts/tests/coverage)
+[![Test Coverage]](http://icecavestudios.github.io/duct/artifacts/tests/coverage)
 
 **Duct** is a PHP library for incrementally parsing continuous streams of JSON values.
 
