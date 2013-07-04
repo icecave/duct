@@ -8,9 +8,6 @@
 **Duct** is designed to parse sequential JSON values from data streams, without framing or demarcation outside of the
 JSON specification.
 
-Please note that **Duct** does not current provide an evented (SAX-like) JSON parser, though there are plans to introduce
-such functionality in the future.
-
 * Install via [Composer](http://getcomposer.org) package [icecave/duct](https://packagist.org/packages/icecave/duct)
 * Read the [API documentation](http://icecavestudios.github.io/duct/artifacts/documentation/api/)
 
@@ -50,7 +47,19 @@ assert($values->size() === 1);
 assert($values[0] == array(4, 5, 6));
 ```
 
+## Events
+
+The **Duct** parser also emits events as tokens are parsed, using [Evenement](https://github.com/igorw/evenement).
+
+The events are:
+
+ * **array.open**: emitted when an object open bracket is encountered
+ * **array.close**: emitted when an object closing bracket is encountered
+ * **object.open**: emitted when an object open brace is encountered
+ * **object.close**: emitted when an object closing brace is encountered
+ * **object.key** (string $key): emitted when an object key is encountered
+ * **value** (mixed $value): emitted whenever a scalar value or null is encountered, including values inside objects and arrays
+
 <!-- references -->
 [Build Status]: https://raw.github.com/IcecaveStudios/duct/gh-pages/artifacts/images/icecave/regular/build-status.png
 [Test Coverage]: https://raw.github.com/IcecaveStudios/duct/gh-pages/artifacts/images/icecave/regular/coverage.png
-
