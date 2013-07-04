@@ -13,7 +13,8 @@
     "require": {
         "php": ">=5.3",
         "eloquent/enumeration": "~3",
-        "icecave/collections": "~0.6"
+        "icecave/collections": "~0.6",
+        "evenement/evenement": "~1"
     },
     "require-dev": {
         "eloquent/typhoon": "~0.9",

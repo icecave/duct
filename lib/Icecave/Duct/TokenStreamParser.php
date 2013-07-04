@@ -1,6 +1,7 @@
 <?php
 namespace Icecave\Duct;
 
+use Evenement\EventEmitter;
 use Icecave\Collections\Stack;
 use Icecave\Collections\Vector;
 use Icecave\Duct\TypeCheck\TypeCheck;
@@ -11,7 +12,7 @@ use stdClass;
  *
  * Converts incoming streams of JSON tokens into PHP values.
  */
-class TokenStreamParser
+class TokenStreamParser extends EventEmitter
 {
     public function __construct()
     {
@@ -136,7 +137,7 @@ class TokenStreamParser
             case TokenType::BOOLEAN_LITERAL():
             case TokenType::NULL_LITERAL():
             case TokenType::NUMBER_LITERAL():
-                $this->emit($token->value());
+                $this->emitValue($token->value());
                 break;
 
             case TokenType::BRACE_CLOSE():
@@ -153,7 +154,7 @@ class TokenStreamParser
     private function doObjectStart(Token $token)
     {
         if (TokenType::BRACE_CLOSE() === $token->type()) {
-            $this->emit($this->pop());
+            $this->emitValue($this->pop());
         } else {
             $this->setState(ParserState::OBJECT_KEY());
             $this->doObjectKey($token);
@@ -191,7 +192,7 @@ class TokenStreamParser
     private function doObjectValueSeparator(Token $token)
     {
         if (TokenType::BRACE_CLOSE() === $token->type()) {
-            $this->emit($this->pop());
+            $this->emitValue($this->pop());
         } elseif (TokenType::COMMA() === $token->type()) {
             $this->setState(ParserState::OBJECT_KEY());
         } else {
@@ -205,7 +206,7 @@ class TokenStreamParser
     private function doArrayStart(Token $token)
     {
         if (TokenType::BRACKET_CLOSE() === $token->type()) {
-            $this->emit($this->pop());
+            $this->emitValue($this->pop());
         } else {
             $this->setState(ParserState::BEGIN());
             $this->doValue($token);
@@ -218,7 +219,7 @@ class TokenStreamParser
     private function doArrayValueSeparator(Token $token)
     {
         if (TokenType::BRACKET_CLOSE() === $token->type()) {
-            $this->emit($this->pop());
+            $this->emitValue($this->pop());
         } elseif (TokenType::COMMA() === $token->type()) {
             $this->setState(ParserState::BEGIN());
         } else {
@@ -229,23 +230,25 @@ class TokenStreamParser
     /**
      * @param mixed $value
      */
-    private function emit($value)
+    private function emitValue($value)
     {
         if ($this->stack->isEmpty()) {
             $this->values->pushBack($value);
+        } else {
+            $entry = $this->stack->next();
 
-            return;
+            if (is_object($entry->value)) {
+                $entry->value->{$entry->key} = $value;
+                $entry->state = ParserState::OBJECT_VALUE_SEPARATOR();
+                $entry->key = null;
+            } elseif (is_array($entry->value)) {
+                $entry->value[] = $value;
+                $entry->state = ParserState::ARRAY_VALUE_SEPARATOR();
+            }
         }
 
-        $entry = $this->stack->next();
-
-        if (is_object($entry->value)) {
-            $entry->value->{$entry->key} = $value;
-            $entry->state = ParserState::OBJECT_VALUE_SEPARATOR();
-            $entry->key = null;
-        } elseif (is_array($entry->value)) {
-            $entry->value[] = $value;
-            $entry->state = ParserState::ARRAY_VALUE_SEPARATOR();
+        if (!is_object($value) && !is_array($value)) {
+            $this->emit('value', array($value));
         }
     }
 
@@ -263,6 +266,8 @@ class TokenStreamParser
     private function setObjectKey($key)
     {
         $this->stack->next()->key = $key;
+
+        $this->emit('object.key', array($key));
     }
 
     /**
@@ -276,6 +281,12 @@ class TokenStreamParser
         $entry->key = null;
         $entry->state = $state;
         $this->stack->push($entry);
+
+        if (is_array($value)) {
+            $this->emit('array-open');
+        } elseif (is_object($value)) {
+            $this->emit('object-open');
+        }
     }
 
     /**
@@ -283,7 +294,15 @@ class TokenStreamParser
      */
     private function pop()
     {
-        return $this->stack->pop()->value;
+        $value = $this->stack->pop()->value;
+
+        if (is_array($value)) {
+            $this->emit('array-close');
+        } elseif (is_object($value)) {
+            $this->emit('object-close');
+        }
+
+        return $value;
     }
 
     /**
