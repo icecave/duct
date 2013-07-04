@@ -171,7 +171,7 @@ class TokenStreamParserTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidat
         }
     }
 
-    public function emit(array $arguments)
+    public function emitValue(array $arguments)
     {
         $argumentCount = \count($arguments);
         if ($argumentCount < 1) {

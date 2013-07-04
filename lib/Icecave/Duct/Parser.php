@@ -2,13 +2,14 @@
 namespace Icecave\Duct;
 
 use Icecave\Duct\TypeCheck\TypeCheck;
+use Evenement\EventEmitterInterface;
 
 /**
  * Streaming JSON parser.
  *
  * Converts incoming streams of JSON data into PHP values.
  */
-class Parser
+class Parser implements EventEmitterInterface
 {
     /**
      * @param Lexer|null             $lexer  The lexer to use for tokenization, or NULL to use the default UTF-8 lexer.
@@ -97,6 +98,72 @@ class Parser
         $this->typeCheck->values(func_get_args());
 
         return $this->parser->values();
+    }
+
+    /**
+     * @param string   $event
+     * @param callable $listener
+     */
+    public function on($event, $listener)
+    {
+        $this->typeCheck->on(func_get_args());
+
+        return $this->parser->on($event, $listener);
+    }
+
+    /**
+     * @param string   $event
+     * @param callable $listener
+     */
+    public function once($event, $listener)
+    {
+        $this->typeCheck->once(func_get_args());
+
+        return $this->parser->once($event, $listener);
+    }
+
+    /**
+     * @param string   $event
+     * @param callable $listener
+     */
+    public function removeListener($event, $listener)
+    {
+        $this->typeCheck->removeListener(func_get_args());
+
+        return $this->parser->removeListener($event, $listener);
+    }
+
+    /**
+     * @param string|null $event
+     */
+    public function removeAllListeners($event = null)
+    {
+        $this->typeCheck->removeAllListeners(func_get_args());
+
+        return $this->parser->removeAllListeners($event);
+    }
+
+    /**
+     * @param string $event
+     *
+     * @return array<callable>
+     */
+    public function listeners($event)
+    {
+        $this->typeCheck->listeners(func_get_args());
+
+        return $this->parser->listeners($event);
+    }
+
+    /**
+     * @param string $event
+     * @param array  $arguments
+     */
+    public function emit($event, array $arguments = array())
+    {
+        $this->typeCheck->emit(func_get_args());
+
+        $this->parser->emit($event, $arguments);
     }
 
     private $typeCheck;
