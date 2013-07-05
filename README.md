@@ -53,11 +53,11 @@ The **Duct** parser also emits events as tokens are parsed, using [Evenement](ht
 
 The events are:
 
- * **array.open**: emitted when an object open bracket is encountered
- * **array.close**: emitted when an object closing bracket is encountered
- * **object.open**: emitted when an object open brace is encountered
- * **object.close**: emitted when an object closing brace is encountered
- * **object.key** (string $key): emitted when an object key is encountered
+ * **array-open**: emitted when an object open bracket is encountered
+ * **array-close**: emitted when an object closing bracket is encountered
+ * **object-open**: emitted when an object open brace is encountered
+ * **object-close**: emitted when an object closing brace is encountered
+ * **object-key** (string $key): emitted when an object key is encountered
  * **value** (mixed $value): emitted whenever a scalar value or null is encountered, including values inside objects and arrays
 
 <!-- references -->
