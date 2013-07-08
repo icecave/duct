@@ -1,6 +1,7 @@
 <?php
 namespace Icecave\Duct;
 
+use Exception;
 use Phake;
 use PHPUnit_Framework_TestCase;
 
@@ -22,6 +23,31 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $result = $parser->parse('[1, 2, 3]');
 
         $this->assertSame(array(1, 2, 3), $result->front());
+    }
+
+    public function testFeedFailure()
+    {
+        $this->setExpectedException('Icecave\Duct\Detail\Exception\ParserException', 'Unexpected token "BRACKET_CLOSE".');
+
+        try {
+            $this->parser->feed(']');
+        } catch (Exception $e) {
+            Phake::verify($this->parser)->reset();
+            throw $e;
+        }
+    }
+
+    public function testFinalizeFailure()
+    {
+        $this->setExpectedException('Icecave\Duct\Detail\Exception\ParserException', 'Unexpected token "NUMBER_LITERAL" in state "OBJECT_KEY".');
+
+        try {
+            $this->parser->feed('{ 1');
+            $this->parser->finalize();
+        } catch (Exception $e) {
+            Phake::verify($this->parser)->reset();
+            throw $e;
+        }
     }
 
     /**

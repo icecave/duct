@@ -1,6 +1,7 @@
 <?php
 namespace Icecave\Duct;
 
+use Exception;
 use Icecave\Duct\Detail\Lexer;
 use Icecave\Duct\Detail\TokenStreamParser;
 use Icecave\Duct\TypeCheck\TypeCheck;
@@ -30,6 +31,11 @@ abstract class AbstractParser
 
         $this->lexer = $lexer;
         $this->parser = $parser;
+
+        $this->lexer->on(
+            'token',
+            array($this->parser, 'feedToken')
+        );
     }
 
     /**
@@ -37,8 +43,7 @@ abstract class AbstractParser
      *
      * @param string $buffer The JSON data.
      *
-     * @return Vector<mixed>             The sequence of parsed JSON values.
-     * @throws Exception\ParserException Indicates that the JSON stream terminated midway through a JSON value.
+     * @throws Exception\SyntaxExceptionInterface
      */
     public function parse($buffer)
     {
@@ -63,28 +68,37 @@ abstract class AbstractParser
     /**
      * Feed (potentially incomplete) JSON data to the parser.
      *
-     * @param string $buffer The JSON data.
+     * @param  string                             $buffer The JSON data.
+     * @throws Exception\SyntaxExceptionInterface
      */
     public function feed($buffer)
     {
         $this->typeCheck->feed(func_get_args());
 
-        $this->lexer->feed($buffer);
-        $this->parser->feed($this->lexer->tokens());
+        try {
+            $this->lexer->feed($buffer);
+        } catch (Exception $e) {
+            $this->reset();
+            throw $e;
+        }
     }
 
     /**
      * Finalize parsing.
      *
-     * @throws Exception\ParserException Indicates that the JSON stream terminated midway through a JSON value.
+     * @throws Exception\SyntaxExceptionInterface
      */
     public function finalize()
     {
         $this->typeCheck->finalize(func_get_args());
 
-        $this->lexer->finalize();
-        $this->parser->feed($this->lexer->tokens());
-        $this->parser->finalize();
+        try {
+            $this->lexer->finalize();
+            $this->parser->finalize();
+        } catch (Exception $e) {
+            $this->reset();
+            throw $e;
+        }
     }
 
     private $typeCheck;

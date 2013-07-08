@@ -1,6 +1,7 @@
 <?php
 namespace Icecave\Duct\Detail;
 
+use Icecave\Collections\Vector;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -12,60 +13,60 @@ class LexerTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->lexer = new Lexer;
+        $this->tokens = new Vector;
+
+        $this->lexer->on(
+            'token',
+            array($this->tokens, 'pushBack')
+        );
     }
 
     public function testFeedEmitsIntegerAfterNonDigit()
     {
         $this->lexer->feed(' 1 ');
 
-        $tokens = $this->lexer->tokens();
-        $this->assertSame(TokenType::NUMBER_LITERAL(), $tokens->back()->type());
-        $this->assertSame(1, $tokens->back()->value());
+        $this->assertSame(TokenType::NUMBER_LITERAL(), $this->tokens->back()->type());
+        $this->assertSame(1, $this->tokens->back()->value());
     }
 
     public function testFeedEmitsMultipleIntegers()
     {
         $this->lexer->feed(' 1 2 ');
 
-        $tokens = $this->lexer->tokens();
-        $this->assertSame(1, $tokens[0]->value());
-        $this->assertSame(2, $tokens[1]->value());
+        $this->assertSame(1, $this->tokens[0]->value());
+        $this->assertSame(2, $this->tokens[1]->value());
     }
 
     public function testFeedIntegerThenNonInteger()
     {
         $this->lexer->feed(' 1{ ');
 
-        $tokens = $this->lexer->tokens();
-        $this->assertSame(1, $tokens[0]->value());
-        $this->assertSame('{', $tokens[1]->value());
+        $this->assertSame(1, $this->tokens[0]->value());
+        $this->assertSame('{', $this->tokens[1]->value());
     }
 
     public function testFeedZeroIntegerThenNonInteger()
     {
         $this->lexer->feed(' 0{ ');
 
-        $tokens = $this->lexer->tokens();
-        $this->assertSame(0, $tokens[0]->value());
-        $this->assertSame('{', $tokens[1]->value());
+        $this->assertSame(0, $this->tokens[0]->value());
+        $this->assertSame('{', $this->tokens[1]->value());
     }
 
     public function testFeedFloatThenNonInteger()
     {
         $this->lexer->feed(' 1.1{ ');
 
-        $tokens = $this->lexer->tokens();
-        $this->assertSame(1.1, $tokens[0]->value());
-        $this->assertSame('{', $tokens[1]->value());
+        $this->assertSame(1.1, $this->tokens[0]->value());
+        $this->assertSame('{', $this->tokens[1]->value());
     }
 
     public function testFeedExponentThenNonInteger()
     {
         $this->lexer->feed(' 1e5{ ');
 
-        $tokens = $this->lexer->tokens();
-        $this->assertSame(1e5, $tokens[0]->value());
-        $this->assertSame('{', $tokens[1]->value());
+        $this->assertSame(1e5, $this->tokens[0]->value());
+        $this->assertSame('{', $this->tokens[1]->value());
     }
 
     public function testFeedFailsOnInvalidBeginningCharacter()
@@ -156,11 +157,11 @@ class LexerTest extends PHPUnit_Framework_TestCase
     {
         $this->lexer->feed("\"\xc3");
 
-        $this->assertTrue($this->lexer->tokens()->isEmpty());
+        $this->assertTrue($this->tokens->isEmpty());
 
         $this->lexer->feed("\xb6\"");
 
-        $this->assertSame("\xc3\xb6", $this->lexer->tokens()->back()->value());
+        $this->assertSame("\xc3\xb6", $this->tokens->back()->value());
     }
 
     /**
@@ -193,11 +194,12 @@ class LexerTest extends PHPUnit_Framework_TestCase
      */
     public function testLexWithSingleToken($json, $expectedToken)
     {
-        $tokens = $this->lexer->lex($json);
-        $this->assertInstanceOf('Icecave\Collections\Vector', $tokens);
-        $this->assertSame(1, $tokens->size());
-        $this->assertEquals($expectedToken, $tokens->back());
-        $this->assertSame($expectedToken->value(), $tokens->back()->value());
+        $this->lexer->feed($json);
+        $this->lexer->finalize();
+
+        $this->assertSame(1, $this->tokens->size());
+        $this->assertEquals($expectedToken, $this->tokens->back());
+        $this->assertSame($expectedToken->value(), $this->tokens->back()->value());
     }
 
     public function singleTokens()

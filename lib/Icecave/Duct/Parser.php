@@ -36,8 +36,8 @@ class Parser extends AbstractParser
      *
      * @param string $buffer The JSON data.
      *
-     * @return Vector<mixed>             The sequence of parsed JSON values.
-     * @throws Exception\ParserException Indicates that the JSON stream terminated midway through a JSON value.
+     * @return Vector<mixed>                      The sequence of parsed JSON values.
+     * @throws Exception\SyntaxExceptionInterface
      */
     public function parse($buffer)
     {
