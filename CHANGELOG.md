@@ -1,5 +1,10 @@
 # Duct Changelog
 
+### 0.2.1 (2013-07-08)
+
+* **[NEW]** Added `error` event to `EventedParser`
+* **[FIXED]** Parsers are now reset when an exception is thrown
+
 ### 0.2.0 (2013-07-08)
 
 * **[NEW]** Added `EventedParser`, a SAX-JS/Clarinet-like event-based JSON parser
