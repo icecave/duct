@@ -15,7 +15,7 @@ JSON specification.
 
 ### Simple parsing
 
-**Duct** can be used to parse multiple JSON documents at a time using the `Parser::parse()` method.
+**Duct** can be used to parse multiple JSON documents in a single call to `Parser::parse()`.
 The JSON string given must contain complete values.
 
 ```php
@@ -65,7 +65,7 @@ assert($values->size() === 1);
 assert($values[0] == array(4, 5, 6));
 
 // At the end of the JSON stream, finalize is called to parse any data remaining
-// in the buffer.
+// in the buffer. An exception is thrown the buffer contains an incomplete value.
 $parser->finalize();
 
 // In this case there were no additional values.
@@ -75,14 +75,15 @@ assert($values->isEmpty());
 
 ### Event-based parsing
 
-**Duct** also provides `EventedParser`, an event-based incremental parser similar to the [Clarinet](https://github.com/dscape/clarinet) library for JavaScript.
-The evented parse uses [Evenement](https://github.com/igorw/evenement) for event management.
+**Duct** also provides `EventedParser`, an event-based incremental parser similar to the [Clarinet](https://github.com/dscape/clarinet)
+library for JavaScript. Event management is provided by [Evenement](https://github.com/igorw/evenement/tree/v1.0.0), a
+popular PHP event library.
 
 As per the example above the `feed()` and `finalize()` methods are used, however there is no `values()` method. Instead,
 the following events are emitted as the buffer is parsed.
 
- * **array-open**: emitted when an object open bracket is encountered
- * **array-close**: emitted when an object closing bracket is encountered
+ * **array-open**: emitted when an array open bracket is encountered
+ * **array-close**: emitted when an array closing bracket is encountered
  * **object-open**: emitted when an object open brace is encountered
  * **object-close**: emitted when an object closing brace is encountered
  * **object-key** (string $key): emitted when an object key is encountered
