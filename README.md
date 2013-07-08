@@ -94,6 +94,6 @@ the following events are emitted as the buffer is parsed.
  * **document** (mixed $value): emitted after an entire JSON document has been parsed
 
 <!-- references -->
-[Build Status]: https://travis-ci.org/IcecaveStudios/semver.png?branch=develop
-[Test Coverage]: https://coveralls.io/repos/IcecaveStudios/semver/badge.png?branch=develop
+[Build Status]: https://travis-ci.org/IcecaveStudios/duct.png?branch=develop
+[Test Coverage]: https://coveralls.io/repos/IcecaveStudios/duct/badge.png?branch=develop
 [SemVer]: http://calm-shore-6115.herokuapp.com/?label=semver&value=0.1.0&color=yellow
