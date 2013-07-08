@@ -1,6 +1,6 @@
 {
     "name": "icecave/duct",
-    "description": "Parse continuous streams of JSON objects.",
+    "description": "An incremental streaming JSON parser.",
     "keywords": ["json", "parse", "parser", "stream"],
     "homepage": "https://github.com/IcecaveStudios/duct",
     "license": "MIT",
@@ -13,15 +13,24 @@
     "require": {
         "php": ">=5.3",
         "eloquent/enumeration": "~3",
-        "icecave/collections": "~0.6"
+        "icecave/collections": "~0.6",
+        "evenement/evenement": "~1"
     },
     "require-dev": {
-        "icecave/archer": "~0.3"
+        "eloquent/typhoon": "~0.9",
+        "icecave/archer": "1.0.0-alpha.1"
     },
     "autoload": {
         "psr-0": {
             "Icecave\\Duct": "lib",
             "Icecave\\Duct\\TypeCheck": "lib-typhoon"
+        }
+    },
+    "extra": {
+        "typhoon": {
+            "output-path": "lib-typhoon",
+            "validator-namespace": "Icecave\\Duct\\TypeCheck",
+            "use-native-callable": false
         }
     }
 }

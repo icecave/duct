@@ -16,6 +16,7 @@ if ($token = getenv('ARCHER_TOKEN')) {
         'github.com' => $token
     );
     $composerFlags = '--prefer-dist';
+    passthru('curl -s -i -H "Authorization: token $ARCHER_TOKEN" https://api.github.com | grep "^X-RateLimit"');
 } else {
     $composerFlags = '--prefer-source';
 }

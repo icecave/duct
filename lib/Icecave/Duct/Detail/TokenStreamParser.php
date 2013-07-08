@@ -1,55 +1,67 @@
 <?php
-namespace Icecave\Duct;
+namespace Icecave\Duct\Detail;
 
+use Evenement\EventEmitter;
 use Icecave\Collections\Stack;
-use Icecave\Collections\Vector;
+use Icecave\Duct\TypeCheck\TypeCheck;
 use stdClass;
 
-class TokenStreamParser
+/**
+ * Streaming token parser.
+ *
+ * Converts incoming streams of JSON tokens into PHP values.
+ */
+class TokenStreamParser extends EventEmitter
 {
     public function __construct()
     {
+        $this->typeCheck = TypeCheck::get(__CLASS__, func_get_args());
+
         $this->reset();
     }
 
+    /**
+     * Reset the parser, discarding any previously parsed input and values.
+     */
     public function reset()
     {
+        $this->typeCheck->reset(func_get_args());
+
         $this->stack = new Stack;
-        $this->values = new Vector;
     }
 
-    public function parse($tokens)
-    {
-        $this->reset();
-        $this->feed($tokens);
-        $this->finalize();
-
-        return $this->values();
-    }
-
+    /**
+     * Feed tokens to the parser.
+     *
+     * @param mixed<Token> $tokens The sequence of tokens.
+     */
     public function feed($tokens)
     {
+        $this->typeCheck->feed(func_get_args());
+
         foreach ($tokens as $token) {
             $this->feedToken($token);
         }
     }
 
+    /**
+     * Finalize parsing.
+     *
+     * @throws Exception\ParserException Indicates that the token stream terminated midway through a JSON value.
+     */
     public function finalize()
     {
+        $this->typeCheck->finalize(func_get_args());
+
         if (!$this->stack->isEmpty()) {
             throw new Exception\ParserException('Token stream ended while parsing ' . gettype($this->stack->next()->value) . '.');
         }
     }
 
-    public function values()
-    {
-        $values = clone $this->values;
-        $this->values->clear();
-
-        return $values;
-    }
-
-    protected function feedToken(Token $token)
+    /**
+     * @param Token $token
+     */
+    private function feedToken(Token $token)
     {
         if (!$this->stack->isEmpty()) {
             switch ($this->stack->next()->state) {
@@ -71,7 +83,10 @@ class TokenStreamParser
         return $this->doValue($token);
     }
 
-    protected function doValue(Token $token)
+    /**
+     * @param Token $token
+     */
+    private function doValue(Token $token)
     {
         switch ($token->type()) {
             case TokenType::BRACE_OPEN():
@@ -86,7 +101,7 @@ class TokenStreamParser
             case TokenType::BOOLEAN_LITERAL():
             case TokenType::NULL_LITERAL():
             case TokenType::NUMBER_LITERAL():
-                $this->emit($token->value());
+                $this->emitValue($token->value());
                 break;
 
             case TokenType::BRACE_CLOSE():
@@ -97,17 +112,23 @@ class TokenStreamParser
         }
     }
 
-    protected function doObjectStart(Token $token)
+    /**
+     * @param Token $token
+     */
+    private function doObjectStart(Token $token)
     {
         if (TokenType::BRACE_CLOSE() === $token->type()) {
-            $this->emit($this->pop());
+            $this->emitValue($this->pop());
         } else {
             $this->setState(ParserState::OBJECT_KEY());
             $this->doObjectKey($token);
         }
     }
 
-    protected function doObjectKey(Token $token)
+    /**
+     * @param Token $token
+     */
+    private function doObjectKey(Token $token)
     {
         if (TokenType::STRING_LITERAL() !== $token->type()) {
             throw $this->createUnexpectedTokenException($token);
@@ -117,7 +138,10 @@ class TokenStreamParser
         $this->setState(ParserState::OBJECT_KEY_SEPARATOR());
     }
 
-    protected function doObjectKeySeparator(Token $token)
+    /**
+     * @param Token $token
+     */
+    private function doObjectKeySeparator(Token $token)
     {
         if (TokenType::COLON() !== $token->type()) {
             throw $this->createUnexpectedTokenException($token);
@@ -126,10 +150,13 @@ class TokenStreamParser
         $this->setState(ParserState::BEGIN());
     }
 
-    protected function doObjectValueSeparator(Token $token)
+    /**
+     * @param Token $token
+     */
+    private function doObjectValueSeparator(Token $token)
     {
         if (TokenType::BRACE_CLOSE() === $token->type()) {
-            $this->emit($this->pop());
+            $this->emitValue($this->pop());
         } elseif (TokenType::COMMA() === $token->type()) {
             $this->setState(ParserState::OBJECT_KEY());
         } else {
@@ -137,20 +164,26 @@ class TokenStreamParser
         }
     }
 
-    protected function doArrayStart(Token $token)
+    /**
+     * @param Token $token
+     */
+    private function doArrayStart(Token $token)
     {
         if (TokenType::BRACKET_CLOSE() === $token->type()) {
-            $this->emit($this->pop());
+            $this->emitValue($this->pop());
         } else {
             $this->setState(ParserState::BEGIN());
             $this->doValue($token);
         }
     }
 
-    protected function doArrayValueSeparator(Token $token)
+    /**
+     * @param Token $token
+     */
+    private function doArrayValueSeparator(Token $token)
     {
         if (TokenType::BRACKET_CLOSE() === $token->type()) {
-            $this->emit($this->pop());
+            $this->emitValue($this->pop());
         } elseif (TokenType::COMMA() === $token->type()) {
             $this->setState(ParserState::BEGIN());
         } else {
@@ -158,51 +191,90 @@ class TokenStreamParser
         }
     }
 
-    protected function emit($value)
+    /**
+     * @param mixed $value
+     */
+    private function emitValue($value)
     {
         if ($this->stack->isEmpty()) {
-            $this->values->pushBack($value);
+            $this->emit('document', array($value));
+        } else {
+            $entry = $this->stack->next();
 
-            return;
+            if (is_object($entry->value)) {
+                $entry->value->{$entry->key} = $value;
+                $entry->state = ParserState::OBJECT_VALUE_SEPARATOR();
+                $entry->key = null;
+            } elseif (is_array($entry->value)) {
+                $entry->value[] = $value;
+                $entry->state = ParserState::ARRAY_VALUE_SEPARATOR();
+            }
         }
 
-        $entry = $this->stack->next();
-
-        if (is_object($entry->value)) {
-            $entry->value->{$entry->key} = $value;
-            $entry->state = ParserState::OBJECT_VALUE_SEPARATOR();
-            $entry->key = null;
-        } elseif (is_array($entry->value)) {
-            $entry->value[] = $value;
-            $entry->state = ParserState::ARRAY_VALUE_SEPARATOR();
+        if (!is_object($value) && !is_array($value)) {
+            $this->emit('value', array($value));
         }
     }
 
-    protected function setState(ParserState $state)
+    /**
+     * @param ParserState $state
+     */
+    private function setState(ParserState $state)
     {
         $this->stack->next()->state = $state;
     }
 
-    protected function setObjectKey($key)
+    /**
+     * @param string $key
+     */
+    private function setObjectKey($key)
     {
         $this->stack->next()->key = $key;
+
+        $this->emit('object.key', array($key));
     }
 
-    protected function push($value, ParserState $state)
+    /**
+     * @param mixed       $value
+     * @param ParserState $state
+     */
+    private function push($value, ParserState $state)
     {
         $entry = new stdClass;
         $entry->value = $value;
         $entry->key = null;
         $entry->state = $state;
         $this->stack->push($entry);
+
+        if (is_array($value)) {
+            $this->emit('array-open');
+        } elseif (is_object($value)) {
+            $this->emit('object-open');
+        }
     }
 
-    protected function pop()
+    /**
+     * @return stdClass
+     */
+    private function pop()
     {
-        return $this->stack->pop()->value;
+        $value = $this->stack->pop()->value;
+
+        if (is_array($value)) {
+            $this->emit('array-close');
+        } elseif (is_object($value)) {
+            $this->emit('object-close');
+        }
+
+        return $value;
     }
 
-    protected function createUnexpectedTokenException(Token $token)
+    /**
+     * @param Token $token
+     *
+     * @return Exception\ParserException
+     */
+    private function createUnexpectedTokenException(Token $token)
     {
         if ($this->stack->isEmpty()) {
             return new Exception\ParserException('Unexpected token "' . $token->type() . '".');
@@ -211,6 +283,6 @@ class TokenStreamParser
         return new Exception\ParserException('Unexpected token "' . $token->type() . '" in state "' . $this->stack->next()->state . '".');
     }
 
+    private $typeCheck;
     private $stack;
-    private $values;
 }

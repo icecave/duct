@@ -1,5 +1,5 @@
 <?php
-namespace Icecave\Duct;
+namespace Icecave\Duct\Detail;
 
 use Eloquent\Enumeration\Enumeration;
 

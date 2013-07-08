@@ -1,13 +1,27 @@
 <?php
 namespace Icecave\Duct;
 
+use Phake;
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @covers Icecave\Duct\Parser
+ * @covers Icecave\Duct\AbstractParser
+ */
 class ParserTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->parser = new Parser;
+        $this->parser = Phake::partialMock(__NAMESPACE__ . '\Parser');
+    }
+
+    public function testParseWithConstructorDefaults()
+    {
+        $parser = new Parser;
+
+        $result = $parser->parse('[1, 2, 3]');
+
+        $this->assertSame(array(1, 2, 3), $result->front());
     }
 
     /**
@@ -19,8 +33,17 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
         $result = $this->parser->parse($json);
 
+        Phake::inOrder(
+            Phake::verify($this->parser)->reset(),
+            Phake::verify($this->parser)->feed($json),
+            Phake::verify($this->parser)->finalize(),
+            Phake::verify($this->parser)->values()
+        );
+
         $this->assertSame(1, $result->size());
         $this->assertEquals($expected, $result->back());
+
+        $this->assertTrue($this->parser->values()->isEmpty());
     }
 
     public function parseData()
