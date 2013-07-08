@@ -86,7 +86,7 @@ the following events are emitted as the buffer is parsed.
  * **object-open**: emitted when an object open brace is encountered
  * **object-close**: emitted when an object closing brace is encountered
  * **object-key** (string $key): emitted when an object key is encountered
- * **value** (mixed $value): emitted whenever a scalar value or null is encountered, including values inside objects and arrays
+ * **value** (mixed $value): emitted whenever a scalar or null is encountered, including inside objects and arrays
  * **document** (mixed $value): emitted after an entire JSON document has been parsed
 
 <!-- references -->
