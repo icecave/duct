@@ -1,7 +1,7 @@
 <?php
 namespace Icecave\Duct\Detail;
 
-use Icecave\Collections\Vector;
+use Evenement\EventEmitter;
 use Icecave\Duct\TypeCheck\TypeCheck;
 
 /**
@@ -9,7 +9,7 @@ use Icecave\Duct\TypeCheck\TypeCheck;
  *
  * Converts incoming streams of JSON data into tokens.
  */
-class Lexer
+class Lexer extends EventEmitter
 {
     /**
      * @param string $encoding The encoding of the incoming JSON data stream.
@@ -34,32 +34,14 @@ class Lexer
         $this->inputBuffer = '';
         $this->tokenBuffer = '';
         $this->unicodeBuffer = '';
-        $this->tokens = new Vector;
-    }
-
-    /**
-     * Tokenize JSON data.
-     *
-     * @param string $buffer The JSON data.
-     *
-     * @return Vector<Token>            The sequence of tokens representing the JSON data.
-     * @throws Exception\LexerException Indicates that the input terminated midway through a token.
-     */
-    public function lex($buffer)
-    {
-        $this->typeCheck->lex(func_get_args());
-
-        $this->reset();
-        $this->feed($buffer);
-        $this->finalize();
-
-        return $this->tokens();
     }
 
     /**
      * Feed JSON data to the lexer.
      *
      * @param string $buffer The JSON data.
+     *
+     * @throws Exception\LexerException
      */
     public function feed($buffer)
     {
@@ -103,21 +85,6 @@ class Lexer
                 $this->emitLiteral(floatval($this->tokenBuffer));
                 break;
         }
-    }
-
-    /**
-     * Fetch the tokens produced by the lexer so far and remove them from the internal token sequence.
-     *
-     * @return Vector<Token> The sequence of tokens representing the JSON value.
-     */
-    public function tokens()
-    {
-        $this->typeCheck->tokens(func_get_args());
-
-        $tokens = clone $this->tokens;
-        $this->tokens->clear();
-
-        return $tokens;
     }
 
     private function consume()
@@ -412,7 +379,7 @@ class Lexer
      */
     private function emitSpecial($char)
     {
-        $this->tokens->pushBack(Token::createSpecial($char));
+        $this->emit('token', array(Token::createSpecial($char)));
         $this->tokenBuffer = '';
         $this->state = LexerState::BEGIN();
     }
@@ -422,7 +389,7 @@ class Lexer
      */
     private function emitLiteral($value)
     {
-        $this->tokens->pushBack(Token::createLiteral($value));
+        $this->emit('token', array(Token::createLiteral($value)));
         $this->tokenBuffer = '';
         $this->state = LexerState::BEGIN();
     }
@@ -496,5 +463,4 @@ class Lexer
     private $tokenBuffer;
     private $unicodeBuffer;
     private $unicodeHighSurrogate;
-    private $tokens;
 }

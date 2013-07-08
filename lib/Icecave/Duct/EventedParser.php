@@ -2,6 +2,7 @@
 namespace Icecave\Duct;
 
 use Evenement\EventEmitterInterface;
+use Exception;
 use Icecave\Duct\Detail\Lexer;
 use Icecave\Duct\Detail\TokenStreamParser;
 use Icecave\Duct\TypeCheck\TypeCheck;
@@ -22,6 +23,39 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
         $this->typeCheck = TypeCheck::get(__CLASS__, func_get_args());
 
         parent::__construct($lexer, $parser);
+    }
+
+    /**
+     * Feed (potentially incomplete) JSON data to the parser.
+     *
+     * @param  string                             $buffer The JSON data.
+     * @throws Exception\SyntaxExceptionInterface
+     */
+    public function feed($buffer)
+    {
+        $this->typeCheck->feed(func_get_args());
+
+        try {
+            parent::feed($buffer);
+        } catch (Exception $e) {
+            $this->emit('error', array($e));
+        }
+    }
+
+    /**
+     * Finalize parsing.
+     *
+     * @throws Exception\SyntaxExceptionInterface
+     */
+    public function finalize()
+    {
+        $this->typeCheck->finalize(func_get_args());
+
+        try {
+            parent::finalize();
+        } catch (Exception $e) {
+            $this->emit('error', array($e));
+        }
     }
 
     /**

@@ -34,6 +34,8 @@ class TokenStreamParser extends EventEmitter
      * Feed tokens to the parser.
      *
      * @param mixed<Token> $tokens The sequence of tokens.
+     *
+     * @throws Exception\ParserException
      */
     public function feed($tokens)
     {
@@ -61,7 +63,7 @@ class TokenStreamParser extends EventEmitter
     /**
      * @param Token $token
      */
-    private function feedToken(Token $token)
+    public function feedToken(Token $token)
     {
         if (!$this->stack->isEmpty()) {
             switch ($this->stack->next()->state) {

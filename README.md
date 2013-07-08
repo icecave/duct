@@ -92,8 +92,9 @@ the following events are emitted as the buffer is parsed.
  * **object-key** (string $key): emitted when an object key is encountered
  * **value** (mixed $value): emitted whenever a scalar or null is encountered, including inside objects and arrays
  * **document** (mixed $value): emitted after an entire JSON document has been parsed
+ * **error** (Exception $error): emitted when a syntax error is encountered
 
 <!-- references -->
 [Build Status]: https://travis-ci.org/IcecaveStudios/duct.png?branch=develop
 [Test Coverage]: https://coveralls.io/repos/IcecaveStudios/duct/badge.png?branch=develop
-[SemVer]: http://calm-shore-6115.herokuapp.com/?label=semver&value=0.2.0&color=yellow
+[SemVer]: http://calm-shore-6115.herokuapp.com/?label=semver&value=0.2.1&color=yellow
