@@ -1,7 +1,8 @@
 # Duct
 
-[![Build Status]](http://travis-ci.org/IcecaveStudios/duct)
-[![Test Coverage]](http://icecavestudios.github.io/duct/artifacts/tests/coverage)
+[![Build Status]](https://travis-ci.org/IcecaveStudios/duct)
+[![Test Coverage]](https://coveralls.io/r/IcecaveStudios/duct?branch=develop)
+[![SemVer]](http://semver.org)
 
 **Duct** is a PHP library for incrementally parsing continuous streams of JSON values.
 
@@ -93,5 +94,6 @@ the following events are emitted as the buffer is parsed.
  * **document** (mixed $value): emitted after an entire JSON document has been parsed
 
 <!-- references -->
-[Build Status]: https://raw.github.com/IcecaveStudios/duct/gh-pages/artifacts/images/icecave/regular/build-status.png
-[Test Coverage]: https://raw.github.com/IcecaveStudios/duct/gh-pages/artifacts/images/icecave/regular/coverage.png
+[Build Status]: https://travis-ci.org/IcecaveStudios/semver.png?branch=develop
+[Test Coverage]: https://coveralls.io/repos/IcecaveStudios/semver/badge.png?branch=develop
+[SemVer]: http://calm-shore-6115.herokuapp.com/?label=semver&value=0.1&color=yellow
