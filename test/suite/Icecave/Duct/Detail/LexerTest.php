@@ -1,11 +1,11 @@
 <?php
-namespace Icecave\Duct;
+namespace Icecave\Duct\Detail;
 
 use PHPUnit_Framework_TestCase;
 
 /**
- * @covers Icecave\Duct\Token
- * @covers Icecave\Duct\Lexer
+ * @covers Icecave\Duct\Detail\Token
+ * @covers Icecave\Duct\Detail\Lexer
  */
 class LexerTest extends PHPUnit_Framework_TestCase
 {

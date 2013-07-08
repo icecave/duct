@@ -1,9 +1,8 @@
 <?php
-namespace Icecave\Duct;
+namespace Icecave\Duct\Detail;
 
 use Evenement\EventEmitter;
 use Icecave\Collections\Stack;
-use Icecave\Collections\Vector;
 use Icecave\Duct\TypeCheck\TypeCheck;
 use stdClass;
 
@@ -22,25 +21,6 @@ class TokenStreamParser extends EventEmitter
     }
 
     /**
-     * Parse a stream of tokens representing one or more complete JSON values.
-     *
-     * @param mixed<Token> $tokens The stream of tokens to parse.
-     *
-     * @return Vector<mixed>             The sequence of parsed JSON values.
-     * @throws Exception\ParserException Indicates that the token stream terminated midway through a JSON value.
-     */
-    public function parse($tokens)
-    {
-        $this->typeCheck->parse(func_get_args());
-
-        $this->reset();
-        $this->feed($tokens);
-        $this->finalize();
-
-        return $this->values();
-    }
-
-    /**
      * Reset the parser, discarding any previously parsed input and values.
      */
     public function reset()
@@ -48,7 +28,6 @@ class TokenStreamParser extends EventEmitter
         $this->typeCheck->reset(func_get_args());
 
         $this->stack = new Stack;
-        $this->values = new Vector;
     }
 
     /**
@@ -77,21 +56,6 @@ class TokenStreamParser extends EventEmitter
         if (!$this->stack->isEmpty()) {
             throw new Exception\ParserException('Token stream ended while parsing ' . gettype($this->stack->next()->value) . '.');
         }
-    }
-
-    /**
-     * Fetch the values produced by the parser so far and remove them from the internal value sequence.
-     *
-     * @return Vector<mixed> The sequence of parsed JSON values.
-     */
-    public function values()
-    {
-        $this->typeCheck->values(func_get_args());
-
-        $values = clone $this->values;
-        $this->values->clear();
-
-        return $values;
     }
 
     /**
@@ -233,7 +197,7 @@ class TokenStreamParser extends EventEmitter
     private function emitValue($value)
     {
         if ($this->stack->isEmpty()) {
-            $this->values->pushBack($value);
+            $this->emit('document', array($value));
         } else {
             $entry = $this->stack->next();
 
@@ -321,5 +285,4 @@ class TokenStreamParser extends EventEmitter
 
     private $typeCheck;
     private $stack;
-    private $values;
 }

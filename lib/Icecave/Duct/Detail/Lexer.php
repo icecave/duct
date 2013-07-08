@@ -1,5 +1,5 @@
 <?php
-namespace Icecave\Duct;
+namespace Icecave\Duct\Detail;
 
 use Icecave\Collections\Vector;
 use Icecave\Duct\TypeCheck\TypeCheck;

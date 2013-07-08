@@ -1,5 +1,5 @@
 <?php
-namespace Icecave\Duct;
+namespace Icecave\Duct\Detail;
 
 use Phake;
 use PHPUnit_Framework_TestCase;
@@ -103,12 +103,23 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
      */
     public function testParse(array $tokens, $expectedValue)
     {
+        $values = array();
+
+        $this->parser->on(
+            'document',
+            function ($value) use (&$values) {
+                $values[] = $value;
+            }
+        );
+
         $tokens = $this->createTokens($tokens);
-        $values = $this->parser->parse($tokens);
-        $this->assertInstanceOf('Icecave\Collections\Vector', $values);
-        $this->assertSame(1, $values->size());
-        $this->assertSame(gettype($expectedValue), gettype($values->back()));
-        $this->assertEquals($expectedValue, $values->back());
+        $this->parser->feed($tokens);
+        $this->parser->finalize();
+
+        $this->assertTrue(is_array($values));
+        $this->assertSame(1, count($values));
+        $this->assertSame(gettype($expectedValue), gettype(end($values)));
+        $this->assertEquals($expectedValue, end($values));
     }
 
     public function parseData()
@@ -147,7 +158,8 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
     public function testParseEvents(array $tokens, $expectedEvents)
     {
         $tokens = $this->createTokens($tokens);
-        $this->parser->parse($tokens);
+        $this->parser->feed($tokens);
+        $this->parser->finalize();
 
         $verifiers = array();
         foreach ($expectedEvents as $eventArguments) {

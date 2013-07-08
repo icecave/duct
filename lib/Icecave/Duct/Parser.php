@@ -1,15 +1,17 @@
 <?php
 namespace Icecave\Duct;
 
+use Icecave\Collections\Vector;
+use Icecave\Duct\Detail\Lexer;
+use Icecave\Duct\Detail\TokenStreamParser;
 use Icecave\Duct\TypeCheck\TypeCheck;
-use Evenement\EventEmitterInterface;
 
 /**
  * Streaming JSON parser.
  *
  * Converts incoming streams of JSON data into PHP values.
  */
-class Parser implements EventEmitterInterface
+class Parser extends AbstractParser
 {
     /**
      * @param Lexer|null             $lexer  The lexer to use for tokenization, or NULL to use the default UTF-8 lexer.
@@ -19,16 +21,14 @@ class Parser implements EventEmitterInterface
     {
         $this->typeCheck = TypeCheck::get(__CLASS__, func_get_args());
 
-        if (null === $lexer) {
-            $lexer = new Lexer;
-        }
+        parent::__construct($lexer, $parser);
 
-        if (null === $parser) {
-            $parser = new TokenStreamParser;
-        }
+        $this->values = $values = new Vector;
 
-        $this->lexer = $lexer;
-        $this->parser = $parser;
+        $this->parser->on(
+            'document',
+            array($this->values, 'pushBack')
+        );
     }
 
     /**
@@ -43,49 +43,9 @@ class Parser implements EventEmitterInterface
     {
         $this->typeCheck->parse(func_get_args());
 
-        $this->reset();
-        $this->feed($buffer);
-        $this->finalize();
+        parent::parse($buffer);
 
         return $this->values();
-    }
-
-    /**
-     * Reset the parser, discarding any previously parsed input and values.
-     */
-    public function reset()
-    {
-        $this->typeCheck->reset(func_get_args());
-
-        $this->lexer->reset();
-        $this->parser->reset();
-    }
-
-    /**
-     * Feed (potentially incomplete) JSON data to the parser.
-     *
-     * @param string $buffer The JSON data.
-     */
-    public function feed($buffer)
-    {
-        $this->typeCheck->feed(func_get_args());
-
-        $this->lexer->feed($buffer);
-        $this->parser->feed($this->lexer->tokens());
-    }
-
-    /**
-     * Finalize parsing.
-     *
-     * @throws Exception\ParserException Indicates that the JSON stream terminated midway through a JSON value.
-     */
-    public function finalize()
-    {
-        $this->typeCheck->finalize(func_get_args());
-
-        $this->lexer->finalize();
-        $this->parser->feed($this->lexer->tokens());
-        $this->parser->finalize();
     }
 
     /**
@@ -97,76 +57,13 @@ class Parser implements EventEmitterInterface
     {
         $this->typeCheck->values(func_get_args());
 
-        return $this->parser->values();
-    }
+        $values = clone $this->values;
 
-    /**
-     * @param string   $event
-     * @param callable $listener
-     */
-    public function on($event, $listener)
-    {
-        $this->typeCheck->on(func_get_args());
+        $this->values->clear();
 
-        return $this->parser->on($event, $listener);
-    }
-
-    /**
-     * @param string   $event
-     * @param callable $listener
-     */
-    public function once($event, $listener)
-    {
-        $this->typeCheck->once(func_get_args());
-
-        return $this->parser->once($event, $listener);
-    }
-
-    /**
-     * @param string   $event
-     * @param callable $listener
-     */
-    public function removeListener($event, $listener)
-    {
-        $this->typeCheck->removeListener(func_get_args());
-
-        return $this->parser->removeListener($event, $listener);
-    }
-
-    /**
-     * @param string|null $event
-     */
-    public function removeAllListeners($event = null)
-    {
-        $this->typeCheck->removeAllListeners(func_get_args());
-
-        return $this->parser->removeAllListeners($event);
-    }
-
-    /**
-     * @param string $event
-     *
-     * @return array<callable>
-     */
-    public function listeners($event)
-    {
-        $this->typeCheck->listeners(func_get_args());
-
-        return $this->parser->listeners($event);
-    }
-
-    /**
-     * @param string $event
-     * @param array  $arguments
-     */
-    public function emit($event, array $arguments = array())
-    {
-        $this->typeCheck->emit(func_get_args());
-
-        $this->parser->emit($event, $arguments);
+        return $values;
     }
 
     private $typeCheck;
-    private $lexer;
-    private $parser;
+    private $values;
 }

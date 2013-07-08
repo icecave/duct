@@ -1,5 +1,5 @@
 <?php
-namespace Icecave\Duct\TypeCheck\Validator\Icecave\Duct;
+namespace Icecave\Duct\TypeCheck\Validator\Icecave\Duct\Detail;
 
 class LexerTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidator
 {

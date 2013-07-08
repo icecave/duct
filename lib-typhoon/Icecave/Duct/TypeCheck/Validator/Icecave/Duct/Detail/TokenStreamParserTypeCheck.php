@@ -1,5 +1,5 @@
 <?php
-namespace Icecave\Duct\TypeCheck\Validator\Icecave\Duct;
+namespace Icecave\Duct\TypeCheck\Validator\Icecave\Duct\Detail;
 
 class TokenStreamParserTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidator
 {
@@ -7,36 +7,6 @@ class TokenStreamParserTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidat
     {
         if (\count($arguments) > 0) {
             throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentException(0, $arguments[0]);
-        }
-    }
-
-    public function parse(array $arguments)
-    {
-        $argumentCount = \count($arguments);
-        if ($argumentCount < 1) {
-            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('tokens', 0, 'mixed<Icecave\\Duct\\Token>');
-        } elseif ($argumentCount > 1) {
-            throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentException(1, $arguments[1]);
-        }
-        $value = $arguments[0];
-        $check = function ($value) {
-            if (!\is_array($value) && !$value instanceof \Traversable) {
-                return false;
-            }
-            foreach ($value as $key => $subValue) {
-                if (!$subValue instanceof \Icecave\Duct\Token) {
-                    return false;
-                }
-            }
-            return true;
-        };
-        if (!$check($arguments[0])) {
-            throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentValueException(
-                'tokens',
-                0,
-                $arguments[0],
-                'mixed<Icecave\\Duct\\Token>'
-            );
         }
     }
 
@@ -51,7 +21,7 @@ class TokenStreamParserTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidat
     {
         $argumentCount = \count($arguments);
         if ($argumentCount < 1) {
-            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('tokens', 0, 'mixed<Icecave\\Duct\\Token>');
+            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('tokens', 0, 'mixed<Icecave\\Duct\\Detail\\Token>');
         } elseif ($argumentCount > 1) {
             throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentException(1, $arguments[1]);
         }
@@ -61,7 +31,7 @@ class TokenStreamParserTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidat
                 return false;
             }
             foreach ($value as $key => $subValue) {
-                if (!$subValue instanceof \Icecave\Duct\Token) {
+                if (!$subValue instanceof \Icecave\Duct\Detail\Token) {
                     return false;
                 }
             }
@@ -72,7 +42,7 @@ class TokenStreamParserTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidat
                 'tokens',
                 0,
                 $arguments[0],
-                'mixed<Icecave\\Duct\\Token>'
+                'mixed<Icecave\\Duct\\Detail\\Token>'
             );
         }
     }
@@ -84,18 +54,11 @@ class TokenStreamParserTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidat
         }
     }
 
-    public function values(array $arguments)
-    {
-        if (\count($arguments) > 0) {
-            throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentException(0, $arguments[0]);
-        }
-    }
-
     public function feedToken(array $arguments)
     {
         $argumentCount = \count($arguments);
         if ($argumentCount < 1) {
-            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('token', 0, 'Icecave\\Duct\\Token');
+            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('token', 0, 'Icecave\\Duct\\Detail\\Token');
         } elseif ($argumentCount > 1) {
             throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentException(1, $arguments[1]);
         }
@@ -105,7 +68,7 @@ class TokenStreamParserTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidat
     {
         $argumentCount = \count($arguments);
         if ($argumentCount < 1) {
-            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('token', 0, 'Icecave\\Duct\\Token');
+            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('token', 0, 'Icecave\\Duct\\Detail\\Token');
         } elseif ($argumentCount > 1) {
             throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentException(1, $arguments[1]);
         }
@@ -115,7 +78,7 @@ class TokenStreamParserTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidat
     {
         $argumentCount = \count($arguments);
         if ($argumentCount < 1) {
-            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('token', 0, 'Icecave\\Duct\\Token');
+            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('token', 0, 'Icecave\\Duct\\Detail\\Token');
         } elseif ($argumentCount > 1) {
             throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentException(1, $arguments[1]);
         }
@@ -125,7 +88,7 @@ class TokenStreamParserTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidat
     {
         $argumentCount = \count($arguments);
         if ($argumentCount < 1) {
-            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('token', 0, 'Icecave\\Duct\\Token');
+            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('token', 0, 'Icecave\\Duct\\Detail\\Token');
         } elseif ($argumentCount > 1) {
             throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentException(1, $arguments[1]);
         }
@@ -135,7 +98,7 @@ class TokenStreamParserTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidat
     {
         $argumentCount = \count($arguments);
         if ($argumentCount < 1) {
-            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('token', 0, 'Icecave\\Duct\\Token');
+            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('token', 0, 'Icecave\\Duct\\Detail\\Token');
         } elseif ($argumentCount > 1) {
             throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentException(1, $arguments[1]);
         }
@@ -145,7 +108,7 @@ class TokenStreamParserTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidat
     {
         $argumentCount = \count($arguments);
         if ($argumentCount < 1) {
-            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('token', 0, 'Icecave\\Duct\\Token');
+            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('token', 0, 'Icecave\\Duct\\Detail\\Token');
         } elseif ($argumentCount > 1) {
             throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentException(1, $arguments[1]);
         }
@@ -155,7 +118,7 @@ class TokenStreamParserTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidat
     {
         $argumentCount = \count($arguments);
         if ($argumentCount < 1) {
-            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('token', 0, 'Icecave\\Duct\\Token');
+            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('token', 0, 'Icecave\\Duct\\Detail\\Token');
         } elseif ($argumentCount > 1) {
             throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentException(1, $arguments[1]);
         }
@@ -165,7 +128,7 @@ class TokenStreamParserTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidat
     {
         $argumentCount = \count($arguments);
         if ($argumentCount < 1) {
-            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('token', 0, 'Icecave\\Duct\\Token');
+            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('token', 0, 'Icecave\\Duct\\Detail\\Token');
         } elseif ($argumentCount > 1) {
             throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentException(1, $arguments[1]);
         }
@@ -185,7 +148,7 @@ class TokenStreamParserTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidat
     {
         $argumentCount = \count($arguments);
         if ($argumentCount < 1) {
-            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('state', 0, 'Icecave\\Duct\\ParserState');
+            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('state', 0, 'Icecave\\Duct\\Detail\\ParserState');
         } elseif ($argumentCount > 1) {
             throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentException(1, $arguments[1]);
         }
@@ -217,7 +180,7 @@ class TokenStreamParserTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidat
             if ($argumentCount < 1) {
                 throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('value', 0, 'mixed');
             }
-            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('state', 1, 'Icecave\\Duct\\ParserState');
+            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('state', 1, 'Icecave\\Duct\\Detail\\ParserState');
         } elseif ($argumentCount > 2) {
             throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentException(2, $arguments[2]);
         }
@@ -234,7 +197,7 @@ class TokenStreamParserTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidat
     {
         $argumentCount = \count($arguments);
         if ($argumentCount < 1) {
-            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('token', 0, 'Icecave\\Duct\\Token');
+            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('token', 0, 'Icecave\\Duct\\Detail\\Token');
         } elseif ($argumentCount > 1) {
             throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentException(1, $arguments[1]);
         }

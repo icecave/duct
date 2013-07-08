@@ -1,5 +1,5 @@
 <?php
-namespace Icecave\Duct\TypeCheck\Validator\Icecave\Duct;
+namespace Icecave\Duct\TypeCheck\Validator\Icecave\Duct\Detail;
 
 class TokenTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidator
 {
@@ -8,7 +8,7 @@ class TokenTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidator
         $argumentCount = \count($arguments);
         if ($argumentCount < 2) {
             if ($argumentCount < 1) {
-                throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('type', 0, 'Icecave\\Duct\\TokenType');
+                throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('type', 0, 'Icecave\\Duct\\Detail\\TokenType');
             }
             throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('value', 1, 'mixed');
         } elseif ($argumentCount > 2) {
