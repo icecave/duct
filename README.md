@@ -96,4 +96,4 @@ the following events are emitted as the buffer is parsed.
 <!-- references -->
 [Build Status]: https://travis-ci.org/IcecaveStudios/semver.png?branch=develop
 [Test Coverage]: https://coveralls.io/repos/IcecaveStudios/semver/badge.png?branch=develop
-[SemVer]: http://calm-shore-6115.herokuapp.com/?label=semver&value=0.1&color=yellow
+[SemVer]: http://calm-shore-6115.herokuapp.com/?label=semver&value=0.1.0&color=yellow
