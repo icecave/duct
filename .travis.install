@@ -28,6 +28,8 @@ if (!is_dir($dir)) {
 }
 file_put_contents($file, json_encode($config));
 
+passthru('composer self-update --no-interaction');
+
 $exitCode = 0;
 passthru('composer install --dev --no-progress --no-interaction --ansi ' . $composerFlags, $exitCode);
 exit($exitCode);
