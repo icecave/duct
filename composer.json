@@ -7,28 +7,29 @@
     "authors": [
         {
             "name": "James Harris",
-            "email": "james.harris@icecave.com.au"
+            "email": "james.harris@icecave.com.au",
+            "homepage": "https://github.com/jmalloc"
         }
     ],
     "require": {
         "php": ">=5.3",
         "eloquent/enumeration": "~3",
-        "icecave/collections": "~0.6",
+        "icecave/collections": "~0.7.0",
         "evenement/evenement": "~1"
     },
     "require-dev": {
-        "eloquent/typhoon": "~0.9",
-        "icecave/archer": "1.0.0-alpha.2"
+        "eloquent/typhoon": "~0.9.0",
+        "icecave/archer": "~1"
     },
     "autoload": {
         "psr-0": {
-            "Icecave\\Duct": "lib",
-            "Icecave\\Duct\\TypeCheck": "lib-typhoon"
+            "Icecave\\Duct": "src",
+            "Icecave\\Duct\\TypeCheck": "src-typhoon"
         }
     },
     "extra": {
         "typhoon": {
-            "output-path": "lib-typhoon",
+            "output-path": "src-typhoon",
             "validator-namespace": "Icecave\\Duct\\TypeCheck",
             "use-native-callable": false
         }

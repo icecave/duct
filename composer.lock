@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "d615b5d7b758accb1d890a8a8962b74f",
+    "hash": "ac5e0349766a0436fca444bce0dd51d3",
     "packages": [
         {
             "name": "eloquent/enumeration",
@@ -57,13 +57,13 @@
             "version": "v1.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/igorw/evenement",
-                "reference": "v1.0.0"
+                "url": "https://github.com/igorw/evenement.git",
+                "reference": "fa966683e7df3e5dd5929d984a44abfbd6bafe8d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/igorw/evenement/zipball/v1.0.0",
-                "reference": "v1.0.0",
+                "url": "https://api.github.com/repos/igorw/evenement/zipball/fa966683e7df3e5dd5929d984a44abfbd6bafe8d",
+                "reference": "fa966683e7df3e5dd5929d984a44abfbd6bafe8d",
                 "shasum": ""
             },
             "require": {
@@ -90,30 +90,33 @@
             "keywords": [
                 "event-dispatcher"
             ],
-            "time": "2012-05-30 08:01:08"
+            "time": "2012-05-30 15:01:08"
         },
         {
             "name": "icecave/collections",
-            "version": "0.6.0",
+            "version": "0.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/IcecaveStudios/collections.git",
-                "reference": "b36f5d1d148ba772753feaae1cee252c706d718c"
+                "reference": "f37bff04bbab6f086ce5766629dc9d99d7cc3b41"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/IcecaveStudios/collections/zipball/b36f5d1d148ba772753feaae1cee252c706d718c",
-                "reference": "b36f5d1d148ba772753feaae1cee252c706d718c",
+                "url": "https://api.github.com/repos/IcecaveStudios/collections/zipball/f37bff04bbab6f086ce5766629dc9d99d7cc3b41",
+                "reference": "f37bff04bbab6f086ce5766629dc9d99d7cc3b41",
                 "shasum": ""
             },
             "require": {
+                "ext-mbstring": "*",
+                "icecave/parity": "~0.1",
                 "icecave/repr": "~1",
-                "php": ">=5.3.3"
+                "php": ">=5.3"
             },
             "require-dev": {
                 "eloquent/liberator": "~1",
                 "eloquent/typhoon": "~0.9",
-                "icecave/archer": "~0.2"
+                "ezzatron/phpunit-extensions": "~1",
+                "icecave/archer": "1.0.0-alpha.2"
             },
             "type": "library",
             "extra": {
@@ -140,7 +143,7 @@
                     "homepage": "https://github.com/jmalloc"
                 }
             ],
-            "description": "A set of PHP collection types loosely inspired by the .NET runtime and the C++ STL.",
+            "description": "A PHP collection library loosely inspired by the .NET runtime and the C++ STL.",
             "homepage": "https://github.com/IcecaveStudios/collections",
             "keywords": [
                 "array",
@@ -152,7 +155,68 @@
                 "sequence",
                 "stack"
             ],
-            "time": "2013-02-26 04:19:11"
+            "time": "2013-08-25 09:13:25"
+        },
+        {
+            "name": "icecave/parity",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/IcecaveStudios/parity.git",
+                "reference": "a68a1c645ced693f34cd39b0da1e44d803fcc7f2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/IcecaveStudios/parity/zipball/a68a1c645ced693f34cd39b0da1e44d803fcc7f2",
+                "reference": "a68a1c645ced693f34cd39b0da1e44d803fcc7f2",
+                "shasum": ""
+            },
+            "require": {
+                "icecave/repr": "~1",
+                "php": ">=5.3"
+            },
+            "require-dev": {
+                "eloquent/typhoon": "~0.9",
+                "icecave/archer": "~0.3"
+            },
+            "type": "library",
+            "extra": {
+                "typhoon": {
+                    "output-path": "lib-typhoon",
+                    "validator-namespace": "Icecave\\Parity\\TypeCheck",
+                    "use-native-callable": false
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Icecave\\Parity": "lib",
+                    "Icecave\\Parity\\TypeCheck": "lib-typhoon"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "James Harris",
+                    "email": "james.harris@icecave.com.au",
+                    "homepage": "https://github.com/jmalloc"
+                }
+            ],
+            "description": "A comparator library for PHP.",
+            "homepage": "https://github.com/IcecaveStudios/parity",
+            "keywords": [
+                "compare",
+                "comparison",
+                "equal",
+                "equality",
+                "greater",
+                "less",
+                "sort",
+                "sorting"
+            ],
+            "time": "2013-05-29 08:00:22"
         },
         {
             "name": "icecave/repr",
@@ -160,12 +224,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/IcecaveStudios/repr.git",
-                "reference": "1.0.0"
+                "reference": "9a78b2b12dbb6fbf46d995f7255ee1f1118bfd8b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/IcecaveStudios/repr/archive/1.0.0.zip",
-                "reference": "1.0.0",
+                "url": "https://api.github.com/repos/IcecaveStudios/repr/zipball/9a78b2b12dbb6fbf46d995f7255ee1f1118bfd8b",
+                "reference": "9a78b2b12dbb6fbf46d995f7255ee1f1118bfd8b",
                 "shasum": ""
             },
             "require": {
@@ -208,12 +272,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dflydev/dflydev-markdown.git",
-                "reference": "v1.0.2"
+                "reference": "2a1b3516bd5af6e722b40ae9e1fccd03e1772060"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/dflydev/dflydev-markdown/zipball/v1.0.2",
-                "reference": "v1.0.2",
+                "url": "https://api.github.com/repos/dflydev/dflydev-markdown/zipball/2a1b3516bd5af6e722b40ae9e1fccd03e1772060",
+                "reference": "2a1b3516bd5af6e722b40ae9e1fccd03e1772060",
                 "shasum": ""
             },
             "require": {
@@ -254,7 +318,7 @@
             "keywords": [
                 "markdown"
             ],
-            "time": "2012-01-15 19:36:37"
+            "time": "2012-01-16 03:36:37"
         },
         {
             "name": "eloquent/asplode",
@@ -365,21 +429,21 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/eloquent/cosmos.git",
-                "reference": "2.3.1"
+                "reference": "0226b7aa39c629cdbb41bde759adff59d932d16d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/eloquent/cosmos/zipball/2.3.1",
-                "reference": "2.3.1",
+                "url": "https://api.github.com/repos/eloquent/cosmos/zipball/0226b7aa39c629cdbb41bde759adff59d932d16d",
+                "reference": "0226b7aa39c629cdbb41bde759adff59d932d16d",
                 "shasum": ""
             },
             "require": {
-                "eloquent/equality": ">=2.0,<3.0",
-                "icecave/isolator": ">=2.0,<3.0",
+                "eloquent/equality": "~2",
+                "icecave/isolator": "~2",
                 "php": ">=5.3.0"
             },
             "require-dev": {
-                "icecave/archer": ">=0.2,<1.0"
+                "icecave/archer": "~0.2"
             },
             "type": "library",
             "autoload": {
@@ -417,19 +481,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/eloquent/equality.git",
-                "reference": "2.1.1"
+                "reference": "83ee596b89786d320470e0ac825df8d0e20d906f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/eloquent/equality/zipball/2.1.1",
-                "reference": "2.1.1",
+                "url": "https://api.github.com/repos/eloquent/equality/zipball/83ee596b89786d320470e0ac825df8d0e20d906f",
+                "reference": "83ee596b89786d320470e0ac825df8d0e20d906f",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
             },
             "require-dev": {
-                "icecave/archer": ">=0.2,<1.0"
+                "icecave/archer": "~0.2"
             },
             "type": "library",
             "autoload": {
@@ -465,21 +529,21 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/eloquent/typhax.git",
-                "reference": "0.9.1"
+                "reference": "5ef82d0c72ad9a0bd1a3c3e624f67dc8c6c870ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/eloquent/typhax/zipball/0.9.1",
-                "reference": "0.9.1",
+                "url": "https://api.github.com/repos/eloquent/typhax/zipball/5ef82d0c72ad9a0bd1a3c3e624f67dc8c6c870ef",
+                "reference": "5ef82d0c72ad9a0bd1a3c3e624f67dc8c6c870ef",
                 "shasum": ""
             },
             "require": {
-                "eloquent/cosmos": ">=2.0,<3.0",
+                "eloquent/cosmos": "~2",
                 "ext-mbstring": "*",
                 "php": ">=5.3.0"
             },
             "require-dev": {
-                "icecave/archer": ">=0.2,<1.0"
+                "icecave/archer": "~0.2"
             },
             "type": "library",
             "autoload": {
@@ -577,16 +641,16 @@
         },
         {
             "name": "guzzle/guzzle",
-            "version": "v3.7.2",
+            "version": "v3.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "eaef90d27bb1d682e1f6ab2d77606dc0159049e6"
+                "reference": "0f16aad385528b5cf790392cb4a4d16cf600e944"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/eaef90d27bb1d682e1f6ab2d77606dc0159049e6",
-                "reference": "eaef90d27bb1d682e1f6ab2d77606dc0159049e6",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/0f16aad385528b5cf790392cb4a4d16cf600e944",
+                "reference": "0f16aad385528b5cf790392cb4a4d16cf600e944",
                 "shasum": ""
             },
             "require": {
@@ -665,20 +729,20 @@
                 "rest",
                 "web service"
             ],
-            "time": "2013-08-02 18:31:05"
+            "time": "2013-09-08 21:09:18"
         },
         {
             "name": "icecave/archer",
-            "version": "1.0.0-alpha.2",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/IcecaveStudios/archer.git",
-                "reference": "f29395874eb668f559f04e98be11ed7e7ccd71dd"
+                "reference": "a88923a3d3fddb8eabff682d7a58457a9bf1fb5b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/IcecaveStudios/archer/zipball/f29395874eb668f559f04e98be11ed7e7ccd71dd",
-                "reference": "f29395874eb668f559f04e98be11ed7e7ccd71dd",
+                "url": "https://api.github.com/repos/IcecaveStudios/archer/zipball/a88923a3d3fddb8eabff682d7a58457a9bf1fb5b",
+                "reference": "a88923a3d3fddb8eabff682d7a58457a9bf1fb5b",
                 "shasum": ""
             },
             "require": {
@@ -703,7 +767,7 @@
             "type": "library",
             "autoload": {
                 "psr-0": {
-                    "Icecave\\Archer": "lib"
+                    "Icecave\\Archer": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -737,7 +801,7 @@
                 "testing",
                 "unit"
             ],
-            "time": "2013-07-29 21:51:56"
+            "time": "2013-09-09 13:20:13"
         },
         {
             "name": "icecave/isolator",
@@ -745,19 +809,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/IcecaveStudios/isolator.git",
-                "reference": "2.2.0"
+                "reference": "2f3fbfcee90790fb3ddde9d4288a2a927cdf6dd6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/IcecaveStudios/isolator/zipball/2.2.0",
-                "reference": "2.2.0",
+                "url": "https://api.github.com/repos/IcecaveStudios/isolator/zipball/2f3fbfcee90790fb3ddde9d4288a2a927cdf6dd6",
+                "reference": "2f3fbfcee90790fb3ddde9d4288a2a927cdf6dd6",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3"
             },
             "require-dev": {
-                "icecave/archer": ">=0.4,<1.0"
+                "icecave/archer": "~0.4"
             },
             "type": "library",
             "autoload": {
@@ -794,12 +858,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/IcecaveStudios/pasta-ast.git",
-                "reference": "0.1.0"
+                "reference": "e60498ac26189a50990b190d34a61b3677a14a69"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/IcecaveStudios/pasta-ast/archive/0.1.0.zip",
-                "reference": "0.1.0",
+                "url": "https://api.github.com/repos/IcecaveStudios/pasta-ast/zipball/e60498ac26189a50990b190d34a61b3677a14a69",
+                "reference": "e60498ac26189a50990b190d34a61b3677a14a69",
                 "shasum": ""
             },
             "require": {
@@ -843,12 +907,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/IcecaveStudios/rasta.git",
-                "reference": "0.1.4"
+                "reference": "aa384531bcab779af0fc25552287866b470ece00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/IcecaveStudios/rasta/archive/0.1.4.zip",
-                "reference": "0.1.4",
+                "url": "https://api.github.com/repos/IcecaveStudios/rasta/zipball/aa384531bcab779af0fc25552287866b470ece00",
+                "reference": "aa384531bcab779af0fc25552287866b470ece00",
                 "shasum": ""
             },
             "require": {
@@ -886,22 +950,27 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v0.9.3",
+            "version": "v0.9.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "98ebfc8d545979636fa438f51921fdbec433f0f9"
+                "reference": "1e5e280ae88a27effa2ae4aa2bd088494ed8594f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/98ebfc8d545979636fa438f51921fdbec433f0f9",
-                "reference": "98ebfc8d545979636fa438f51921fdbec433f0f9",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/1e5e280ae88a27effa2ae4aa2bd088494ed8594f",
+                "reference": "1e5e280ae88a27effa2ae4aa2bd088494ed8594f",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.2"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.9-dev"
+                }
+            },
             "autoload": {
                 "psr-0": {
                     "PHPParser": "lib/"
@@ -921,20 +990,20 @@
                 "parser",
                 "php"
             ],
-            "time": "2012-11-22 18:54:05"
+            "time": "2013-08-25 17:11:40"
         },
         {
             "name": "phake/phake",
             "version": "v1.0.3",
             "source": {
                 "type": "git",
-                "url": "git://github.com/mlively/Phake.git",
-                "reference": "v1.0.3"
+                "url": "https://github.com/mlively/Phake.git",
+                "reference": "4d822246b401f4dc609500d47e42dac8df645f4f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/mlively/Phake/zipball/v1.0.3",
-                "reference": "v1.0.3",
+                "url": "https://api.github.com/repos/mlively/Phake/zipball/4d822246b401f4dc609500d47e42dac8df645f4f",
+                "reference": "4d822246b401f4dc609500d47e42dac8df645f4f",
                 "shasum": ""
             },
             "require": {
@@ -965,7 +1034,7 @@
                 "mock",
                 "testing"
             ],
-            "time": "2012-05-14 08:06:51"
+            "time": "2012-05-14 15:06:51"
         },
         {
             "name": "pimple/pimple",
@@ -1018,13 +1087,13 @@
             "version": "1.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/php-fig/log",
-                "reference": "1.0.0"
+                "url": "https://github.com/php-fig/log.git",
+                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/php-fig/log/archive/1.0.0.zip",
-                "reference": "1.0.0",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/fe0936ee26643249e916849d48e3a51d5f5e278b",
+                "reference": "fe0936ee26643249e916849d48e3a51d5f5e278b",
                 "shasum": ""
             },
             "type": "library",
@@ -1057,12 +1126,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Sami.git",
-                "reference": "v1.1"
+                "reference": "46c58957ce4823c613e8535626b81e2fd80a9865"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Sami/zipball/v1.1",
-                "reference": "v1.1",
+                "url": "https://api.github.com/repos/fabpot/Sami/zipball/46c58957ce4823c613e8535626b81e2fd80a9865",
+                "reference": "46c58957ce4823c613e8535626b81e2fd80a9865",
                 "shasum": ""
             },
             "require": {
@@ -1178,7 +1247,7 @@
         },
         {
             "name": "symfony/config",
-            "version": "v2.3.3",
+            "version": "v2.3.4",
             "target-dir": "Symfony/Component/Config",
             "source": {
                 "type": "git",
@@ -1226,17 +1295,17 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.3.3",
+            "version": "v2.3.4",
             "target-dir": "Symfony/Component/Console",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Console.git",
-                "reference": "290fe87d3618ce49c2caf7c456402affbd9917ac"
+                "reference": "db78f8ff7fc9e28d25ff9a0bf6ddf9f0e35fbbe3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Console/zipball/290fe87d3618ce49c2caf7c456402affbd9917ac",
-                "reference": "290fe87d3618ce49c2caf7c456402affbd9917ac",
+                "url": "https://api.github.com/repos/symfony/Console/zipball/db78f8ff7fc9e28d25ff9a0bf6ddf9f0e35fbbe3",
+                "reference": "db78f8ff7fc9e28d25ff9a0bf6ddf9f0e35fbbe3",
                 "shasum": ""
             },
             "require": {
@@ -1275,11 +1344,11 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "http://symfony.com",
-            "time": "2013-07-21 12:12:18"
+            "time": "2013-08-17 16:34:49"
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v2.3.3",
+            "version": "v2.3.4",
             "target-dir": "Symfony/Component/EventDispatcher",
             "source": {
                 "type": "git",
@@ -1333,7 +1402,7 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v2.3.3",
+            "version": "v2.3.4",
             "target-dir": "Symfony/Component/Filesystem",
             "source": {
                 "type": "git",
@@ -1380,17 +1449,17 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v2.3.3",
+            "version": "v2.3.4",
             "target-dir": "Symfony/Component/Finder",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Finder.git",
-                "reference": "b251476db261edb54bb1d7c6b8be6ae49ff9a371"
+                "reference": "4a0fee5b86f5bbd9dfdc11ec124eba2915737ce1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Finder/zipball/b251476db261edb54bb1d7c6b8be6ae49ff9a371",
-                "reference": "b251476db261edb54bb1d7c6b8be6ae49ff9a371",
+                "url": "https://api.github.com/repos/symfony/Finder/zipball/4a0fee5b86f5bbd9dfdc11ec124eba2915737ce1",
+                "reference": "4a0fee5b86f5bbd9dfdc11ec124eba2915737ce1",
                 "shasum": ""
             },
             "require": {
@@ -1423,21 +1492,21 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "http://symfony.com",
-            "time": "2013-07-21 12:12:18"
+            "time": "2013-08-13 20:18:00"
         },
         {
             "name": "symfony/process",
-            "version": "v2.3.3",
+            "version": "v2.3.4",
             "target-dir": "Symfony/Component/Process",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Process.git",
-                "reference": "dd780ac1fa0452567c261237798c4ec64f1337cf"
+                "reference": "1e91553e1cedd0b8fb1da6ea4f89b02e21713d5b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Process/zipball/dd780ac1fa0452567c261237798c4ec64f1337cf",
-                "reference": "dd780ac1fa0452567c261237798c4ec64f1337cf",
+                "url": "https://api.github.com/repos/symfony/Process/zipball/1e91553e1cedd0b8fb1da6ea4f89b02e21713d5b",
+                "reference": "1e91553e1cedd0b8fb1da6ea4f89b02e21713d5b",
                 "shasum": ""
             },
             "require": {
@@ -1470,21 +1539,21 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "http://symfony.com",
-            "time": "2013-08-02 21:51:01"
+            "time": "2013-08-22 06:42:25"
         },
         {
             "name": "symfony/stopwatch",
-            "version": "v2.3.3",
+            "version": "v2.3.4",
             "target-dir": "Symfony/Component/Stopwatch",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Stopwatch.git",
-                "reference": "v2.3.3"
+                "reference": "23333342d7edd461f576b246c6fa7b30b4d9bebe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Stopwatch/zipball/v2.3.3",
-                "reference": "v2.3.3",
+                "url": "https://api.github.com/repos/symfony/Stopwatch/zipball/23333342d7edd461f576b246c6fa7b30b4d9bebe",
+                "reference": "23333342d7edd461f576b246c6fa7b30b4d9bebe",
                 "shasum": ""
             },
             "require": {
@@ -1521,17 +1590,17 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.3.3",
+            "version": "v2.3.4",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "3837ccd0830ef44ed5c5844403bf6f69f7998758"
+                "reference": "5a279f1b5f5e1045a6c432354d9ea727ff3a9847"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/3837ccd0830ef44ed5c5844403bf6f69f7998758",
-                "reference": "3837ccd0830ef44ed5c5844403bf6f69f7998758",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/5a279f1b5f5e1045a6c432354d9ea727ff3a9847",
+                "reference": "5a279f1b5f5e1045a6c432354d9ea727ff3a9847",
                 "shasum": ""
             },
             "require": {
@@ -1564,7 +1633,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2013-07-21 12:12:18"
+            "time": "2013-08-24 15:26:22"
         },
         {
             "name": "twig/twig",
@@ -1620,9 +1689,9 @@
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "icecave/archer": 15
-    },
+    "stability-flags": [
+
+    ],
     "platform": {
         "php": ">=5.3"
     },
