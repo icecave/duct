@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "ac5e0349766a0436fca444bce0dd51d3",
+    "hash": "d5e0c80a00e934ca1ec3f711224a6361",
     "packages": [
         {
             "name": "eloquent/enumeration",
