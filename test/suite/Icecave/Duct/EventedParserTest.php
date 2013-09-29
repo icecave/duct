@@ -9,15 +9,44 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->tokenStreamParser = Phake::partialMock(__NAMESPACE__ . '\Detail\TokenStreamParser');
-        $this->parser = new EventedParser(null, $this->tokenStreamParser);
+        $this->parser = Phake::partialMock(__NAMESPACE__ . '\EventedParser');
+
+        $this->callbackArguments = array();
+
+        $self = $this;
+        $this->callback = function() use ($self) {
+            $self->callbackArguments[] = func_get_args();
+        };
     }
 
     public function testFeed()
     {
-        $this->parser->feed('[]');
+        $this->parser->feed('[ 1, 2, { "foo" : "bar" }, 3, 4 ]');
 
-        Phake::verify($this->tokenStreamParser)->emit('document', array(array()));
+        Phake::inOrder(
+            Phake::verify($this->parser)->emit('array-open'),
+            Phake::verify($this->parser)->emit('value', array(1)),
+            Phake::verify($this->parser)->emit('value', array(2)),
+            Phake::verify($this->parser)->emit('object-open'),
+            Phake::verify($this->parser)->emit('object-key', array('foo')),
+            Phake::verify($this->parser)->emit('value', array('bar')),
+            Phake::verify($this->parser)->emit('object-close'),
+            Phake::verify($this->parser)->emit('value', array(3)),
+            Phake::verify($this->parser)->emit('value', array(4)),
+            Phake::verify($this->parser)->emit('array-close'),
+            Phake::verify($this->parser)->emit('document')
+        );
+    }
+
+    public function testFeedEmitsDocumentEventWithObject()
+    {
+        $this->parser->feed('{}');
+
+        Phake::inOrder(
+            Phake::verify($this->parser)->emit('object-open'),
+            Phake::verify($this->parser)->emit('object-close'),
+            Phake::verify($this->parser)->emit('document')
+        );
     }
 
     public function testFeedFailure()
@@ -25,7 +54,7 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
         $this->parser->feed('{ 1 :');
 
         $arguments = null;
-        Phake::verify($this->tokenStreamParser)->emit('error', Phake::capture($arguments));
+        Phake::verify($this->parser)->emit('error', Phake::capture($arguments));
 
         $expected = array(
             new ParserException('Unexpected token "NUMBER_LITERAL" in state "OBJECT_KEY".')
@@ -38,11 +67,14 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
     {
         $this->parser->feed('10');
 
-        Phake::verify($this->tokenStreamParser, Phake::never())->emit(Phake::anyParameters());
+        Phake::verify($this->parser, Phake::never())->emit(Phake::anyParameters());
 
         $this->parser->finalize();
 
-        Phake::verify($this->tokenStreamParser)->emit('document', array(10));
+        Phake::inOrder(
+            Phake::verify($this->parser)->emit('value', array(10)),
+            Phake::verify($this->parser)->emit('document')
+        );
     }
 
     public function testFinalizeFailure()
@@ -51,7 +83,7 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
         $this->parser->finalize();
 
         $arguments = null;
-        Phake::verify($this->tokenStreamParser)->emit('error', Phake::capture($arguments));
+        Phake::verify($this->parser)->emit('error', Phake::capture($arguments));
 
         $expected = array(
             new ParserException('Unexpected token "NUMBER_LITERAL" in state "OBJECT_KEY".')
@@ -62,43 +94,72 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
 
     public function testOn()
     {
-        $callback = function() {};
+        $this->parser->on('foo', $this->callback);
 
-        $this->parser->on('foo', $callback);
+        $this->parser->emit('foo', array(1, 2));
+        $this->parser->emit('foo', array(3, 4));
 
-        Phake::verify($this->tokenStreamParser)->on('foo', $this->identicalTo($callback));
+        $this->assertSame(
+            $this->callbackArguments,
+            array(
+                array(1, 2),
+                array(3, 4)
+            )
+        );
     }
 
     public function testOnce()
     {
-        $callback = function() {};
+        $this->parser->once('foo', $this->callback);
 
-        $this->parser->once('foo', $callback);
+        $this->parser->emit('foo', array(1, 2));
+        $this->parser->emit('foo', array(3, 4));
 
-        Phake::verify($this->tokenStreamParser)->once('foo', $this->identicalTo($callback));
+        $this->assertSame(
+            $this->callbackArguments,
+            array(
+                array(1, 2)
+            )
+        );
     }
 
     public function testRemoveListener()
     {
-        $callback = function() {};
+        $this->parser->on('foo', $this->callback);
+        $this->parser->removeListener('foo', $this->callback);
 
-        $this->parser->removeListener('foo', $callback);
+        $this->parser->emit('foo');
 
-        Phake::verify($this->tokenStreamParser)->removeListener('foo', $this->identicalTo($callback));
+        $this->assertSame(
+            $this->callbackArguments,
+            array()
+        );
     }
 
     public function testRemoveAllListeners()
     {
+        $this->parser->on('foo', $this->callback);
         $this->parser->removeAllListeners('foo');
 
-        Phake::verify($this->tokenStreamParser)->removeAllListeners('foo');
+        $this->parser->emit('foo');
+
+        $this->assertSame(
+            $this->callbackArguments,
+            array()
+        );
     }
 
     public function testRemoveAllListenersAllEvents()
     {
-        $this->parser->removeAllListeners();
+        $this->parser->on('foo', $this->callback);
+        $this->parser->removeAllListeners(null);
 
-        Phake::verify($this->tokenStreamParser)->removeAllListeners(null);
+        $this->parser->emit('foo');
+
+        $this->assertSame(
+            $this->callbackArguments,
+            array()
+        );
     }
 
     public function testListeners()
@@ -110,12 +171,5 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
         $result = $this->parser->listeners('foo');
 
         $this->assertSame(array($callback), $result);
-    }
-
-    public function testEmit()
-    {
-        $this->parser->emit('foo', array(1, 2, 3));
-
-        Phake::verify($this->tokenStreamParser)->emit('foo', array(1, 2, 3));
     }
 }

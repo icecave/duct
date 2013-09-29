@@ -56,7 +56,7 @@ class TokenStreamParser extends EventEmitter
         $this->typeCheck->finalize(func_get_args());
 
         if (!$this->stack->isEmpty()) {
-            throw new Exception\ParserException('Token stream ended while parsing ' . gettype($this->stack->next()->value) . '.');
+            throw new Exception\ParserException('Token stream ended unexpectedly.');
         }
     }
 
@@ -66,7 +66,7 @@ class TokenStreamParser extends EventEmitter
     public function feedToken(Token $token)
     {
         if (!$this->stack->isEmpty()) {
-            switch ($this->stack->next()->state) {
+            switch ($this->stack->next()) {
                 case ParserState::ARRAY_START():
                     return $this->doArrayStart($token);
                 case ParserState::ARRAY_VALUE_SEPARATOR():
@@ -92,24 +92,24 @@ class TokenStreamParser extends EventEmitter
     {
         switch ($token->type()) {
             case TokenType::BRACE_OPEN():
-                $this->push(new stdClass, ParserState::OBJECT_START());
+                $this->push(ParserState::OBJECT_START());
+                $this->emit('object-open');
                 break;
 
             case TokenType::BRACKET_OPEN():
-                $this->push(array(), ParserState::ARRAY_START());
+                $this->push(ParserState::ARRAY_START());
+                $this->emit('array-open');
                 break;
 
             case TokenType::STRING_LITERAL():
             case TokenType::BOOLEAN_LITERAL():
             case TokenType::NULL_LITERAL():
             case TokenType::NUMBER_LITERAL():
-                $this->emitValue($token->value());
+                $this->endValue();
+                $this->emit('value', array($token->value()));
                 break;
 
-            case TokenType::BRACE_CLOSE():
-            case TokenType::BRACKET_CLOSE():
-            case TokenType::COLON():
-            case TokenType::COMMA():
+            default:
                 throw $this->createUnexpectedTokenException($token);
         }
     }
@@ -120,10 +120,12 @@ class TokenStreamParser extends EventEmitter
     private function doObjectStart(Token $token)
     {
         if (TokenType::BRACE_CLOSE() === $token->type()) {
-            $this->emitValue($this->pop());
+            $this->pop();
+            $this->endValue();
+            $this->emit('object-close');
         } else {
             $this->setState(ParserState::OBJECT_KEY());
-            $this->doObjectKey($token);
+            $this->feedToken($token);
         }
     }
 
@@ -136,8 +138,8 @@ class TokenStreamParser extends EventEmitter
             throw $this->createUnexpectedTokenException($token);
         }
 
-        $this->setObjectKey($token->value());
         $this->setState(ParserState::OBJECT_KEY_SEPARATOR());
+        $this->emit('object-key', array($token->value()));
     }
 
     /**
@@ -149,7 +151,7 @@ class TokenStreamParser extends EventEmitter
             throw $this->createUnexpectedTokenException($token);
         }
 
-        $this->setState(ParserState::BEGIN());
+        $this->setState(ParserState::OBJECT_VALUE());
     }
 
     /**
@@ -158,7 +160,9 @@ class TokenStreamParser extends EventEmitter
     private function doObjectValueSeparator(Token $token)
     {
         if (TokenType::BRACE_CLOSE() === $token->type()) {
-            $this->emitValue($this->pop());
+            $this->pop();
+            $this->endValue();
+            $this->emit('object-close');
         } elseif (TokenType::COMMA() === $token->type()) {
             $this->setState(ParserState::OBJECT_KEY());
         } else {
@@ -172,10 +176,12 @@ class TokenStreamParser extends EventEmitter
     private function doArrayStart(Token $token)
     {
         if (TokenType::BRACKET_CLOSE() === $token->type()) {
-            $this->emitValue($this->pop());
+            $this->pop();
+            $this->endValue();
+            $this->emit('array-close');
         } else {
-            $this->setState(ParserState::BEGIN());
-            $this->doValue($token);
+            $this->setState(ParserState::ARRAY_VALUE());
+            $this->feedToken($token);
         }
     }
 
@@ -185,36 +191,24 @@ class TokenStreamParser extends EventEmitter
     private function doArrayValueSeparator(Token $token)
     {
         if (TokenType::BRACKET_CLOSE() === $token->type()) {
-            $this->emitValue($this->pop());
+            $this->pop();
+            $this->endValue();
+            $this->emit('array-close');
         } elseif (TokenType::COMMA() === $token->type()) {
-            $this->setState(ParserState::BEGIN());
+            $this->setState(ParserState::ARRAY_VALUE());
         } else {
             throw $this->createUnexpectedTokenException($token);
         }
     }
 
-    /**
-     * @param mixed $value
-     */
-    private function emitValue($value)
+    private function endValue()
     {
         if ($this->stack->isEmpty()) {
-            $this->emit('document', array($value));
-        } else {
-            $entry = $this->stack->next();
-
-            if (is_object($entry->value)) {
-                $entry->value->{$entry->key} = $value;
-                $entry->state = ParserState::OBJECT_VALUE_SEPARATOR();
-                $entry->key = null;
-            } elseif (is_array($entry->value)) {
-                $entry->value[] = $value;
-                $entry->state = ParserState::ARRAY_VALUE_SEPARATOR();
-            }
-        }
-
-        if (!is_object($value) && !is_array($value)) {
-            $this->emit('value', array($value));
+            return;
+        } elseif (ParserState::ARRAY_VALUE() === $this->stack->next()) {
+            $this->setState(ParserState::ARRAY_VALUE_SEPARATOR());
+        } elseif (ParserState::OBJECT_VALUE() === $this->stack->next()) {
+            $this->setState(ParserState::OBJECT_VALUE_SEPARATOR());
         }
     }
 
@@ -223,36 +217,17 @@ class TokenStreamParser extends EventEmitter
      */
     private function setState(ParserState $state)
     {
-        $this->stack->next()->state = $state;
-    }
-
-    /**
-     * @param string $key
-     */
-    private function setObjectKey($key)
-    {
-        $this->stack->next()->key = $key;
-
-        $this->emit('object.key', array($key));
+        $this->stack->pop();
+        $this->stack->push($state);
     }
 
     /**
      * @param mixed       $value
      * @param ParserState $state
      */
-    private function push($value, ParserState $state)
+    private function push(ParserState $state)
     {
-        $entry = new stdClass;
-        $entry->value = $value;
-        $entry->key = null;
-        $entry->state = $state;
-        $this->stack->push($entry);
-
-        if (is_array($value)) {
-            $this->emit('array-open');
-        } elseif (is_object($value)) {
-            $this->emit('object-open');
-        }
+        $this->stack->push($state);
     }
 
     /**
@@ -260,15 +235,7 @@ class TokenStreamParser extends EventEmitter
      */
     private function pop()
     {
-        $value = $this->stack->pop()->value;
-
-        if (is_array($value)) {
-            $this->emit('array-close');
-        } elseif (is_object($value)) {
-            $this->emit('object-close');
-        }
-
-        return $value;
+        $this->stack->pop();
     }
 
     /**
@@ -282,7 +249,7 @@ class TokenStreamParser extends EventEmitter
             return new Exception\ParserException('Unexpected token "' . $token->type() . '".');
         }
 
-        return new Exception\ParserException('Unexpected token "' . $token->type() . '" in state "' . $this->stack->next()->state . '".');
+        return new Exception\ParserException('Unexpected token "' . $token->type() . '" in state "' . $this->stack->next() . '".');
     }
 
     private $typeCheck;

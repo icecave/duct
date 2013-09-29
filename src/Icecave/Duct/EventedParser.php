@@ -2,6 +2,7 @@
 namespace Icecave\Duct;
 
 use Evenement\EventEmitterInterface;
+use Evenement\EventEmitter;
 use Exception;
 use Icecave\Duct\Detail\Lexer;
 use Icecave\Duct\Detail\TokenStreamParser;
@@ -21,6 +22,9 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
     public function __construct(Lexer $lexer = null, TokenStreamParser $parser = null)
     {
         $this->typeCheck = TypeCheck::get(__CLASS__, func_get_args());
+
+        $this->depth = 0;
+        $this->eventEmitterImpl = new EventEmitter;
 
         parent::__construct($lexer, $parser);
     }
@@ -66,7 +70,7 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
     {
         $this->typeCheck->on(func_get_args());
 
-        return $this->parser->on($event, $listener);
+        return $this->eventEmitterImpl->on($event, $listener);
     }
 
     /**
@@ -77,7 +81,7 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
     {
         $this->typeCheck->once(func_get_args());
 
-        return $this->parser->once($event, $listener);
+        return $this->eventEmitterImpl->once($event, $listener);
     }
 
     /**
@@ -88,7 +92,7 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
     {
         $this->typeCheck->removeListener(func_get_args());
 
-        return $this->parser->removeListener($event, $listener);
+        return $this->eventEmitterImpl->removeListener($event, $listener);
     }
 
     /**
@@ -98,7 +102,7 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
     {
         $this->typeCheck->removeAllListeners(func_get_args());
 
-        return $this->parser->removeAllListeners($event);
+        return $this->eventEmitterImpl->removeAllListeners($event);
     }
 
     /**
@@ -110,7 +114,7 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
     {
         $this->typeCheck->listeners(func_get_args());
 
-        return $this->parser->listeners($event);
+        return $this->eventEmitterImpl->listeners($event);
     }
 
     /**
@@ -121,8 +125,61 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
     {
         $this->typeCheck->emit(func_get_args());
 
-        $this->parser->emit($event, $arguments);
+        $this->eventEmitterImpl->emit($event, $arguments);
+    }
+
+    /**
+     * @param mixed $value
+     */
+    protected function onValue($value)
+    {
+        $this->emit('value', array($value));
+
+        if (0 === $this->depth) {
+            $this->emit('document');
+        }
+    }
+
+    protected function onArrayOpen()
+    {
+        $this->emit('array-open');
+
+        ++$this->depth;
+    }
+
+    protected function onArrayClose()
+    {
+        $this->emit('array-close');
+
+        if (0 === --$this->depth) {
+            $this->emit('document');
+        }
+    }
+
+    protected function onObjectOpen()
+    {
+        $this->emit('object-open');
+
+        ++$this->depth;
+    }
+
+    protected function onObjectClose()
+    {
+        $this->emit('object-close');
+
+        if (0 === --$this->depth) {
+            $this->emit('document');
+        }
+    }
+
+    /**
+     * @param mixed $value
+     */
+    protected function onObjectKey($value)
+    {
+        $this->emit('object-key', array($value));
     }
 
     private $typeCheck;
+    private $depth;
 }

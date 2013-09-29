@@ -5,6 +5,7 @@ use Exception;
 use Icecave\Duct\Detail\Lexer;
 use Icecave\Duct\Detail\TokenStreamParser;
 use Icecave\Duct\TypeCheck\TypeCheck;
+use ReflectionMethod;
 
 /**
  * Streaming JSON parser.
@@ -35,6 +36,36 @@ abstract class AbstractParser
         $this->lexer->on(
             'token',
             array($this->parser, 'feedToken')
+        );
+
+        $this->parser->on(
+            'value',
+            $this->makePublicWrapper('onValue')
+        );
+
+        $this->parser->on(
+            'array-open',
+            $this->makePublicWrapper('onArrayOpen')
+        );
+
+        $this->parser->on(
+            'array-close',
+            $this->makePublicWrapper('onArrayClose')
+        );
+
+        $this->parser->on(
+            'object-open',
+            $this->makePublicWrapper('onObjectOpen')
+        );
+
+        $this->parser->on(
+            'object-close',
+            $this->makePublicWrapper('onObjectClose')
+        );
+
+        $this->parser->on(
+            'object-key',
+            $this->makePublicWrapper('onObjectKey')
         );
     }
 
@@ -99,6 +130,47 @@ abstract class AbstractParser
             $this->reset();
             throw $e;
         }
+    }
+
+    /**
+     * @param mixed $value
+     */
+    protected function onValue($value)
+    {
+    }
+
+    protected function onArrayOpen()
+    {
+    }
+
+    protected function onArrayClose()
+    {
+    }
+
+    protected function onObjectOpen()
+    {
+    }
+
+    protected function onObjectClose()
+    {
+    }
+
+    /**
+     * @param mixed $value
+     */
+    protected function onObjectKey($value)
+    {
+    }
+
+    protected function makePublicWrapper($method)
+    {
+        $self = $this;
+        $reflector = new ReflectionMethod($this, $method);
+        $reflector->setAccessible(true);
+
+        return function () use ($self, $reflector) {
+            return $reflector->invokeArgs($self, func_get_args());
+        };
     }
 
     private $typeCheck;
