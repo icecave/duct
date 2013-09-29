@@ -18,4 +18,4 @@ env:
 install:
   - ./.travis.install
 script:
-  - ./vendor/bin/archer travis:build --verbose
+  - ./vendor/bin/archer travis:build
