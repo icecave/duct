@@ -8,7 +8,7 @@
 #
 language: php
 
-php: ["5.3", "5.4", "5.5"]
+php: ["5.3"]
 
 env:
   global:
@@ -18,4 +18,5 @@ env:
 install:
   - ./.travis.install
 script:
-  - ./vendor/bin/archer travis:build
+  - rbenv which phpunit
+
