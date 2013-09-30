@@ -24,6 +24,7 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
         $this->parser->feed('[ 1, 2, { "foo" : "bar" }, 3, 4 ]');
 
         Phake::inOrder(
+            Phake::verify($this->parser)->emit('document-open'),
             Phake::verify($this->parser)->emit('array-open'),
             Phake::verify($this->parser)->emit('value', array(1)),
             Phake::verify($this->parser)->emit('value', array(2)),
@@ -34,7 +35,7 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
             Phake::verify($this->parser)->emit('value', array(3)),
             Phake::verify($this->parser)->emit('value', array(4)),
             Phake::verify($this->parser)->emit('array-close'),
-            Phake::verify($this->parser)->emit('document')
+            Phake::verify($this->parser)->emit('document-close')
         );
     }
 
@@ -43,9 +44,10 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
         $this->parser->feed('{}');
 
         Phake::inOrder(
+            Phake::verify($this->parser)->emit('document-open'),
             Phake::verify($this->parser)->emit('object-open'),
             Phake::verify($this->parser)->emit('object-close'),
-            Phake::verify($this->parser)->emit('document')
+            Phake::verify($this->parser)->emit('document-close')
         );
     }
 
@@ -72,8 +74,9 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
         $this->parser->finalize();
 
         Phake::inOrder(
+            Phake::verify($this->parser)->emit('document-open'),
             Phake::verify($this->parser)->emit('value', array(10)),
-            Phake::verify($this->parser)->emit('document')
+            Phake::verify($this->parser)->emit('document-close')
         );
     }
 

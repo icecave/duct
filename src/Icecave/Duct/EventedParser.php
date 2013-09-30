@@ -133,18 +133,22 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
      */
     protected function onValue($value)
     {
-        $this->emit('value', array($value));
-
         if (0 === $this->depth) {
-            $this->emit('document');
+            $this->emit('document-open');
+            $this->emit('value', array($value));
+            $this->emit('document-close');
+        } else {
+            $this->emit('value', array($value));
         }
     }
 
     protected function onArrayOpen()
     {
-        $this->emit('array-open');
+        if (0 === $this->depth++) {
+            $this->emit('document-open');
+        }
 
-        ++$this->depth;
+        $this->emit('array-open');
     }
 
     protected function onArrayClose()
@@ -152,15 +156,17 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
         $this->emit('array-close');
 
         if (0 === --$this->depth) {
-            $this->emit('document');
+            $this->emit('document-close');
         }
     }
 
     protected function onObjectOpen()
     {
-        $this->emit('object-open');
+        if (0 === $this->depth++) {
+            $this->emit('document-open');
+        }
 
-        ++$this->depth;
+        $this->emit('object-open');
     }
 
     protected function onObjectClose()
@@ -168,7 +174,7 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
         $this->emit('object-close');
 
         if (0 === --$this->depth) {
-            $this->emit('document');
+            $this->emit('document-close');
         }
     }
 
