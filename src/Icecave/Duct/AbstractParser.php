@@ -133,37 +133,46 @@ abstract class AbstractParser
     }
 
     /**
-     * @param mixed $value
+     * Called when the token stream parser emits a 'value' event.
+     *
+     * @param mixed $value The value emitted.
      */
-    protected function onValue($value)
-    {
-    }
-
-    protected function onArrayOpen()
-    {
-    }
-
-    protected function onArrayClose()
-    {
-    }
-
-    protected function onObjectOpen()
-    {
-    }
-
-    protected function onObjectClose()
-    {
-    }
+    abstract protected function onValue($value);
 
     /**
-     * @param mixed $value
+     * Called when the token stream parser emits an 'array-open' event.
      */
-    protected function onObjectKey($value)
-    {
-    }
+    abstract protected function onArrayOpen();
 
+    /**
+     * Called when the token stream parser emits an 'array-close' event.
+     */
+    abstract protected function onArrayClose();
+
+    /**
+     * Called when the token stream parser emits an 'object-open' event.
+     */
+    abstract protected function onObjectOpen();
+
+    /**
+     * Called when the token stream parser emits an 'object-close' event.
+     */
+    abstract protected function onObjectClose();
+
+    /**
+     * Called when the token stream parser emits an 'object-key' event.
+     *
+     * @param string $value The key for the next object value.
+     */
+    abstract protected function onObjectKey($value);
+
+    /**
+     * @param string $method
+     */
     protected function makePublicWrapper($method)
     {
+        $this->typeCheck->makePublicWrapper(func_get_args());
+
         $self = $this;
         $reflector = new ReflectionMethod($this, $method);
         $reflector->setAccessible(true);

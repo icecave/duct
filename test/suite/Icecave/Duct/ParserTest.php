@@ -13,8 +13,6 @@ class ParserTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->markTestSkipped('Need to implement object-building logic directly in Parser.');
-
         $this->parser = Phake::partialMock(__NAMESPACE__ . '\Parser');
     }
 

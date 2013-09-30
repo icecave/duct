@@ -129,10 +129,14 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
     }
 
     /**
-     * @param mixed $value
+     * Called when the token stream parser emits a 'value' event.
+     *
+     * @param mixed $value The value emitted.
      */
     protected function onValue($value)
     {
+        $this->typeCheck->onValue(func_get_args());
+
         if (0 === $this->depth) {
             $this->emit('document-open');
             $this->emit('value', array($value));
@@ -142,8 +146,13 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
         }
     }
 
+    /**
+     * Called when the token stream parser emits an 'array-open' event.
+     */
     protected function onArrayOpen()
     {
+        $this->typeCheck->onArrayOpen(func_get_args());
+
         if (0 === $this->depth++) {
             $this->emit('document-open');
         }
@@ -151,8 +160,13 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
         $this->emit('array-open');
     }
 
+    /**
+     * Called when the token stream parser emits an 'array-close' event.
+     */
     protected function onArrayClose()
     {
+        $this->typeCheck->onArrayClose(func_get_args());
+
         $this->emit('array-close');
 
         if (0 === --$this->depth) {
@@ -160,8 +174,13 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
         }
     }
 
+    /**
+     * Called when the token stream parser emits an 'object-open' event.
+     */
     protected function onObjectOpen()
     {
+        $this->typeCheck->onObjectOpen(func_get_args());
+
         if (0 === $this->depth++) {
             $this->emit('document-open');
         }
@@ -169,8 +188,13 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
         $this->emit('object-open');
     }
 
+    /**
+     * Called when the token stream parser emits an 'object-close' event.
+     */
     protected function onObjectClose()
     {
+        $this->typeCheck->onObjectClose(func_get_args());
+
         $this->emit('object-close');
 
         if (0 === --$this->depth) {
@@ -179,10 +203,14 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
     }
 
     /**
-     * @param mixed $value
+     * Called when the token stream parser emits an 'object-key' event.
+     *
+     * @param string $value The key for the next object value.
      */
     protected function onObjectKey($value)
     {
+        $this->typeCheck->onObjectKey(func_get_args());
+
         $this->emit('object-key', array($value));
     }
 

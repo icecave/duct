@@ -222,7 +222,6 @@ class TokenStreamParser extends EventEmitter
     }
 
     /**
-     * @param mixed       $value
      * @param ParserState $state
      */
     private function push(ParserState $state)
