@@ -85,13 +85,14 @@ popular PHP event library.
 As per the example above the `feed()` and `finalize()` methods are used, however there is no `values()` method. Instead,
 the following events are emitted as the buffer is parsed.
 
+ * **document-open**: emitted when a JSON document is begun
+ * **document-close**: emitted after an entire JSON document has been parsed
  * **array-open**: emitted when an array open bracket is encountered
  * **array-close**: emitted when an array closing bracket is encountered
  * **object-open**: emitted when an object open brace is encountered
  * **object-close**: emitted when an object closing brace is encountered
  * **object-key** (string $key): emitted when an object key is encountered
  * **value** (mixed $value): emitted whenever a scalar or null is encountered, including inside objects and arrays
- * **document** (mixed $value): emitted after an entire JSON document has been parsed
  * **error** (Exception $error): emitted when a syntax error is encountered
 
 <!-- references -->

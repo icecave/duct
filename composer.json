@@ -19,7 +19,7 @@
     },
     "require-dev": {
         "eloquent/typhoon": "~0.9.0",
-        "icecave/archer": "~1"
+        "icecave/archer": "dev-release/1.1.0"
     },
     "autoload": {
         "psr-0": {

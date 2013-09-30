@@ -134,13 +134,10 @@ class TokenStreamParserTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidat
         }
     }
 
-    public function emitValue(array $arguments)
+    public function endValue(array $arguments)
     {
-        $argumentCount = \count($arguments);
-        if ($argumentCount < 1) {
-            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('value', 0, 'mixed');
-        } elseif ($argumentCount > 1) {
-            throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentException(1, $arguments[1]);
+        if (\count($arguments) > 0) {
+            throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentException(0, $arguments[0]);
         }
     }
 
@@ -154,35 +151,13 @@ class TokenStreamParserTypeCheck extends \Icecave\Duct\TypeCheck\AbstractValidat
         }
     }
 
-    public function setObjectKey(array $arguments)
-    {
-        $argumentCount = \count($arguments);
-        if ($argumentCount < 1) {
-            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('key', 0, 'string');
-        } elseif ($argumentCount > 1) {
-            throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentException(1, $arguments[1]);
-        }
-        $value = $arguments[0];
-        if (!\is_string($value)) {
-            throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentValueException(
-                'key',
-                0,
-                $arguments[0],
-                'string'
-            );
-        }
-    }
-
     public function push(array $arguments)
     {
         $argumentCount = \count($arguments);
-        if ($argumentCount < 2) {
-            if ($argumentCount < 1) {
-                throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('value', 0, 'mixed');
-            }
-            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('state', 1, 'Icecave\\Duct\\Detail\\ParserState');
-        } elseif ($argumentCount > 2) {
-            throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentException(2, $arguments[2]);
+        if ($argumentCount < 1) {
+            throw new \Icecave\Duct\TypeCheck\Exception\MissingArgumentException('state', 0, 'Icecave\\Duct\\Detail\\ParserState');
+        } elseif ($argumentCount > 1) {
+            throw new \Icecave\Duct\TypeCheck\Exception\UnexpectedArgumentException(1, $arguments[1]);
         }
     }
 
