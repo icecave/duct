@@ -30,7 +30,7 @@ class Lexer extends EventEmitter
     {
         $this->typeCheck->reset(func_get_args());
 
-        $this->state = LexerState::BEGIN();
+        $this->state = LexerState::BEGIN;
         $this->inputBuffer = '';
         $this->tokenBuffer = '';
         $this->unicodeBuffer = '';
@@ -47,11 +47,22 @@ class Lexer extends EventEmitter
     {
         $this->typeCheck->feed(func_get_args());
 
-        $length = strlen($buffer);
+        $this->inputBuffer .= $buffer;
 
-        for ($index = 0; $index < $length; ++$index) {
-            $this->inputBuffer .= $buffer[$index];
-            $this->consume();
+        while (true) {
+            $char = mb_substr($this->inputBuffer, 0, 1, $this->encoding);
+
+            $valid = $char !== false
+                  && $char !== ''
+                  && mb_check_encoding($char, $this->encoding);
+
+            if (!$valid) {
+                return;
+            }
+
+            $this->inputBuffer = substr($this->inputBuffer, strlen($char));
+
+            $this->consume($char);
         }
     }
 
@@ -65,61 +76,54 @@ class Lexer extends EventEmitter
         $this->typeCheck->finalize(func_get_args());
 
         switch ($this->state) {
-            case LexerState::NUMBER_VALUE_NEGATIVE():
-            case LexerState::NUMBER_VALUE_EXPONENT_START():
-            case LexerState::STRING_VALUE():
-            case LexerState::STRING_VALUE_ESCAPED():
-            case LexerState::STRING_VALUE_UNICODE():
-            case LexerState::TRUE_VALUE():
-            case LexerState::FALSE_VALUE():
-            case LexerState::NULL_VALUE():
+            case LexerState::NUMBER_VALUE_NEGATIVE:
+            case LexerState::NUMBER_VALUE_EXPONENT_START:
+            case LexerState::STRING_VALUE:
+            case LexerState::STRING_VALUE_ESCAPED:
+            case LexerState::STRING_VALUE_UNICODE:
+            case LexerState::TRUE_VALUE:
+            case LexerState::FALSE_VALUE:
+            case LexerState::NULL_VALUE:
                 throw new Exception\LexerException('Character stream ended while scanning literal value.');
 
-            case LexerState::NUMBER_VALUE():
-            case LexerState::NUMBER_VALUE_LEADING_ZERO():
+            case LexerState::NUMBER_VALUE:
+            case LexerState::NUMBER_VALUE_LEADING_ZERO:
                 $this->emitLiteral(intval($this->tokenBuffer));
                 break;
 
-            case LexerState::NUMBER_VALUE_DECIMAL():
-            case LexerState::NUMBER_VALUE_EXPONENT():
+            case LexerState::NUMBER_VALUE_DECIMAL:
+            case LexerState::NUMBER_VALUE_EXPONENT:
                 $this->emitLiteral(floatval($this->tokenBuffer));
                 break;
         }
     }
 
-    private function consume()
+    private function consume($char)
     {
-        if (!mb_check_encoding($this->inputBuffer, $this->encoding)) {
-            return;
-        }
-
-        $char = $this->inputBuffer;
-        $this->inputBuffer = '';
-
         switch ($this->state) {
-            case LexerState::STRING_VALUE():
+            case LexerState::STRING_VALUE:
                 return $this->doStringValue($char);
-            case LexerState::STRING_VALUE_ESCAPED():
+            case LexerState::STRING_VALUE_ESCAPED:
                 return $this->doStringValueEscaped($char);
-            case LexerState::STRING_VALUE_UNICODE():
+            case LexerState::STRING_VALUE_UNICODE:
                 return $this->doStringValueUnicode($char);
-            case LexerState::NUMBER_VALUE():
+            case LexerState::NUMBER_VALUE:
                 return $this->doNumberValue($char);
-            case LexerState::NUMBER_VALUE_NEGATIVE():
+            case LexerState::NUMBER_VALUE_NEGATIVE:
                 return $this->doNumberValueNegative($char);
-            case LexerState::NUMBER_VALUE_LEADING_ZERO():
+            case LexerState::NUMBER_VALUE_LEADING_ZERO:
                 return $this->doNumberValueLeadingZero($char);
-            case LexerState::NUMBER_VALUE_DECIMAL():
+            case LexerState::NUMBER_VALUE_DECIMAL:
                 return $this->doNumberValueDecimal($char);
-            case LexerState::NUMBER_VALUE_EXPONENT_START():
+            case LexerState::NUMBER_VALUE_EXPONENT_START:
                 return $this->doNumberValueExponentStart($char);
-            case LexerState::NUMBER_VALUE_EXPONENT():
+            case LexerState::NUMBER_VALUE_EXPONENT:
                 return $this->doNumberValueExponent($char);
-            case LexerState::TRUE_VALUE():
+            case LexerState::TRUE_VALUE:
                 return $this->doTrueValue($char);
-            case LexerState::FALSE_VALUE():
+            case LexerState::FALSE_VALUE:
                 return $this->doFalseValue($char);
-            case LexerState::NULL_VALUE():
+            case LexerState::NULL_VALUE:
                 return $this->doNullValue($char);
         }
 
@@ -132,25 +136,25 @@ class Lexer extends EventEmitter
     private function doBegin($char)
     {
         if ('"' === $char) {
-            $this->state = LexerState::STRING_VALUE();
+            $this->state = LexerState::STRING_VALUE;
         } elseif ('0' === $char) {
             $this->tokenBuffer = $char;
-            $this->state = LexerState::NUMBER_VALUE_LEADING_ZERO();
+            $this->state = LexerState::NUMBER_VALUE_LEADING_ZERO;
         } elseif ('-' === $char) {
             $this->tokenBuffer = $char;
-            $this->state = LexerState::NUMBER_VALUE_NEGATIVE();
+            $this->state = LexerState::NUMBER_VALUE_NEGATIVE;
         } elseif (ctype_digit($char)) {
             $this->tokenBuffer = $char;
-            $this->state = LexerState::NUMBER_VALUE();
+            $this->state = LexerState::NUMBER_VALUE;
         } elseif ('t' === $char) {
             $this->tokenBuffer = $char;
-            $this->state = LexerState::TRUE_VALUE();
+            $this->state = LexerState::TRUE_VALUE;
         } elseif ('f' === $char) {
             $this->tokenBuffer = $char;
-            $this->state = LexerState::FALSE_VALUE();
+            $this->state = LexerState::FALSE_VALUE;
         } elseif ('n' === $char) {
             $this->tokenBuffer = $char;
-            $this->state = LexerState::NULL_VALUE();
+            $this->state = LexerState::NULL_VALUE;
         } elseif (false !== strpos('{}[]:,', $char)) {
             $this->emitSpecial($char);
         } elseif (!$this->isWhitespace($char)) {
@@ -164,7 +168,7 @@ class Lexer extends EventEmitter
     private function doStringValue($char)
     {
         if ('\\' === $char) {
-            $this->state = LexerState::STRING_VALUE_ESCAPED();
+            $this->state = LexerState::STRING_VALUE_ESCAPED;
         } elseif (null !== $this->unicodeHighSurrogate) {
             throw new Exception\LexerException('Missing low surrogate for unicode surrogate pair.');
         } elseif ('"' === $char) {
@@ -181,12 +185,12 @@ class Lexer extends EventEmitter
     {
         if ('u' === $char) {
             $this->unicodeBuffer = '';
-            $this->state = LexerState::STRING_VALUE_UNICODE();
+            $this->state = LexerState::STRING_VALUE_UNICODE;
         } elseif (null !== $this->unicodeHighSurrogate) {
             throw new Exception\LexerException('Missing low surrogate for unicode surrogate pair.');
         } elseif (array_key_exists($char, self::$escapeSequences)) {
             $this->tokenBuffer .= self::$escapeSequences[$char];
-            $this->state = LexerState::STRING_VALUE();
+            $this->state = LexerState::STRING_VALUE;
         } else {
             throw new Exception\LexerException('Invalid escape sequence.');
         }
@@ -227,7 +231,7 @@ class Lexer extends EventEmitter
                 $this->tokenBuffer .= $this->convertUnicodeCodepoint($codepoint);
             }
 
-            $this->state = LexerState::STRING_VALUE();
+            $this->state = LexerState::STRING_VALUE;
         }
     }
 
@@ -240,10 +244,10 @@ class Lexer extends EventEmitter
             $this->tokenBuffer .= $char;
         } elseif ('.' === $char) {
             $this->tokenBuffer .= '.';
-            $this->state = LexerState::NUMBER_VALUE_DECIMAL();
+            $this->state = LexerState::NUMBER_VALUE_DECIMAL;
         } elseif ('e' === $char || 'E' === $char) {
             $this->tokenBuffer .= 'e';
-            $this->state = LexerState::NUMBER_VALUE_EXPONENT_START();
+            $this->state = LexerState::NUMBER_VALUE_EXPONENT_START;
         } else {
             $this->emitLiteral(intval($this->tokenBuffer));
             $this->doBegin($char);
@@ -257,10 +261,10 @@ class Lexer extends EventEmitter
     {
         if ('0' === $char) {
             $this->tokenBuffer .= $char;
-            $this->state = LexerState::NUMBER_VALUE_LEADING_ZERO();
+            $this->state = LexerState::NUMBER_VALUE_LEADING_ZERO;
         } elseif (ctype_digit($char)) {
             $this->tokenBuffer .= $char;
-            $this->state = LexerState::NUMBER_VALUE();
+            $this->state = LexerState::NUMBER_VALUE;
         } else {
             throw new Exception\LexerException('Expected digit after negative sign.');
         }
@@ -273,10 +277,10 @@ class Lexer extends EventEmitter
     {
         if ('.' === $char) {
             $this->tokenBuffer .= '.';
-            $this->state = LexerState::NUMBER_VALUE_DECIMAL();
+            $this->state = LexerState::NUMBER_VALUE_DECIMAL;
         } elseif ('e' === $char || 'E' === $char) {
             $this->tokenBuffer .= 'e';
-            $this->state = LexerState::NUMBER_VALUE_EXPONENT_START();
+            $this->state = LexerState::NUMBER_VALUE_EXPONENT_START;
         } else {
             $this->emitLiteral(intval($this->tokenBuffer));
             $this->doBegin($char);
@@ -292,7 +296,7 @@ class Lexer extends EventEmitter
             $this->tokenBuffer .= $char;
         } elseif ('e' === $char || 'E' === $char) {
             $this->tokenBuffer .= 'e';
-            $this->state = LexerState::NUMBER_VALUE_EXPONENT_START();
+            $this->state = LexerState::NUMBER_VALUE_EXPONENT_START;
         } elseif ('.' === substr($this->tokenBuffer, -1)) {
             throw new Exception\LexerException('Expected digit after decimal point.');
         } else {
@@ -308,10 +312,10 @@ class Lexer extends EventEmitter
     {
         if ('+' === $char || '-' === $char) {
             $this->tokenBuffer .= $char;
-            $this->state = LexerState::NUMBER_VALUE_EXPONENT();
+            $this->state = LexerState::NUMBER_VALUE_EXPONENT;
         } elseif (ctype_digit($char)) {
             $this->tokenBuffer .= $char;
-            $this->state = LexerState::NUMBER_VALUE_EXPONENT();
+            $this->state = LexerState::NUMBER_VALUE_EXPONENT;
         } else {
             throw new Exception\LexerException('Expected digit or +/- as exponent.');
         }
@@ -381,7 +385,7 @@ class Lexer extends EventEmitter
     {
         $this->emit('token', array(Token::createSpecial($char)));
         $this->tokenBuffer = '';
-        $this->state = LexerState::BEGIN();
+        $this->state = LexerState::BEGIN;
     }
 
     /**
@@ -391,7 +395,7 @@ class Lexer extends EventEmitter
     {
         $this->emit('token', array(Token::createLiteral($value)));
         $this->tokenBuffer = '';
-        $this->state = LexerState::BEGIN();
+        $this->state = LexerState::BEGIN;
     }
 
     /**
