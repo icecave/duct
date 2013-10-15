@@ -57,7 +57,7 @@ class Lexer extends EventEmitter
                   && mb_check_encoding($char, $this->encoding);
 
             if (!$valid) {
-                return;
+                break;
             }
 
             $this->inputBuffer = substr($this->inputBuffer, strlen($char));

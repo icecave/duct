@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "e9462bea40f61168995ee26ab7601424",
+    "hash": "ddd6912ea30ba801b516e352734fcd19",
     "packages": [
         {
             "name": "eloquent/enumeration",
@@ -94,16 +94,16 @@
         },
         {
             "name": "icecave/collections",
-            "version": "0.7.1",
+            "version": "0.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/IcecaveStudios/collections.git",
-                "reference": "cf35e1b09c16087afb6a551a098c969b63b777df"
+                "reference": "c12f606057b91c956a5af4ae7bdd7a13fdbedcd9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/IcecaveStudios/collections/zipball/cf35e1b09c16087afb6a551a098c969b63b777df",
-                "reference": "cf35e1b09c16087afb6a551a098c969b63b777df",
+                "url": "https://api.github.com/repos/IcecaveStudios/collections/zipball/c12f606057b91c956a5af4ae7bdd7a13fdbedcd9",
+                "reference": "c12f606057b91c956a5af4ae7bdd7a13fdbedcd9",
                 "shasum": ""
             },
             "require": {
@@ -155,7 +155,7 @@
                 "sequence",
                 "stack"
             ],
-            "time": "2013-09-21 05:02:38"
+            "time": "2013-09-23 04:36:07"
         },
         {
             "name": "icecave/parity",
@@ -742,12 +742,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/IcecaveStudios/archer.git",
-                "reference": "20c7ae6ced91d5125d7da220919a2075ba4df19f"
+                "reference": "5e7b8fc80a0f30840799c147d3c9a52a887e7ae4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/IcecaveStudios/archer/zipball/20c7ae6ced91d5125d7da220919a2075ba4df19f",
-                "reference": "20c7ae6ced91d5125d7da220919a2075ba4df19f",
+                "url": "https://api.github.com/repos/IcecaveStudios/archer/zipball/5e7b8fc80a0f30840799c147d3c9a52a887e7ae4",
+                "reference": "5e7b8fc80a0f30840799c147d3c9a52a887e7ae4",
                 "shasum": ""
             },
             "require": {
@@ -806,7 +806,7 @@
                 "testing",
                 "unit"
             ],
-            "time": "2013-09-30 00:22:42"
+            "time": "2013-09-30 08:32:41"
         },
         {
             "name": "icecave/isolator",
