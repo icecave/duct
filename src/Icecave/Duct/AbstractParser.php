@@ -5,6 +5,7 @@ use Exception;
 use Icecave\Duct\Detail\Lexer;
 use Icecave\Duct\Detail\TokenStreamParser;
 use Icecave\Duct\TypeCheck\TypeCheck;
+use ReflectionMethod;
 
 /**
  * Streaming JSON parser.
@@ -35,6 +36,36 @@ abstract class AbstractParser
         $this->lexer->on(
             'token',
             array($this->parser, 'feedToken')
+        );
+
+        $this->parser->on(
+            'value',
+            $this->makePublicWrapper('onValue')
+        );
+
+        $this->parser->on(
+            'array-open',
+            $this->makePublicWrapper('onArrayOpen')
+        );
+
+        $this->parser->on(
+            'array-close',
+            $this->makePublicWrapper('onArrayClose')
+        );
+
+        $this->parser->on(
+            'object-open',
+            $this->makePublicWrapper('onObjectOpen')
+        );
+
+        $this->parser->on(
+            'object-close',
+            $this->makePublicWrapper('onObjectClose')
+        );
+
+        $this->parser->on(
+            'object-key',
+            $this->makePublicWrapper('onObjectKey')
         );
     }
 
@@ -99,6 +130,56 @@ abstract class AbstractParser
             $this->reset();
             throw $e;
         }
+    }
+
+    /**
+     * Called when the token stream parser emits a 'value' event.
+     *
+     * @param mixed $value The value emitted.
+     */
+    abstract protected function onValue($value);
+
+    /**
+     * Called when the token stream parser emits an 'array-open' event.
+     */
+    abstract protected function onArrayOpen();
+
+    /**
+     * Called when the token stream parser emits an 'array-close' event.
+     */
+    abstract protected function onArrayClose();
+
+    /**
+     * Called when the token stream parser emits an 'object-open' event.
+     */
+    abstract protected function onObjectOpen();
+
+    /**
+     * Called when the token stream parser emits an 'object-close' event.
+     */
+    abstract protected function onObjectClose();
+
+    /**
+     * Called when the token stream parser emits an 'object-key' event.
+     *
+     * @param string $value The key for the next object value.
+     */
+    abstract protected function onObjectKey($value);
+
+    /**
+     * @param string $method
+     */
+    protected function makePublicWrapper($method)
+    {
+        $this->typeCheck->makePublicWrapper(func_get_args());
+
+        $self = $this;
+        $reflector = new ReflectionMethod($this, $method);
+        $reflector->setAccessible(true);
+
+        return function () use ($self, $reflector) {
+            return $reflector->invokeArgs($self, func_get_args());
+        };
     }
 
     private $typeCheck;

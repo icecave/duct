@@ -3,7 +3,6 @@ namespace Icecave\Duct\Detail;
 
 use Phake;
 use PHPUnit_Framework_TestCase;
-use stdClass;
 
 class TokenStreamParserTest extends PHPUnit_Framework_TestCase
 {
@@ -32,7 +31,7 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
         $tokens = $this->createTokens(array('{'));
         $this->parser->feed($tokens);
 
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Token stream ended while parsing object.');
+        $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Token stream ended unexpectedly.');
         $this->parser->finalize();
     }
 
@@ -41,7 +40,7 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
         $tokens = $this->createTokens(array('['));
         $this->parser->feed($tokens);
 
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Token stream ended while parsing array.');
+        $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Token stream ended unexpectedly.');
         $this->parser->finalize();
     }
 
@@ -95,60 +94,6 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
             array(']'),
             array(':'),
             array(','),
-        );
-    }
-
-    /**
-     * @dataProvider parseData
-     */
-    public function testParse(array $tokens, $expectedValue)
-    {
-        $values = array();
-
-        $this->parser->on(
-            'document',
-            function ($value) use (&$values) {
-                $values[] = $value;
-            }
-        );
-
-        $tokens = $this->createTokens($tokens);
-        $this->parser->feed($tokens);
-        $this->parser->finalize();
-
-        $this->assertTrue(is_array($values));
-        $this->assertSame(1, count($values));
-        $this->assertSame(gettype($expectedValue), gettype(end($values)));
-        $this->assertEquals($expectedValue, end($values));
-    }
-
-    public function parseData()
-    {
-        return array(
-            array(array(1),                                                  1),
-            array(array(1.1),                                                1.1),
-            array(array(true),                                               true),
-            array(array(false),                                              false),
-            array(array(null),                                               null),
-            array(array('foo'),                                              'foo'),
-
-            array(array('[', ']'),                                           array()),
-            array(array('[', 1, ']'),                                        array(1)),
-            array(array('[', 1, ',', 2, ',', 3, ']'),                        array(1, 2, 3)),
-
-            array(array('[', '[', ']', ']'),                                 array(array())),
-            array(array('[', '{', '}', ']'),                                 array(new stdClass)),
-
-            array(array('{', '}'),                                           new stdClass),
-            array(array('{', 'k1', ':', 1, '}'),                             (object) array('k1' => 1)),
-            array(
-                array('{', 'k1', ':', 1, ',', 'k2', ':', 2, ',', 'k3', ':', 3, '}'),
-                (object) array('k1' => 1, 'k2' => 2, 'k3' => 3)
-            ),
-
-            array(array('{', 'k1', ':', '{', '}', '}'),                      (object) array('k1' => new stdClass)),
-            array(array('{', 'k1', ':', '{', 'k2', ':', '{', '}', '}', '}'), (object) array('k1' => (object) array('k2' => new stdClass))),
-            array(array('{', 'k1', ':', '[', 1, ',', 2, ']', '}'),           (object) array('k1' => array(1, 2))),
         );
     }
 
@@ -226,9 +171,9 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
                 array('{', 'k1', ':', 1, ',', 'k2', ':', 2, '}',),
                 array(
                     array('object-open'),
-                    array('object.key', array('k1')),
+                    array('object-key', array('k1')),
                     array('value', array(1)),
-                    array('object.key', array('k2')),
+                    array('object-key', array('k2')),
                     array('value', array(2)),
                     array('object-close'),
                 ),
