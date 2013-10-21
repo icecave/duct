@@ -19,7 +19,10 @@
     },
     "require-dev": {
         "eloquent/typhoon": "~0.9.0",
-        "icecave/archer": "dev-release/1.1.0"
+        "icecave/archer": "~1"
+    },
+    "suggest": {
+        "eloquent/asplode": "Drop-in exception-based error handling."
     },
     "autoload": {
         "psr-0": {
