@@ -66,9 +66,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
             Phake::verify($this->parser)->values()
         );
 
-        $this->assertEquals([$expected], $result);
+        $this->assertEquals(array($expected), $result);
 
-        $this->assertEquals([], $this->parser->values());
+        $this->assertEquals(array(), $this->parser->values());
     }
 
     public function parseData()

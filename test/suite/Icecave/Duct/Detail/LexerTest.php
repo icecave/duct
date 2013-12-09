@@ -11,7 +11,7 @@ class LexerTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $tokens = [];
+        $tokens = array();
 
         $this->lexer = new Lexer;
         $this->tokens = &$tokens;
