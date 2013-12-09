@@ -2,7 +2,6 @@
 namespace Icecave\Duct\Detail;
 
 use Evenement\EventEmitter;
-use Icecave\Duct\TypeCheck\TypeCheck;
 
 /**
  * Streaming JSON lexer.
@@ -16,8 +15,6 @@ class Lexer extends EventEmitter
      */
     public function __construct($encoding = 'UTF-8')
     {
-        $this->typeCheck = TypeCheck::get(__CLASS__, func_get_args());
-
         $this->encoding = $encoding;
 
         $this->reset();
@@ -28,8 +25,6 @@ class Lexer extends EventEmitter
      */
     public function reset()
     {
-        $this->typeCheck->reset(func_get_args());
-
         $this->state = LexerState::BEGIN;
         $this->inputBuffer = '';
         $this->tokenBuffer = '';
@@ -45,8 +40,6 @@ class Lexer extends EventEmitter
      */
     public function feed($buffer)
     {
-        $this->typeCheck->feed(func_get_args());
-
         $this->inputBuffer .= $buffer;
 
         while (true) {
@@ -73,8 +66,6 @@ class Lexer extends EventEmitter
      */
     public function finalize()
     {
-        $this->typeCheck->finalize(func_get_args());
-
         switch ($this->state) {
             case LexerState::NUMBER_VALUE_NEGATIVE:
             case LexerState::NUMBER_VALUE_EXPONENT_START:
@@ -460,7 +451,6 @@ class Lexer extends EventEmitter
         '\\' => '\\',
     );
 
-    private $typeCheck;
     private $encoding;
     private $state;
     private $inputBuffer;

@@ -17,7 +17,6 @@
         "evenement/evenement": "~1"
     },
     "require-dev": {
-        "eloquent/typhoon": "~0.9.0",
         "icecave/archer": "~1"
     },
     "suggest": {
@@ -25,15 +24,7 @@
     },
     "autoload": {
         "psr-0": {
-            "Icecave\\Duct": "src",
-            "Icecave\\Duct\\TypeCheck": "src-typhoon"
-        }
-    },
-    "extra": {
-        "typhoon": {
-            "output-path": "src-typhoon",
-            "validator-namespace": "Icecave\\Duct\\TypeCheck",
-            "use-native-callable": false
+            "Icecave\\Duct": "src"
         }
     }
 }
