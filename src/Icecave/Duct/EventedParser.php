@@ -1,8 +1,8 @@
 <?php
 namespace Icecave\Duct;
 
-use Evenement\EventEmitterInterface;
 use Evenement\EventEmitter;
+use Evenement\EventEmitterInterface;
 use Exception;
 use Icecave\Duct\Detail\Lexer;
 use Icecave\Duct\Detail\TokenStreamParser;

@@ -14,7 +14,7 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
         $this->callbackArguments = array();
 
         $self = $this;
-        $this->callback = function() use ($self) {
+        $this->callback = function () use ($self) {
             $self->callbackArguments[] = func_get_args();
         };
     }
@@ -167,7 +167,7 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
 
     public function testListeners()
     {
-        $callback = function() {};
+        $callback = function () {};
 
         $this->parser->on('foo', $callback);
 

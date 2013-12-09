@@ -41,29 +41,28 @@ $parser = new Parser;
 // JSON data can be fed to the parser incrementally.
 $parser->feed('[ 1, ');
 
-// Completed values can be retreived using the values() method, which returns an
-// Icecave\Collections\Vector of values. At this point no complete object has
-// been parsed so the vector is empty.
+// An array of completed values can be retreived using the values() method.
+// At this point no complete object has been parsed so the array is empty.
 $values = $parser->values();
-assert($values->isEmpty());
+assert(0 === count($values));
 
 // As more data is fed to the parser, we now have one value available, an array
 // of elements 1, 2, 3.
 $parser->feed('2, 3 ][ 4, 5');
 $values = $parser->values();
-assert($values->size() === 1);
+assert(1 === count($values));
 assert($values[0] == array(1, 2, 3));
 
 // Note that calling values() is destructive, in that any complete objects are
 // removed from the parser and will not be returned by future calls to values().
 $values = $parser->values();
-assert($values->size() === 0);
+assert(0 === count($values));
 
 // Finally we feed the remaining part of the second object to the parser and the
 // second value becomes available.
 $parser->feed(', 6 ]');
 $values = $parser->values();
-assert($values->size() === 1);
+assert(1 === count($values));
 assert($values[0] == array(4, 5, 6));
 
 // At the end of the JSON stream, finalize is called to parse any data remaining
@@ -73,7 +72,7 @@ $parser->finalize();
 
 // In this case there were no additional values.
 $values = $parser->values();
-assert($values->isEmpty());
+assert(0 === count($values));
 ```
 
 ### Event-based parsing

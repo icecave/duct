@@ -1,11 +1,10 @@
 <?php
 namespace Icecave\Duct;
 
-use Icecave\Collections\Stack;
-use Icecave\Collections\Vector;
 use Icecave\Duct\Detail\Lexer;
 use Icecave\Duct\Detail\TokenStreamParser;
 use Icecave\Duct\TypeCheck\TypeCheck;
+use SplStack;
 use stdClass;
 
 /**
@@ -25,8 +24,8 @@ class Parser extends AbstractParser
 
         parent::__construct($lexer, $parser);
 
-        $this->values = new Vector;
-        $this->stack = new Stack;
+        $this->values = array();
+        $this->stack = new SplStack;
     }
 
     /**
@@ -38,8 +37,8 @@ class Parser extends AbstractParser
 
         parent::reset();
 
-        $this->values->clear();
-        $this->stack->clear();
+        $this->values = array();
+        $this->stack = new SplStack;
     }
 
     /**
@@ -47,7 +46,7 @@ class Parser extends AbstractParser
      *
      * @param string $buffer The JSON data.
      *
-     * @return Vector<mixed>                      The sequence of parsed JSON values.
+     * @return array<mixed>                       The sequence of parsed JSON values.
      * @throws Exception\SyntaxExceptionInterface
      */
     public function parse($buffer)
@@ -62,15 +61,14 @@ class Parser extends AbstractParser
     /**
      * Fetch the values produced by the parser so far and remove them from the internal value sequence.
      *
-     * @return Vector<mixed> The sequence of parsed JSON values.
+     * @return array<mixed> The sequence of parsed JSON values.
      */
     public function values()
     {
         $this->typeCheck->values(func_get_args());
 
-        $values = clone $this->values;
-
-        $this->values->clear();
+        $values = $this->values;
+        $this->values = array();
 
         return $values;
     }
@@ -85,9 +83,9 @@ class Parser extends AbstractParser
         $this->typeCheck->onValue(func_get_args());
 
         if ($this->stack->isEmpty()) {
-            $this->values->pushBack($value);
+            $this->values[] = $value;
         } else {
-            $context = $this->stack->next();
+            $context = $this->stack->top();
 
             if (is_array($context->value)) {
                 $context->value[] = $value;
@@ -147,7 +145,7 @@ class Parser extends AbstractParser
     {
         $this->typeCheck->onObjectKey(func_get_args());
 
-        $this->stack->next()->key = $value;
+        $this->stack->top()->key = $value;
     }
 
     /**
