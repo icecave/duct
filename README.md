@@ -95,6 +95,6 @@ the following events are emitted as the buffer is parsed.
  * **error** (Exception $error): emitted when a syntax error is encountered
 
 <!-- references -->
-[Build Status]: https://travis-ci.org/IcecaveStudios/duct.png?branch=develop
-[Test Coverage]: https://coveralls.io/repos/IcecaveStudios/duct/badge.png?branch=develop
-[SemVer]: http://calm-shore-6115.herokuapp.com/?label=semver&value=0.3.0&color=yellow
+[Build Status]: https://b.adge.me/travis/IcecaveStudios/duct/develop.svg
+[Test Coverage]: https://b.adge.me/coveralls/IcecaveStudios/duct/develop.svg
+[SemVer]: https://b.adge.me/:semver-0.3.0-yellow.svg
