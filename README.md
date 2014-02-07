@@ -66,7 +66,7 @@ assert(1 === count($values));
 assert($values[0] == array(4, 5, 6));
 
 // At the end of the JSON stream, finalize is called to parse any data remaining
-// in the buffer. An exception is if thrown the buffer contains an incomplete
+// in the buffer. An exception is thrown if the buffer contains an incomplete
 // value.
 $parser->finalize();
 
