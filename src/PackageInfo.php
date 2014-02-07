@@ -4,5 +4,5 @@ namespace Icecave\Duct;
 class PackageInfo
 {
     const NAME = 'Duct';
-    const VERSION = '0.3.0';
+    const VERSION = '0.4.0';
 }
