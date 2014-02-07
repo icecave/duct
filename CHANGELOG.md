@@ -1,9 +1,14 @@
 # Duct Changelog
 
+### 0.4.0 (2014-02-07)
+
+* **[BC]** Removed [icecave/collections](https://github.com/IcecaveStudios/collections) for performance reasons
+* **[IMPROVED]** Updated autoloader to [PSR-4](http://www.php-fig.org/psr/psr-4/)
+
 ### 0.3.0 (2013-09-30)
 
-* **[IMPROVED]** Improved handling of large JSON documents with `EventedParser`.
-* **[BC]** `EventedParser` no longer emits the `document` event, replaced with `document-open` and `document-close`.
+* **[IMPROVED]** Improved handling of large JSON documents with `EventedParser`
+* **[BC]** `EventedParser` no longer emits the `document` event, replaced with `document-open` and `document-close`
 
 ### 0.2.1 (2013-07-08)
 

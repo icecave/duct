@@ -97,4 +97,4 @@ the following events are emitted as the buffer is parsed.
 <!-- references -->
 [Build Status]: http://img.shields.io/travis/IcecaveStudios/duct/develop.svg
 [Test Coverage]: http://img.shields.io/coveralls/IcecaveStudios/duct/develop.svg
-[SemVer]: http://img.shields.io/:semver-0.3.0-yellow.svg
+[SemVer]: http://img.shields.io/:semver-0.4.0-yellow.svg
