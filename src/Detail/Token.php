@@ -1,8 +1,6 @@
 <?php
 namespace Icecave\Duct\Detail;
 
-use Icecave\Duct\TypeCheck\TypeCheck;
-
 /**
  * A JSON token produced by the lexer.
  */
@@ -14,8 +12,6 @@ class Token
      */
     public function __construct(TokenType $type, $value)
     {
-        $this->typeCheck = TypeCheck::get(__CLASS__, func_get_args());
-
         $this->type = $type;
         $this->value = $value;
     }
@@ -31,8 +27,6 @@ class Token
      */
     public static function createSpecial($value)
     {
-        TypeCheck::get(__CLASS__)->createSpecial(func_get_args());
-
         return new Token(TokenType::instanceByValue($value), $value);
     }
 
@@ -47,8 +41,6 @@ class Token
      */
     public static function createLiteral($value)
     {
-        TypeCheck::get(__CLASS__)->createLiteral(func_get_args());
-
         if (is_integer($value) || is_float($value)) {
             return new Token(TokenType::NUMBER_LITERAL(), $value);
         } elseif (is_bool($value)) {
@@ -67,8 +59,6 @@ class Token
      */
     public function type()
     {
-        $this->typeCheck->type(func_get_args());
-
         return $this->type;
     }
 
@@ -79,12 +69,9 @@ class Token
      */
     public function value()
     {
-        $this->typeCheck->value(func_get_args());
-
         return $this->value;
     }
 
-    private $typeCheck;
     private $type;
     private $value;
 }

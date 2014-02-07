@@ -1,7 +1,6 @@
 <?php
 namespace Icecave\Duct\Detail;
 
-use Icecave\Collections\Vector;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -12,12 +11,16 @@ class LexerTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
+        $tokens = array();
+
         $this->lexer = new Lexer;
-        $this->tokens = new Vector;
+        $this->tokens = &$tokens;
 
         $this->lexer->on(
             'token',
-            array($this->tokens, 'pushBack')
+            function ($token) use (&$tokens) {
+                $tokens[] = $token;
+            }
         );
     }
 
@@ -25,8 +28,8 @@ class LexerTest extends PHPUnit_Framework_TestCase
     {
         $this->lexer->feed(' 1 ');
 
-        $this->assertSame(TokenType::NUMBER_LITERAL(), $this->tokens->back()->type());
-        $this->assertSame(1, $this->tokens->back()->value());
+        $this->assertSame(TokenType::NUMBER_LITERAL(), end($this->tokens)->type());
+        $this->assertSame(1, end($this->tokens)->value());
     }
 
     public function testFeedEmitsMultipleIntegers()
@@ -157,11 +160,11 @@ class LexerTest extends PHPUnit_Framework_TestCase
     {
         $this->lexer->feed("\"\xc3");
 
-        $this->assertTrue($this->tokens->isEmpty());
+        $this->assertEmpty($this->tokens);
 
         $this->lexer->feed("\xb6\"");
 
-        $this->assertSame("\xc3\xb6", $this->tokens->back()->value());
+        $this->assertSame("\xc3\xb6", end($this->tokens)->value());
     }
 
     /**
@@ -197,9 +200,9 @@ class LexerTest extends PHPUnit_Framework_TestCase
         $this->lexer->feed($json);
         $this->lexer->finalize();
 
-        $this->assertSame(1, $this->tokens->size());
-        $this->assertEquals($expectedToken, $this->tokens->back());
-        $this->assertSame($expectedToken->value(), $this->tokens->back()->value());
+        $this->assertSame(1, count($this->tokens));
+        $this->assertEquals($expectedToken, end($this->tokens));
+        $this->assertSame($expectedToken->value(), end($this->tokens)->value());
     }
 
     public function singleTokens()

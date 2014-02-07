@@ -14,24 +14,17 @@
     "require": {
         "php": ">=5.3",
         "eloquent/enumeration": "~3",
-        "icecave/collections": "~0.8.0",
         "evenement/evenement": "~1"
     },
     "require-dev": {
-        "eloquent/typhoon": "~0.9.0",
-        "icecave/archer": "dev-release/1.1.0"
+        "icecave/archer": "~1"
+    },
+    "suggest": {
+        "eloquent/asplode": "Drop-in exception-based error handling."
     },
     "autoload": {
-        "psr-0": {
-            "Icecave\\Duct": "src",
-            "Icecave\\Duct\\TypeCheck": "src-typhoon"
-        }
-    },
-    "extra": {
-        "typhoon": {
-            "output-path": "src-typhoon",
-            "validator-namespace": "Icecave\\Duct\\TypeCheck",
-            "use-native-callable": false
+        "psr-4": {
+            "Icecave\\Duct\\": "src"
         }
     }
 }

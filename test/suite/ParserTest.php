@@ -22,7 +22,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
         $result = $parser->parse('[1, 2, 3]');
 
-        $this->assertSame(array(1, 2, 3), $result->front());
+        $this->assertSame(array(array(1, 2, 3)), $result);
     }
 
     public function testFeedFailure()
@@ -66,10 +66,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
             Phake::verify($this->parser)->values()
         );
 
-        $this->assertSame(1, $result->size());
-        $this->assertEquals($expected, $result->back());
+        $this->assertEquals(array($expected), $result);
 
-        $this->assertTrue($this->parser->values()->isEmpty());
+        $this->assertEquals(array(), $this->parser->values());
     }
 
     public function parseData()

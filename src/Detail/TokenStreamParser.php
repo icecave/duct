@@ -2,8 +2,7 @@
 namespace Icecave\Duct\Detail;
 
 use Evenement\EventEmitter;
-use Icecave\Collections\Stack;
-use Icecave\Duct\TypeCheck\TypeCheck;
+use SplStack;
 use stdClass;
 
 /**
@@ -15,8 +14,6 @@ class TokenStreamParser extends EventEmitter
 {
     public function __construct()
     {
-        $this->typeCheck = TypeCheck::get(__CLASS__, func_get_args());
-
         $this->reset();
     }
 
@@ -25,9 +22,7 @@ class TokenStreamParser extends EventEmitter
      */
     public function reset()
     {
-        $this->typeCheck->reset(func_get_args());
-
-        $this->stack = new Stack;
+        $this->stack = new SplStack;
     }
 
     /**
@@ -39,8 +34,6 @@ class TokenStreamParser extends EventEmitter
      */
     public function feed($tokens)
     {
-        $this->typeCheck->feed(func_get_args());
-
         foreach ($tokens as $token) {
             $this->feedToken($token);
         }
@@ -53,8 +46,6 @@ class TokenStreamParser extends EventEmitter
      */
     public function finalize()
     {
-        $this->typeCheck->finalize(func_get_args());
-
         if (!$this->stack->isEmpty()) {
             throw new Exception\ParserException('Token stream ended unexpectedly.');
         }
@@ -66,7 +57,7 @@ class TokenStreamParser extends EventEmitter
     public function feedToken(Token $token)
     {
         if (!$this->stack->isEmpty()) {
-            switch ($this->stack->next()) {
+            switch ($this->stack->top()) {
                 case ParserState::ARRAY_START:
                     return $this->doArrayStart($token);
                 case ParserState::ARRAY_VALUE_SEPARATOR:
@@ -205,9 +196,9 @@ class TokenStreamParser extends EventEmitter
     {
         if ($this->stack->isEmpty()) {
             return;
-        } elseif (ParserState::ARRAY_VALUE === $this->stack->next()) {
+        } elseif (ParserState::ARRAY_VALUE === $this->stack->top()) {
             $this->setState(ParserState::ARRAY_VALUE_SEPARATOR);
-        } elseif (ParserState::OBJECT_VALUE === $this->stack->next()) {
+        } elseif (ParserState::OBJECT_VALUE === $this->stack->top()) {
             $this->setState(ParserState::OBJECT_VALUE_SEPARATOR);
         }
     }
@@ -249,10 +240,9 @@ class TokenStreamParser extends EventEmitter
         }
 
         return new Exception\ParserException(
-            'Unexpected token "' . $token->type() . '" in state "' . ParserState::instanceByValue($this->stack->next()) . '".'
+            'Unexpected token "' . $token->type() . '" in state "' . ParserState::instanceByValue($this->stack->top()) . '".'
         );
     }
 
-    private $typeCheck;
     private $stack;
 }

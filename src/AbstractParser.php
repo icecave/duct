@@ -4,7 +4,6 @@ namespace Icecave\Duct;
 use Exception;
 use Icecave\Duct\Detail\Lexer;
 use Icecave\Duct\Detail\TokenStreamParser;
-use Icecave\Duct\TypeCheck\TypeCheck;
 use ReflectionMethod;
 
 /**
@@ -20,8 +19,6 @@ abstract class AbstractParser
      */
     public function __construct(Lexer $lexer = null, TokenStreamParser $parser = null)
     {
-        $this->typeCheck = TypeCheck::get(__CLASS__, func_get_args());
-
         if (null === $lexer) {
             $lexer = new Lexer;
         }
@@ -78,8 +75,6 @@ abstract class AbstractParser
      */
     public function parse($buffer)
     {
-        $this->typeCheck->parse(func_get_args());
-
         $this->reset();
         $this->feed($buffer);
         $this->finalize();
@@ -90,8 +85,6 @@ abstract class AbstractParser
      */
     public function reset()
     {
-        $this->typeCheck->reset(func_get_args());
-
         $this->lexer->reset();
         $this->parser->reset();
     }
@@ -104,8 +97,6 @@ abstract class AbstractParser
      */
     public function feed($buffer)
     {
-        $this->typeCheck->feed(func_get_args());
-
         try {
             $this->lexer->feed($buffer);
         } catch (Exception $e) {
@@ -121,8 +112,6 @@ abstract class AbstractParser
      */
     public function finalize()
     {
-        $this->typeCheck->finalize(func_get_args());
-
         try {
             $this->lexer->finalize();
             $this->parser->finalize();
@@ -171,8 +160,6 @@ abstract class AbstractParser
      */
     protected function makePublicWrapper($method)
     {
-        $this->typeCheck->makePublicWrapper(func_get_args());
-
         $self = $this;
         $reflector = new ReflectionMethod($this, $method);
         $reflector->setAccessible(true);
@@ -182,7 +169,6 @@ abstract class AbstractParser
         };
     }
 
-    private $typeCheck;
     protected $lexer;
     protected $parser;
 }

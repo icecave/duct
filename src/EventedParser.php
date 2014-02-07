@@ -1,12 +1,11 @@
 <?php
 namespace Icecave\Duct;
 
-use Evenement\EventEmitterInterface;
 use Evenement\EventEmitter;
+use Evenement\EventEmitterInterface;
 use Exception;
 use Icecave\Duct\Detail\Lexer;
 use Icecave\Duct\Detail\TokenStreamParser;
-use Icecave\Duct\TypeCheck\TypeCheck;
 
 /**
  * Streaming JSON parser.
@@ -21,8 +20,6 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
      */
     public function __construct(Lexer $lexer = null, TokenStreamParser $parser = null)
     {
-        $this->typeCheck = TypeCheck::get(__CLASS__, func_get_args());
-
         $this->depth = 0;
         $this->eventEmitterImpl = new EventEmitter;
 
@@ -37,8 +34,6 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
      */
     public function feed($buffer)
     {
-        $this->typeCheck->feed(func_get_args());
-
         try {
             parent::feed($buffer);
         } catch (Exception $e) {
@@ -53,8 +48,6 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
      */
     public function finalize()
     {
-        $this->typeCheck->finalize(func_get_args());
-
         try {
             parent::finalize();
         } catch (Exception $e) {
@@ -68,8 +61,6 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
      */
     public function on($event, $listener)
     {
-        $this->typeCheck->on(func_get_args());
-
         return $this->eventEmitterImpl->on($event, $listener);
     }
 
@@ -79,8 +70,6 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
      */
     public function once($event, $listener)
     {
-        $this->typeCheck->once(func_get_args());
-
         return $this->eventEmitterImpl->once($event, $listener);
     }
 
@@ -90,8 +79,6 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
      */
     public function removeListener($event, $listener)
     {
-        $this->typeCheck->removeListener(func_get_args());
-
         return $this->eventEmitterImpl->removeListener($event, $listener);
     }
 
@@ -100,8 +87,6 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
      */
     public function removeAllListeners($event = null)
     {
-        $this->typeCheck->removeAllListeners(func_get_args());
-
         return $this->eventEmitterImpl->removeAllListeners($event);
     }
 
@@ -112,8 +97,6 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
      */
     public function listeners($event)
     {
-        $this->typeCheck->listeners(func_get_args());
-
         return $this->eventEmitterImpl->listeners($event);
     }
 
@@ -123,8 +106,6 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
      */
     public function emit($event, array $arguments = array())
     {
-        $this->typeCheck->emit(func_get_args());
-
         $this->eventEmitterImpl->emit($event, $arguments);
     }
 
@@ -135,8 +116,6 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
      */
     protected function onValue($value)
     {
-        $this->typeCheck->onValue(func_get_args());
-
         if (0 === $this->depth) {
             $this->emit('document-open');
             $this->emit('value', array($value));
@@ -151,8 +130,6 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
      */
     protected function onArrayOpen()
     {
-        $this->typeCheck->onArrayOpen(func_get_args());
-
         if (0 === $this->depth++) {
             $this->emit('document-open');
         }
@@ -165,8 +142,6 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
      */
     protected function onArrayClose()
     {
-        $this->typeCheck->onArrayClose(func_get_args());
-
         $this->emit('array-close');
 
         if (0 === --$this->depth) {
@@ -179,8 +154,6 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
      */
     protected function onObjectOpen()
     {
-        $this->typeCheck->onObjectOpen(func_get_args());
-
         if (0 === $this->depth++) {
             $this->emit('document-open');
         }
@@ -193,8 +166,6 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
      */
     protected function onObjectClose()
     {
-        $this->typeCheck->onObjectClose(func_get_args());
-
         $this->emit('object-close');
 
         if (0 === --$this->depth) {
@@ -209,11 +180,8 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
      */
     protected function onObjectKey($value)
     {
-        $this->typeCheck->onObjectKey(func_get_args());
-
         $this->emit('object-key', array($value));
     }
 
-    private $typeCheck;
     private $depth;
 }
