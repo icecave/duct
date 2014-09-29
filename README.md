@@ -95,6 +95,6 @@ the following events are emitted as the buffer is parsed.
  * **error** (Exception $error): emitted when a syntax error is encountered
 
 <!-- references -->
-[Build Status]: http://img.shields.io/travis/IcecaveStudios/duct/develop.svg
-[Test Coverage]: http://img.shields.io/coveralls/IcecaveStudios/duct/develop.svg
-[SemVer]: http://img.shields.io/:semver-0.4.0-yellow.svg
+[Build Status]: http://img.shields.io/travis/IcecaveStudios/duct/develop.svg?style=flat-square
+[Test Coverage]: http://img.shields.io/coveralls/IcecaveStudios/duct/develop.svg?style=flat-square
+[SemVer]: http://img.shields.io/:semver-0.4.0-yellow.svg?style=flat-square
