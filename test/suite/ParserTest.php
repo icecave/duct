@@ -18,7 +18,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function testParseWithConstructorDefaults()
     {
-        $parser = new Parser;
+        $parser = new Parser();
 
         $result = $parser->parse('[1, 2, 3]');
 

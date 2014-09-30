@@ -20,11 +20,11 @@ abstract class AbstractParser
     public function __construct(Lexer $lexer = null, TokenStreamParser $parser = null)
     {
         if (null === $lexer) {
-            $lexer = new Lexer;
+            $lexer = new Lexer();
         }
 
         if (null === $parser) {
-            $parser = new TokenStreamParser;
+            $parser = new TokenStreamParser();
         }
 
         $this->lexer = $lexer;

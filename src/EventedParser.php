@@ -21,7 +21,7 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
     public function __construct(Lexer $lexer = null, TokenStreamParser $parser = null)
     {
         $this->depth = 0;
-        $this->eventEmitterImpl = new EventEmitter;
+        $this->eventEmitterImpl = new EventEmitter();
 
         parent::__construct($lexer, $parser);
     }

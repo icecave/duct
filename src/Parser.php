@@ -22,7 +22,7 @@ class Parser extends AbstractParser
         parent::__construct($lexer, $parser);
 
         $this->values = array();
-        $this->stack = new SplStack;
+        $this->stack = new SplStack();
     }
 
     /**
@@ -33,7 +33,7 @@ class Parser extends AbstractParser
         parent::reset();
 
         $this->values = array();
-        $this->stack = new SplStack;
+        $this->stack = new SplStack();
     }
 
     /**
@@ -106,7 +106,7 @@ class Parser extends AbstractParser
      */
     protected function onObjectOpen()
     {
-        $this->push(new stdClass);
+        $this->push(new stdClass());
     }
 
     /**
@@ -134,7 +134,7 @@ class Parser extends AbstractParser
      */
     protected function push($value)
     {
-        $context = new stdClass;
+        $context = new stdClass();
         $context->value = $value;
         $context->key = null;
 
