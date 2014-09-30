@@ -22,7 +22,7 @@ class TokenStreamParser extends EventEmitter
      */
     public function reset()
     {
-        $this->stack = new SplStack;
+        $this->stack = new SplStack();
     }
 
     /**

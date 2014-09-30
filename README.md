@@ -66,7 +66,7 @@ assert(1 === count($values));
 assert($values[0] == array(4, 5, 6));
 
 // At the end of the JSON stream, finalize is called to parse any data remaining
-// in the buffer. An exception is if thrown the buffer contains an incomplete
+// in the buffer. An exception is thrown if the buffer contains an incomplete
 // value.
 $parser->finalize();
 
@@ -95,6 +95,6 @@ the following events are emitted as the buffer is parsed.
  * **error** (Exception $error): emitted when a syntax error is encountered
 
 <!-- references -->
-[Build Status]: http://img.shields.io/travis/IcecaveStudios/duct/develop.svg
-[Test Coverage]: http://img.shields.io/coveralls/IcecaveStudios/duct/develop.svg
-[SemVer]: http://img.shields.io/:semver-0.4.0-yellow.svg
+[Build Status]: http://img.shields.io/travis/IcecaveStudios/duct/develop.svg?style=flat-square
+[Test Coverage]: http://img.shields.io/coveralls/IcecaveStudios/duct/develop.svg?style=flat-square
+[SemVer]: http://img.shields.io/:semver-1.0.0-brightgreen.svg?style=flat-square

@@ -13,7 +13,7 @@ class LexerTest extends PHPUnit_Framework_TestCase
     {
         $tokens = array();
 
-        $this->lexer = new Lexer;
+        $this->lexer = new Lexer();
         $this->tokens = &$tokens;
 
         $this->lexer->on(

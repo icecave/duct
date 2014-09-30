@@ -18,7 +18,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function testParseWithConstructorDefaults()
     {
-        $parser = new Parser;
+        $parser = new Parser();
 
         $result = $parser->parse('[1, 2, 3]');
 
@@ -80,6 +80,22 @@ class ParserTest extends PHPUnit_Framework_TestCase
             array('{ "a" : 1, "nested" : { "b" : 2, "c" : 3, "d" : 4 }, "e" : 5 }'),
             array('[ 1, 2, 3 ]'),
             array('[ 1, [ 2, 3, 4 ], 5 ]'),
+        );
+    }
+
+    public function testParseObjectAsAssociativeArray()
+    {
+        $this->parser->setProduceAssociativeArrays(true);
+
+        $json = '{ "a" : 1, "nested" : { "b" : 2, "c" : 3, "d" : 4 }, "e" : 5 }';
+
+        $result = $this->parser->parse($json);
+
+        $this->assertEquals(
+            array(
+                json_decode($json, true)
+            ),
+            $result
         );
     }
 }

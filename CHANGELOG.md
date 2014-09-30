@@ -1,5 +1,9 @@
 # Duct Changelog
 
+### 1.0.0 (2014-09-30)
+
+* **[NEW]** Added support for representing JSON objects as associative arrays
+
 ### 0.4.0 (2014-02-07)
 
 * **[BC]** Removed [icecave/collections](https://github.com/IcecaveStudios/collections) for performance reasons

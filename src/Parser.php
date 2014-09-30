@@ -14,15 +14,38 @@ use stdClass;
 class Parser extends AbstractParser
 {
     /**
-     * @param Lexer|null             $lexer  The lexer to use for tokenization, or NULL to use the default UTF-8 lexer.
-     * @param TokenStreamParser|null $parser The token-stream parser to use for converting tokens into PHP values, or null to use the default.
+     * @param Lexer|null             $lexer                    The lexer to use for tokenization, or NULL to use the default UTF-8 lexer.
+     * @param TokenStreamParser|null $parser                   The token-stream parser to use for converting tokens into PHP values, or null to use the default.
      */
-    public function __construct(Lexer $lexer = null, TokenStreamParser $parser = null)
-    {
+    public function __construct(
+        Lexer $lexer = null,
+        TokenStreamParser $parser = null
+    ) {
         parent::__construct($lexer, $parser);
 
+        $this->produceAssociativeArrays = false;
         $this->values = array();
-        $this->stack = new SplStack;
+        $this->stack = new SplStack();
+    }
+
+    /**
+     * Set whether or not to use associative arrays for JSON objects.
+     *
+     * @return boolean True if JSON objects should produce arrays rather than objects; otherwise, false.
+     */
+    public function produceAssociativeArrays()
+    {
+        return $this->produceAssociativeArrays;
+    }
+
+    /**
+     * Set whether or not to use associative arrays for JSON objects.
+     *
+     * @param boolean $produceAssociativeArrays True if JSON objects should produce arrays rather than objects; otherwise, false.
+     */
+    public function setProduceAssociativeArrays($produceAssociativeArrays)
+    {
+        $this->produceAssociativeArrays = $produceAssociativeArrays;
     }
 
     /**
@@ -33,7 +56,7 @@ class Parser extends AbstractParser
         parent::reset();
 
         $this->values = array();
-        $this->stack = new SplStack;
+        $this->stack = new SplStack();
     }
 
     /**
@@ -76,11 +99,12 @@ class Parser extends AbstractParser
         } else {
             $context = $this->stack->top();
 
-            if (is_array($context->value)) {
+            if (null === $context->key) {
                 $context->value[] = $value;
+            } elseif ($this->produceAssociativeArrays) {
+                $context->value[$context->key] = $value;
             } else {
                 $context->value->{$context->key} = $value;
-                $context->key = null;
             }
         }
     }
@@ -106,7 +130,11 @@ class Parser extends AbstractParser
      */
     protected function onObjectOpen()
     {
-        $this->push(new stdClass);
+        if ($this->produceAssociativeArrays) {
+            $this->push(array());
+        } else {
+            $this->push(new stdClass());
+        }
     }
 
     /**
@@ -130,11 +158,11 @@ class Parser extends AbstractParser
     /**
      * Push a value onto the object stack.
      *
-     * @param array|stdClass $value
+     * @param stdClass|array $value
      */
     protected function push($value)
     {
-        $context = new stdClass;
+        $context = new stdClass();
         $context->value = $value;
         $context->key = null;
 
@@ -151,6 +179,7 @@ class Parser extends AbstractParser
         $this->onValue($context->value);
     }
 
+    private $produceAssociativeArrays;
     private $values;
     private $stack;
 }
