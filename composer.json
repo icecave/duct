@@ -1,7 +1,15 @@
 {
     "name": "icecave/duct",
     "description": "An incremental streaming JSON parser.",
-    "keywords": ["json", "parse", "parser", "stream", "event", "evented", "react"],
+    "keywords": [
+        "json",
+        "parse",
+        "parser",
+        "stream",
+        "event",
+        "evented",
+        "react"
+    ],
     "homepage": "https://github.com/IcecaveStudios/duct",
     "license": "MIT",
     "authors": [
@@ -19,12 +27,14 @@
     "require-dev": {
         "icecave/archer": "~1"
     },
-    "suggest": {
-        "eloquent/asplode": "Drop-in exception-based error handling."
-    },
     "autoload": {
         "psr-4": {
             "Icecave\\Duct\\": "src"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-develop": "0.5.x-dev"
         }
     }
 }
