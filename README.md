@@ -94,6 +94,11 @@ the following events are emitted as the buffer is parsed.
  * **value** (mixed $value): emitted whenever a scalar or null is encountered, including inside objects and arrays
  * **error** (Exception $error): emitted when a syntax error is encountered
 
+## Contact us
+
+* Follow [@IcecaveStudios](https://twitter.com/IcecaveStudios) on Twitter
+* Visit the [Icecave Studios website](http://icecave.com.au)
+
 <!-- references -->
 [Build Status]: http://img.shields.io/travis/IcecaveStudios/duct/develop.svg?style=flat-square
 [Test Coverage]: http://img.shields.io/coveralls/IcecaveStudios/duct/develop.svg?style=flat-square
