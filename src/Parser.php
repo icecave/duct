@@ -14,19 +14,16 @@ use stdClass;
 class Parser extends AbstractParser
 {
     /**
-     * @param boolean                $produceAssociativeArrays True if JSON objects should produce arrays rather than objects; otherwise, false.
      * @param Lexer|null             $lexer                    The lexer to use for tokenization, or NULL to use the default UTF-8 lexer.
      * @param TokenStreamParser|null $parser                   The token-stream parser to use for converting tokens into PHP values, or null to use the default.
      */
     public function __construct(
-        $produceAssociativeArrays = false,
         Lexer $lexer = null,
         TokenStreamParser $parser = null
     ) {
         parent::__construct($lexer, $parser);
 
-        $this->setProduceAssociativeArrays($produceAssociativeArrays);
-
+        $this->produceAssociativeArrays = false;
         $this->values = array();
         $this->stack = new SplStack();
     }
