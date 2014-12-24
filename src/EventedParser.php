@@ -1,7 +1,7 @@
 <?php
 namespace Icecave\Duct;
 
-use Evenement\EventEmitter;
+use Evenement\EventEmitterTrait;
 use Evenement\EventEmitterInterface;
 use Exception;
 use Icecave\Duct\Detail\Lexer;
@@ -16,6 +16,7 @@ use Icecave\Duct\Exception\SyntaxExceptionInterface;
  */
 class EventedParser implements ParserInterface, EventEmitterInterface
 {
+    use EventEmitterTrait;
     use ParserTrait {
         feed as private doFeed;
         finalize as private doFinalize;
@@ -28,7 +29,6 @@ class EventedParser implements ParserInterface, EventEmitterInterface
     public function __construct(Lexer $lexer = null, TokenStreamParser $parser = null)
     {
         $this->depth = 0;
-        $this->eventEmitterImpl = new EventEmitter();
 
         $this->initialize($lexer, $parser);
     }
@@ -61,60 +61,6 @@ class EventedParser implements ParserInterface, EventEmitterInterface
         } catch (Exception $e) {
             $this->emit('error', array($e));
         }
-    }
-
-    /**
-     * @param string   $event
-     * @param callable $listener
-     */
-    public function on($event, callable $listener)
-    {
-        return $this->eventEmitterImpl->on($event, $listener);
-    }
-
-    /**
-     * @param string   $event
-     * @param callable $listener
-     */
-    public function once($event, callable $listener)
-    {
-        return $this->eventEmitterImpl->once($event, $listener);
-    }
-
-    /**
-     * @param string   $event
-     * @param callable $listener
-     */
-    public function removeListener($event, callable $listener)
-    {
-        return $this->eventEmitterImpl->removeListener($event, $listener);
-    }
-
-    /**
-     * @param string|null $event
-     */
-    public function removeAllListeners($event = null)
-    {
-        return $this->eventEmitterImpl->removeAllListeners($event);
-    }
-
-    /**
-     * @param string $event
-     *
-     * @return array<callable>
-     */
-    public function listeners($event)
-    {
-        return $this->eventEmitterImpl->listeners($event);
-    }
-
-    /**
-     * @param string $event
-     * @param array  $arguments
-     */
-    public function emit($event, array $arguments = array())
-    {
-        $this->eventEmitterImpl->emit($event, $arguments);
     }
 
     /**
