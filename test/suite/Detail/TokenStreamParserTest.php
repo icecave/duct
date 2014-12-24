@@ -1,8 +1,8 @@
 <?php
 namespace Icecave\Duct\Detail;
 
-use Phake;
 use PHPUnit_Framework_TestCase;
+use Phake;
 
 class TokenStreamParserTest extends PHPUnit_Framework_TestCase
 {
@@ -13,13 +13,19 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
 
     protected function createTokens(array $tokens)
     {
-        $result = array();
+        $result = [];
 
         foreach ($tokens as $token) {
             if (is_string($token) && 1 === strlen($token)) {
-                $result[] = Token::createSpecial($token);
+                $result[] = new Token($token, $token);
+            } elseif (is_integer($token) || is_float($token)) {
+                $result[] = new Token(TokenType::NUMBER_LITERAL, $token);
+            } elseif (is_bool($token)) {
+                $result[] = new Token(TokenType::BOOLEAN_LITERAL, $token);
+            } elseif (is_null($token)) {
+                $result[] = new Token(TokenType::NULL_LITERAL, null);
             } else {
-                $result[] = Token::createLiteral($token);
+                $result[] = new Token(TokenType::STRING_LITERAL, strval($token));
             }
         }
 
@@ -28,7 +34,7 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
 
     public function testFinalizeFailsWithPartialObject()
     {
-        $tokens = $this->createTokens(array('{'));
+        $tokens = $this->createTokens(['{']);
         $this->parser->feed($tokens);
 
         $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Token stream ended unexpectedly.');
@@ -37,7 +43,7 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
 
     public function testFinalizeFailsWithPartialArray()
     {
-        $tokens = $this->createTokens(array('['));
+        $tokens = $this->createTokens(['[']);
         $this->parser->feed($tokens);
 
         $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Token stream ended unexpectedly.');
@@ -46,7 +52,7 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
 
     public function testFeedFailsOnNonStringKey()
     {
-        $tokens = $this->createTokens(array('{', 1));
+        $tokens = $this->createTokens(['{', 1]);
 
         $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Unexpected token "NUMBER_LITERAL" in state "OBJECT_KEY".');
         $this->parser->feed($tokens);
@@ -54,7 +60,7 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
 
     public function testFeedFailsUnexpectedTokenAfterObjectKey()
     {
-        $tokens = $this->createTokens(array('{', "foo", ','));
+        $tokens = $this->createTokens(['{', "foo", ',']);
 
         $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Unexpected token "COMMA" in state "OBJECT_KEY_SEPARATOR".');
         $this->parser->feed($tokens);
@@ -62,7 +68,7 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
 
     public function testFeedFailsUnexpectedTokenAfterObjectValue()
     {
-        $tokens = $this->createTokens(array('{', "foo", ':', "bar", ':'));
+        $tokens = $this->createTokens(['{', "foo", ':', "bar", ':']);
 
         $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Unexpected token "COLON" in state "OBJECT_VALUE_SEPARATOR".');
         $this->parser->feed($tokens);
@@ -70,7 +76,7 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
 
     public function testFeedFailsUnexpectedTokenAfterArrayValue()
     {
-        $tokens = $this->createTokens(array('[', "foo", ':'));
+        $tokens = $this->createTokens(['[', "foo", ':']);
 
         $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Unexpected token "COLON" in state "ARRAY_VALUE_SEPARATOR".');
         $this->parser->feed($tokens);
@@ -81,20 +87,20 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
      */
     public function testFeedFailsOnInvalidStartingToken($token)
     {
-        $tokens = $this->createTokens(array($token));
+        $tokens = $this->createTokens([$token]);
 
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Unexpected token "' . $tokens[0]->type() . '".');
+        $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Unexpected token "' . TokenType::memberByValue($tokens[0]->type) . '".');
         $this->parser->feed($tokens);
     }
 
     public function invalidStartToken()
     {
-        return array(
-            array('}'),
-            array(']'),
-            array(':'),
-            array(','),
-        );
+        return [
+            ['}'],
+            [']'],
+            [':'],
+            [','],
+        ];
     }
 
     /**
@@ -106,10 +112,10 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
         $this->parser->feed($tokens);
         $this->parser->finalize();
 
-        $verifiers = array();
+        $verifiers = [];
         foreach ($expectedEvents as $eventArguments) {
             $verifiers[] = call_user_func_array(
-                array(Phake::verify($this->parser), 'emit'),
+                [Phake::verify($this->parser), 'emit'],
                 $eventArguments
             );
         }
@@ -122,62 +128,62 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
 
     public function eventData()
     {
-        return array(
-            array(array(1),                                                  array(array('value', array(1)))),
-            array(array(1.1),                                                array(array('value', array(1.1)))),
-            array(array(true),                                               array(array('value', array(true)))),
-            array(array(false),                                              array(array('value', array(false)))),
-            array(array(null),                                               array(array('value', array(null)))),
-            array(array('foo'),                                              array(array('value', array('foo')))),
+        return [
+            [[1],                                                  [['value', [1]]]],
+            [[1.1],                                                [['value', [1.1]]]],
+            [[true],                                               [['value', [true]]]],
+            [[false],                                              [['value', [false]]]],
+            [[null],                                               [['value', [null]]]],
+            [['foo'],                                              [['value', ['foo']]]],
 
-            array(
-                array('[', ']'),
-                array(
-                    array('array-open'),
-                    array('array-close'),
-                ),
-            ),
+            [
+                ['[', ']'],
+                [
+                    ['array-open'],
+                    ['array-close'],
+                ],
+            ],
 
-            array(
-                array('[', 1, ',', 2, ',', 3, ']'),
-                array(
-                    array('array-open'),
-                    array('value', array(1)),
-                    array('value', array(2)),
-                    array('value', array(3)),
-                    array('array-close'),
-                ),
-            ),
+            [
+                ['[', 1, ',', 2, ',', 3, ']'],
+                [
+                    ['array-open'],
+                    ['value', [1]],
+                    ['value', [2]],
+                    ['value', [3]],
+                    ['array-close'],
+                ],
+            ],
 
-            array(
-                array('[', '{', '}', ']'),
-                array(
-                    array('array-open'),
-                    array('object-open'),
-                    array('object-close'),
-                    array('array-close'),
-                ),
-            ),
+            [
+                ['[', '{', '}', ']'],
+                [
+                    ['array-open'],
+                    ['object-open'],
+                    ['object-close'],
+                    ['array-close'],
+                ],
+            ],
 
-            array(
-                array('{', '}',),
-                array(
-                    array('object-open'),
-                    array('object-close'),
-                ),
-            ),
+            [
+                ['{', '}'],
+                [
+                    ['object-open'],
+                    ['object-close'],
+                ],
+            ],
 
-            array(
-                array('{', 'k1', ':', 1, ',', 'k2', ':', 2, '}',),
-                array(
-                    array('object-open'),
-                    array('object-key', array('k1')),
-                    array('value', array(1)),
-                    array('object-key', array('k2')),
-                    array('value', array(2)),
-                    array('object-close'),
-                ),
-            )
-        );
+            [
+                ['{', 'k1', ':', 1, ',', 'k2', ':', 2, '}'],
+                [
+                    ['object-open'],
+                    ['object-key', ['k1']],
+                    ['value', [1]],
+                    ['object-key', ['k2']],
+                    ['value', [2]],
+                    ['object-close'],
+                ],
+            ],
+        ];
     }
 }

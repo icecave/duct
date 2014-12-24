@@ -1,9 +1,12 @@
 <?php
 namespace Icecave\Duct\Detail;
 
-use Eloquent\Enumeration\Enumeration;
+use Eloquent\Enumeration\AbstractEnumeration;
 
-class LexerState extends Enumeration
+/**
+ * @internal
+ */
+class LexerState extends AbstractEnumeration
 {
     const BEGIN = 0;
 

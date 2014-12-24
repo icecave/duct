@@ -1,8 +1,10 @@
 <?php
 namespace Icecave\Duct;
 
+use Exception;
 use Icecave\Duct\Detail\Lexer;
 use Icecave\Duct\Detail\TokenStreamParser;
+use Icecave\Duct\Exception\SyntaxExceptionInterface;
 use SplStack;
 use stdClass;
 
@@ -11,21 +13,83 @@ use stdClass;
  *
  * Converts incoming streams of JSON data into PHP values.
  */
-class Parser extends AbstractParser
+class Parser implements ParserInterface
 {
     /**
+     * @param boolean                $produceAssociativeArrays True if JSON objects should produce arrays rather than objects; otherwise, false.
      * @param Lexer|null             $lexer                    The lexer to use for tokenization, or NULL to use the default UTF-8 lexer.
      * @param TokenStreamParser|null $parser                   The token-stream parser to use for converting tokens into PHP values, or null to use the default.
      */
     public function __construct(
+        $produceAssociativeArrays = false,
         Lexer $lexer = null,
         TokenStreamParser $parser = null
     ) {
-        parent::__construct($lexer, $parser);
+        if (null === $lexer) {
+            $lexer = new Lexer;
+        }
 
-        $this->produceAssociativeArrays = false;
-        $this->values = array();
-        $this->stack = new SplStack();
+        if (null === $parser) {
+            $parser = new TokenStreamParser;
+        }
+
+        $this->produceAssociativeArrays = $produceAssociativeArrays;
+        $this->lexer                    = $lexer;
+        $this->parser                   = $parser;
+        $this->values                   = [];
+        $this->previousContexts         = [];
+        $this->currentKey               = null;
+        $this->currentValue             = null;
+
+        $this->lexer->setCallback(
+            [$this->parser, 'feedToken']
+        );
+
+        $this->parser->on(
+            'value',
+            function ($value) {
+                $this->handleValue($value);
+            }
+        );
+
+        $this->parser->on(
+            'array-open',
+            function () {
+                $this->push([]);
+            }
+        );
+
+        $this->parser->on(
+            'array-close',
+            function () {
+                $this->pop();
+            }
+        );
+
+        $this->parser->on(
+            'object-open',
+            function () {
+                if ($this->produceAssociativeArrays) {
+                    $this->push([]);
+                } else {
+                    $this->push(new stdClass);
+                }
+            }
+        );
+
+        $this->parser->on(
+            'object-close',
+            function () {
+                $this->pop();
+            }
+        );
+
+        $this->parser->on(
+            'object-key',
+            function ($value) {
+                $this->currentKey = $value;
+            }
+        );
     }
 
     /**
@@ -49,110 +113,104 @@ class Parser extends AbstractParser
     }
 
     /**
-     * Reset the parser, discarding any previously parsed input and values.
-     */
-    public function reset()
-    {
-        parent::reset();
-
-        $this->values = array();
-        $this->stack = new SplStack();
-    }
-
-    /**
      * Parse one or more complete JSON values.
+     *
+     * This is a convenience method that feeds the buffer to the parser and
+     * finalizes parsing.
      *
      * @param string $buffer The JSON data.
      *
-     * @return array<mixed>                       The sequence of parsed JSON values.
-     * @throws Exception\SyntaxExceptionInterface
+     * @return array<mixed>             The sequence of parsed JSON values.
+     * @throws SyntaxExceptionInterface If the JSON buffer is invalid.
      */
     public function parse($buffer)
     {
-        parent::parse($buffer);
+        $this->reset();
+        $this->feed($buffer);
+        $this->finalize();
 
         return $this->values();
     }
 
     /**
-     * Fetch the values produced by the parser so far and remove them from the internal value sequence.
+     * Reset the parser, discarding any previously parsed input and values.
+     */
+    public function reset()
+    {
+        $this->lexer->reset();
+        $this->parser->reset();
+
+        $this->values           = [];
+        $this->previousContexts = [];
+        $this->currentKey       = null;
+        $this->currentValue     = null;
+    }
+
+    /**
+     * Feed (potentially incomplete) JSON data to the parser.
+     *
+     * @param string $buffer The JSON data.
+     *
+     * @throws SyntaxExceptionInterface If the JSON buffer is invalid.
+     */
+    public function feed($buffer)
+    {
+        try {
+            $this->lexer->feed($buffer);
+        } catch (Exception $e) {
+            $this->reset();
+            throw $e;
+        }
+    }
+
+    /**
+     * Finalize parsing.
+     *
+     * @throws SyntaxExceptionInterface If the JSON buffer is invalid.
+     */
+    public function finalize()
+    {
+        try {
+            $this->lexer->finalize();
+            $this->parser->finalize();
+        } catch (Exception $e) {
+            $this->reset();
+            throw $e;
+        }
+    }
+
+    /**
+     * Fetch the values produced by the parser so far and remove them from the
+     * internal value sequence.
      *
      * @return array<mixed> The sequence of parsed JSON values.
      */
     public function values()
     {
-        $values = $this->values;
-        $this->values = array();
+        $values       = $this->values;
+        $this->values = [];
 
         return $values;
     }
 
     /**
-     * Called when the token stream parser emits a 'value' event.
+     * Handle an incoming value.
      *
-     * @param mixed $value The value emitted.
+     * @param mixed $value
      */
-    protected function onValue($value)
+    private function handleValue($value)
     {
-        if ($this->stack->isEmpty()) {
+        if (null === $this->currentValue) {
             $this->values[] = $value;
         } else {
-            $context = $this->stack->top();
-
-            if (null === $context->key) {
-                $context->value[] = $value;
+            if (null === $this->currentKey) {
+                $this->currentValue[] = $value;
             } elseif ($this->produceAssociativeArrays) {
-                $context->value[$context->key] = $value;
+                $this->currentValue[$this->currentKey] = $value;
             } else {
-                $context->value->{$context->key} = $value;
+                $this->currentValue->{$this->currentKey} = $value;
             }
         }
-    }
-
-    /**
-     * Called when the token stream parser emits an 'array-open' event.
-     */
-    protected function onArrayOpen()
-    {
-        $this->push(array());
-    }
-
-    /**
-     * Called when the token stream parser emits an 'array-close' event.
-     */
-    protected function onArrayClose()
-    {
-        $this->pop();
-    }
-
-    /**
-     * Called when the token stream parser emits an 'object-open' event.
-     */
-    protected function onObjectOpen()
-    {
-        if ($this->produceAssociativeArrays) {
-            $this->push(array());
-        } else {
-            $this->push(new stdClass());
-        }
-    }
-
-    /**
-     * Called when the token stream parser emits an 'object-close' event.
-     */
-    protected function onObjectClose()
-    {
-        $this->pop();
-    }
-
-    /**
-     * Called when the token stream parser emits an 'object-key' event.
-     *
-     * @param string $value The key for the next object value.
-     */
-    protected function onObjectKey($value)
-    {
-        $this->stack->top()->key = $value;
     }
 
     /**
@@ -160,26 +218,33 @@ class Parser extends AbstractParser
      *
      * @param stdClass|array $value
      */
-    protected function push($value)
+    private function push($value)
     {
-        $context = new stdClass();
-        $context->value = $value;
-        $context->key = null;
+        if ($this->currentValue) {
+            $this->previousContexts[] = [$this->currentKey, $this->currentValue];
+        }
 
-        $this->stack->push($context);
+        $this->currentKey   = null;
+        $this->currentValue = $value;
     }
 
     /**
      * Pop a value from the object stack, emitting it if the stack is empty.
      */
-    protected function pop()
+    private function pop()
     {
-        $context = $this->stack->pop();
+        $value = $this->currentValue;
 
-        $this->onValue($context->value);
+        list($this->currentKey, $this->currentValue) = array_pop($this->previousContexts);
+
+        $this->handleValue($value);
     }
 
     private $produceAssociativeArrays;
+    private $lexer;
+    private $parser;
     private $values;
-    private $stack;
+    private $previousContexts;
+    private $currentKey;
+    private $currentValue;
 }

@@ -20,11 +20,12 @@
         }
     ],
     "require": {
-        "php": ">=5.3",
-        "eloquent/enumeration": "~3",
-        "evenement/evenement": "~1"
+        "php": ">=5.4",
+        "eloquent/enumeration": "~5",
+        "evenement/evenement": "~2"
     },
     "require-dev": {
+        "athletic/athletic": "~0.1",
         "icecave/archer": "~1"
     },
     "autoload": {
@@ -32,9 +33,14 @@
             "Icecave\\Duct\\": "src"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Icecave\\Duct\\": "test/benchmarks"
+        }
+    },
     "extra": {
         "branch-alias": {
-            "dev-develop": "1.0.x-dev"
+            "dev-develop": "2.0.x-dev"
         }
     }
 }
