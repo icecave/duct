@@ -6,6 +6,7 @@
 * **[BC]** Updated minimum PHP version requirement to 5.4
 * **[BC]** Removed `AbstractParser` (added `ParserInterface`)
 * **[IMPROVED]** Added `produceAssociativeArrays` constructor parameter to `Parser`
+* **[IMPROVED]** Various micro-optimizations resulting in a ~2.4x performance improvement
 
 ### 1.0.0 (2014-09-30)
 
