@@ -5,10 +5,6 @@ use Icecave\Duct\Detail\Exception\ParserException;
 use Phake;
 use PHPUnit_Framework_TestCase;
 
-/**
- * @covers Icecave\Duct\EventedParser
- * @covers Icecave\Duct\Detail\ParserTrait
- */
 class EventedParserTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
@@ -21,6 +17,17 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
         $this->callback = function () use ($self) {
             $self->callbackArguments[] = func_get_args();
         };
+    }
+
+    public function testParse()
+    {
+        $this->parser->parse('10');
+
+        Phake::inOrder(
+            Phake::verify($this->parser)->emit('document-open'),
+            Phake::verify($this->parser)->emit('value', array(10)),
+            Phake::verify($this->parser)->emit('document-close')
+        );
     }
 
     public function testFeed()
