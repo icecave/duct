@@ -25,8 +25,8 @@ use Icecave\Duct\Parser;
 $parser = new Parser;
 $values = $parser->parse('[ 1, 2, 3 ] [ 4, 5, 6 ]');
 
-assert($values[0] === array(1, 2, 3));
-assert($values[1] === array(4, 5, 6));
+assert($values[0] === [1, 2, 3]);
+assert($values[1] === [4, 5, 6]);
 ```
 
 ### Incremental parsing
@@ -51,7 +51,7 @@ assert(0 === count($values));
 $parser->feed('2, 3 ][ 4, 5');
 $values = $parser->values();
 assert(1 === count($values));
-assert($values[0] == array(1, 2, 3));
+assert($values[0] == [1, 2, 3]);
 
 // Note that calling values() is destructive, in that any complete objects are
 // removed from the parser and will not be returned by future calls to values().
@@ -63,7 +63,7 @@ assert(0 === count($values));
 $parser->feed(', 6 ]');
 $values = $parser->values();
 assert(1 === count($values));
-assert($values[0] == array(4, 5, 6));
+assert($values[0] == [4, 5, 6]);
 
 // At the end of the JSON stream, finalize is called to parse any data remaining
 // in the buffer. An exception is thrown if the buffer contains an incomplete
@@ -78,8 +78,8 @@ assert(0 === count($values));
 ### Event-based parsing
 
 **Duct** also provides `EventedParser`, an event-based incremental parser similar to the [Clarinet](https://github.com/dscape/clarinet)
-library for JavaScript. Event management is provided by [Evenement](https://github.com/igorw/evenement/tree/v1.0.0), a
-popular PHP event library.
+library for JavaScript. Event management is provided by [Événement](https://github.com/igorw/evenement), a popular PHP
+event library.
 
 As per the example above the `feed()` and `finalize()` methods are used, however there is no `values()` method. Instead,
 the following events are emitted as the buffer is parsed.
