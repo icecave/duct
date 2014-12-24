@@ -25,11 +25,17 @@
         "evenement/evenement": "~2"
     },
     "require-dev": {
-        "icecave/archer": "~1"
+        "icecave/archer": "~1",
+        "athletic/athletic": "~0.1"
     },
     "autoload": {
         "psr-4": {
             "Icecave\\Duct\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Icecave\\Duct\\": "test/benchmarks"
         }
     },
     "extra": {

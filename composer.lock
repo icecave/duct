@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f2412cebb0bf6b780e2d32b51abd05c4",
+    "hash": "6270d58a51b4e043d5e32f31ab385c9c",
     "packages": [
         {
             "name": "eloquent/enumeration",
@@ -103,6 +103,58 @@
         }
     ],
     "packages-dev": [
+        {
+            "name": "athletic/athletic",
+            "version": "v0.1.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/polyfractal/athletic.git",
+                "reference": "51fe4b6e5298dd8af187825a4e57745898e37f0e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/polyfractal/athletic/zipball/51fe4b6e5298dd8af187825a4e57745898e37f0e",
+                "reference": "51fe4b6e5298dd8af187825a4e57745898e37f0e",
+                "shasum": ""
+            },
+            "require": {
+                "nategood/commando": "0.2.1",
+                "php": ">=5.3.9",
+                "pimple/pimple": ">=1.0,<3.0",
+                "zeptech/annotations": "1.1.*"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "1.2.*",
+                "mockery/mockery": "0.8.*",
+                "phpunit/phpunit": "~4.0",
+                "satooshi/php-coveralls": "0.6.*"
+            },
+            "bin": [
+                "bin/athletic"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Athletic": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Zachary Tong"
+                }
+            ],
+            "description": "PHP Benchmarking Framework",
+            "keywords": [
+                "benchmark",
+                "benchmarking",
+                "profiling"
+            ],
+            "time": "2014-06-03 18:32:22"
+        },
         {
             "name": "dflydev/markdown",
             "version": "v1.0.3",
@@ -332,6 +384,99 @@
                 "unit"
             ],
             "time": "2014-11-10 21:59:53"
+        },
+        {
+            "name": "kevinlebrun/colors.php",
+            "version": "0.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kevinlebrun/colors.php.git",
+                "reference": "b13d23b9365ece519abc0eaa77cd3061c5810d30"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kevinlebrun/colors.php/zipball/b13d23b9365ece519abc0eaa77cd3061c5810d30",
+                "reference": "b13d23b9365ece519abc0eaa77cd3061c5810d30",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Colors": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kevin Le Brun",
+                    "email": "lebrun.k@gmail.com",
+                    "homepage": "http://kevinlebrun.fr",
+                    "role": "developer"
+                }
+            ],
+            "description": "Colors for PHP CLI scripts",
+            "homepage": "https://github.com/kevinlebrun/colors.php",
+            "keywords": [
+                "cli",
+                "color",
+                "colors",
+                "console",
+                "shell"
+            ],
+            "time": "2012-03-25 18:18:10"
+        },
+        {
+            "name": "nategood/commando",
+            "version": "0.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nategood/commando.git",
+                "reference": "b8e475d08a6ff1c0f2b89391e777c4e71fc1a6e1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nategood/commando/zipball/b8e475d08a6ff1c0f2b89391e777c4e71fc1a6e1",
+                "reference": "b8e475d08a6ff1c0f2b89391e777c4e71fc1a6e1",
+                "shasum": ""
+            },
+            "require": {
+                "kevinlebrun/colors.php": "0.2.*",
+                "php": ">=5.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Commando": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nate Good",
+                    "email": "me@nategood.com",
+                    "homepage": "http://nategood.com"
+                }
+            ],
+            "description": "PHP CLI Commando Style",
+            "homepage": "http://github.com/nategood/commando",
+            "keywords": [
+                "automation",
+                "cli",
+                "command",
+                "command line",
+                "command line interface",
+                "scripting"
+            ],
+            "time": "2012-10-07 15:35:37"
         },
         {
             "name": "nikic/php-parser",
@@ -1091,6 +1236,46 @@
                 "templating"
             ],
             "time": "2014-10-17 12:53:44"
+        },
+        {
+            "name": "zeptech/annotations",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pgraham/php-annotations.git",
+                "reference": "9cd042daa9ace184d04b49f0605edf73f19a9c71"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pgraham/php-annotations/zipball/9cd042daa9ace184d04b49f0605edf73f19a9c71",
+                "reference": "9cd042daa9ace184d04b49f0605edf73f19a9c71",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "zpt\\anno": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD"
+            ],
+            "authors": [
+                {
+                    "name": "Philip Graham",
+                    "email": "philip@zeptech.ca"
+                }
+            ],
+            "description": "DOC Block annotation parsing for PHP",
+            "homepage": "https://github.com/pgraham/php-annotations",
+            "keywords": [
+                "annotations"
+            ],
+            "time": "2013-05-29 02:35:23"
         }
     ],
     "aliases": [],
