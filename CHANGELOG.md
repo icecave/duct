@@ -1,5 +1,12 @@
 # Duct Changelog
 
+### 2.0.0 (2014-12-24)
+
+* **[BC]** Updated to [igorw/evenement](https://github.com/igorw/evenement) version 2 (affects public interface of `EventedParser`)
+* **[BC]** Updated minimum PHP version requirement to 5.4
+* **[BC]** Removed `AbstractParser` (added `ParserInterface`)
+* **[IMPROVED]** Added `produceAssociativeArrays` constructor parameter to `Parser`
+
 ### 1.0.0 (2014-09-30)
 
 * **[NEW]** Added support for representing JSON objects as associative arrays
