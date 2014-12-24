@@ -1,9 +1,9 @@
 <?php
 namespace Icecave\Duct\Detail;
 
-use Eloquent\Enumeration\Enumeration;
+use Eloquent\Enumeration\AbstractEnumeration;
 
-class TokenType extends Enumeration
+class TokenType extends AbstractEnumeration
 {
     const BRACE_OPEN      = '{';
     const BRACE_CLOSE     = '}';

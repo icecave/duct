@@ -1,9 +1,9 @@
 <?php
 namespace Icecave\Duct\Detail;
 
-use Eloquent\Enumeration\Enumeration;
+use Eloquent\Enumeration\AbstractEnumeration;
 
-class ParserState extends Enumeration
+class ParserState extends AbstractEnumeration
 {
     const BEGIN = 0;
 

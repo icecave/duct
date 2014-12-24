@@ -27,7 +27,7 @@ class Token
      */
     public static function createSpecial($value)
     {
-        return new Token(TokenType::instanceByValue($value), $value);
+        return new Token(TokenType::memberByValue($value), $value);
     }
 
     /**

@@ -59,7 +59,7 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
      * @param string   $event
      * @param callable $listener
      */
-    public function on($event, $listener)
+    public function on($event, callable $listener)
     {
         return $this->eventEmitterImpl->on($event, $listener);
     }
@@ -68,7 +68,7 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
      * @param string   $event
      * @param callable $listener
      */
-    public function once($event, $listener)
+    public function once($event, callable $listener)
     {
         return $this->eventEmitterImpl->once($event, $listener);
     }
@@ -77,7 +77,7 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
      * @param string   $event
      * @param callable $listener
      */
-    public function removeListener($event, $listener)
+    public function removeListener($event, callable $listener)
     {
         return $this->eventEmitterImpl->removeListener($event, $listener);
     }

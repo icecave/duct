@@ -240,7 +240,7 @@ class TokenStreamParser extends EventEmitter
         }
 
         return new Exception\ParserException(
-            'Unexpected token "' . $token->type() . '" in state "' . ParserState::instanceByValue($this->stack->top()) . '".'
+            'Unexpected token "' . $token->type() . '" in state "' . ParserState::memberByValue($this->stack->top()) . '".'
         );
     }
 

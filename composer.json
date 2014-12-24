@@ -20,9 +20,9 @@
         }
     ],
     "require": {
-        "php": ">=5.3",
-        "eloquent/enumeration": "~3",
-        "evenement/evenement": "~1"
+        "php": ">=5.4",
+        "eloquent/enumeration": "~5",
+        "evenement/evenement": "~2"
     },
     "require-dev": {
         "icecave/archer": "~1"
