@@ -2,7 +2,9 @@
 namespace Icecave\Duct;
 
 use Icecave\Duct\Detail\Lexer;
+use Icecave\Duct\Detail\ParserTrait;
 use Icecave\Duct\Detail\TokenStreamParser;
+use Icecave\Duct\Exception\SyntaxExceptionInterface;
 use SplStack;
 use stdClass;
 
@@ -11,8 +13,13 @@ use stdClass;
  *
  * Converts incoming streams of JSON data into PHP values.
  */
-class Parser extends AbstractParser
+class Parser implements ParserInterface
 {
+    use ParserTrait {
+        reset as private doReset;
+        parse as private doParse;
+    }
+
     /**
      * @param Lexer|null             $lexer                    The lexer to use for tokenization, or NULL to use the default UTF-8 lexer.
      * @param TokenStreamParser|null $parser                   The token-stream parser to use for converting tokens into PHP values, or null to use the default.
@@ -21,11 +28,11 @@ class Parser extends AbstractParser
         Lexer $lexer = null,
         TokenStreamParser $parser = null
     ) {
-        parent::__construct($lexer, $parser);
-
         $this->produceAssociativeArrays = false;
         $this->values = array();
         $this->stack = new SplStack();
+
+        $this->initialize($lexer, $parser);
     }
 
     /**
@@ -53,7 +60,7 @@ class Parser extends AbstractParser
      */
     public function reset()
     {
-        parent::reset();
+        $this->doReset();
 
         $this->values = array();
         $this->stack = new SplStack();
@@ -62,20 +69,24 @@ class Parser extends AbstractParser
     /**
      * Parse one or more complete JSON values.
      *
+     * This is a convenience method that feeds the buffer to the parser and
+     * finalizes parsing.
+     *
      * @param string $buffer The JSON data.
      *
-     * @return array<mixed>                       The sequence of parsed JSON values.
-     * @throws Exception\SyntaxExceptionInterface
+     * @return array<mixed>             The sequence of parsed JSON values.
+     * @throws SyntaxExceptionInterface If the JSON buffer is invalid.
      */
     public function parse($buffer)
     {
-        parent::parse($buffer);
+        $this->doParse($buffer);
 
         return $this->values();
     }
 
     /**
-     * Fetch the values produced by the parser so far and remove them from the internal value sequence.
+     * Fetch the values produced by the parser so far and remove them from the
+     * internal value sequence.
      *
      * @return array<mixed> The sequence of parsed JSON values.
      */

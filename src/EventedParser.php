@@ -5,15 +5,22 @@ use Evenement\EventEmitter;
 use Evenement\EventEmitterInterface;
 use Exception;
 use Icecave\Duct\Detail\Lexer;
+use Icecave\Duct\Detail\ParserTrait;
 use Icecave\Duct\Detail\TokenStreamParser;
+use Icecave\Duct\Exception\SyntaxExceptionInterface;
 
 /**
  * Streaming JSON parser.
  *
  * Converts incoming streams of JSON data into PHP values.
  */
-class EventedParser extends AbstractParser implements EventEmitterInterface
+class EventedParser implements ParserInterface, EventEmitterInterface
 {
+    use ParserTrait {
+        feed as private doFeed;
+        finalize as private doFinalize;
+    }
+
     /**
      * @param Lexer|null             $lexer  The lexer to use for tokenization, or NULL to use the default UTF-8 lexer.
      * @param TokenStreamParser|null $parser The token-stream parser to use for converting tokens into PHP values, or null to use the default.
@@ -23,19 +30,20 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
         $this->depth = 0;
         $this->eventEmitterImpl = new EventEmitter();
 
-        parent::__construct($lexer, $parser);
+        $this->initialize($lexer, $parser);
     }
 
     /**
      * Feed (potentially incomplete) JSON data to the parser.
      *
-     * @param  string                             $buffer The JSON data.
-     * @throws Exception\SyntaxExceptionInterface
+     * @param string $buffer The JSON data.
+     *
+     * @throws SyntaxExceptionInterface If the JSON buffer is invalid.
      */
     public function feed($buffer)
     {
         try {
-            parent::feed($buffer);
+            $this->doFeed($buffer);
         } catch (Exception $e) {
             $this->emit('error', array($e));
         }
@@ -44,12 +52,12 @@ class EventedParser extends AbstractParser implements EventEmitterInterface
     /**
      * Finalize parsing.
      *
-     * @throws Exception\SyntaxExceptionInterface
+     * @throws SyntaxExceptionInterface If the JSON buffer is invalid.
      */
     public function finalize()
     {
         try {
-            parent::finalize();
+            $this->doFinalize();
         } catch (Exception $e) {
             $this->emit('error', array($e));
         }

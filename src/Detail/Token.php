@@ -3,6 +3,8 @@ namespace Icecave\Duct\Detail;
 
 /**
  * A JSON token produced by the lexer.
+ *
+ * @internal
  */
 class Token
 {

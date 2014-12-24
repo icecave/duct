@@ -7,7 +7,7 @@ use PHPUnit_Framework_TestCase;
 
 /**
  * @covers Icecave\Duct\Parser
- * @covers Icecave\Duct\AbstractParser
+ * @covers Icecave\Duct\Detail\ParserTrait
  */
 class ParserTest extends PHPUnit_Framework_TestCase
 {
@@ -85,7 +85,15 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function testParseObjectAsAssociativeArray()
     {
+        $this->assertFalse(
+            $this->parser->produceAssociativeArrays()
+        );
+
         $this->parser->setProduceAssociativeArrays(true);
+
+        $this->assertTrue(
+            $this->parser->produceAssociativeArrays()
+        );
 
         $json = '{ "a" : 1, "nested" : { "b" : 2, "c" : 3, "d" : 4 }, "e" : 5 }';
 

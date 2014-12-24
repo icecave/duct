@@ -9,6 +9,8 @@ use stdClass;
  * Streaming token parser.
  *
  * Converts incoming streams of JSON tokens into PHP values.
+ *
+ * @internal
  */
 class TokenStreamParser extends EventEmitter
 {

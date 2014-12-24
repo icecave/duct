@@ -7,6 +7,8 @@ use Evenement\EventEmitter;
  * Streaming JSON lexer.
  *
  * Converts incoming streams of JSON data into tokens.
+ *
+ * @internal
  */
 class Lexer extends EventEmitter
 {

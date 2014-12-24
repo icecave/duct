@@ -1,9 +1,8 @@
 <?php
-namespace Icecave\Duct;
+namespace Icecave\Duct\Detail;
 
 use Exception;
-use Icecave\Duct\Detail\Lexer;
-use Icecave\Duct\Detail\TokenStreamParser;
+use Icecave\Duct\Exception\SyntaxExceptionInterface;
 use ReflectionMethod;
 
 /**
@@ -11,13 +10,13 @@ use ReflectionMethod;
  *
  * Converts incoming streams of JSON data into PHP values.
  */
-abstract class AbstractParser
+trait ParserTrait
 {
     /**
      * @param Lexer|null             $lexer  The lexer to use for tokenization, or NULL to use the default UTF-8 lexer.
      * @param TokenStreamParser|null $parser The token-stream parser to use for converting tokens into PHP values, or null to use the default.
      */
-    public function __construct(Lexer $lexer = null, TokenStreamParser $parser = null)
+    private function initialize(Lexer $lexer = null, TokenStreamParser $parser = null)
     {
         if (null === $lexer) {
             $lexer = new Lexer();
@@ -27,51 +26,66 @@ abstract class AbstractParser
             $parser = new TokenStreamParser();
         }
 
-        $this->lexer = $lexer;
+        $this->lexer  = $lexer;
         $this->parser = $parser;
 
         $this->lexer->on(
             'token',
-            array($this->parser, 'feedToken')
+            [$this->parser, 'feedToken']
         );
 
         $this->parser->on(
             'value',
-            $this->makePublicWrapper('onValue')
+            function ($value) {
+                $this->onValue($value);
+            }
         );
 
         $this->parser->on(
             'array-open',
-            $this->makePublicWrapper('onArrayOpen')
+            function () {
+                $this->onArrayOpen();
+            }
         );
 
         $this->parser->on(
             'array-close',
-            $this->makePublicWrapper('onArrayClose')
+            function () {
+                $this->onArrayClose();
+            }
         );
 
         $this->parser->on(
             'object-open',
-            $this->makePublicWrapper('onObjectOpen')
+            function () {
+                $this->onObjectOpen();
+            }
         );
 
         $this->parser->on(
             'object-close',
-            $this->makePublicWrapper('onObjectClose')
+            function () {
+                $this->onObjectClose();
+            }
         );
 
         $this->parser->on(
             'object-key',
-            $this->makePublicWrapper('onObjectKey')
+            function ($value) {
+                $this->onObjectKey($value);
+            }
         );
     }
 
     /**
      * Parse one or more complete JSON values.
      *
+     * This is a convenience method that feeds the buffer to the parser and
+     * finalizes parsing.
+     *
      * @param string $buffer The JSON data.
      *
-     * @throws Exception\SyntaxExceptionInterface
+     * @throws SyntaxExceptionInterface If the JSON buffer is invalid.
      */
     public function parse($buffer)
     {
@@ -92,8 +106,9 @@ abstract class AbstractParser
     /**
      * Feed (potentially incomplete) JSON data to the parser.
      *
-     * @param  string                             $buffer The JSON data.
-     * @throws Exception\SyntaxExceptionInterface
+     * @param string $buffer The JSON data.
+     *
+     * @throws SyntaxExceptionInterface If the JSON buffer is invalid.
      */
     public function feed($buffer)
     {
@@ -108,7 +123,7 @@ abstract class AbstractParser
     /**
      * Finalize parsing.
      *
-     * @throws Exception\SyntaxExceptionInterface
+     * @throws SyntaxExceptionInterface If the JSON buffer is invalid.
      */
     public function finalize()
     {
@@ -155,20 +170,6 @@ abstract class AbstractParser
      */
     abstract protected function onObjectKey($value);
 
-    /**
-     * @param string $method
-     */
-    protected function makePublicWrapper($method)
-    {
-        $self = $this;
-        $reflector = new ReflectionMethod($this, $method);
-        $reflector->setAccessible(true);
-
-        return function () use ($self, $reflector) {
-            return $reflector->invokeArgs($self, func_get_args());
-        };
-    }
-
-    protected $lexer;
-    protected $parser;
+    private $lexer;
+    private $parser;
 }

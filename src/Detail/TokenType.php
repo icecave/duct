@@ -3,6 +3,9 @@ namespace Icecave\Duct\Detail;
 
 use Eloquent\Enumeration\AbstractEnumeration;
 
+/**
+ * @internal
+ */
 class TokenType extends AbstractEnumeration
 {
     const BRACE_OPEN      = '{';

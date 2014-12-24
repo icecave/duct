@@ -3,6 +3,9 @@ namespace Icecave\Duct\Detail;
 
 use Eloquent\Enumeration\AbstractEnumeration;
 
+/**
+ * @internal
+ */
 class LexerState extends AbstractEnumeration
 {
     const BEGIN = 0;

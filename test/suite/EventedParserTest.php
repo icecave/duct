@@ -5,6 +5,10 @@ use Icecave\Duct\Detail\Exception\ParserException;
 use Phake;
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @covers Icecave\Duct\EventedParser
+ * @covers Icecave\Duct\Detail\ParserTrait
+ */
 class EventedParserTest extends PHPUnit_Framework_TestCase
 {
     public function setUp()
