@@ -26,19 +26,18 @@ class EventedParser implements ParserInterface, EventEmitterInterface
         TokenStreamParser $parser = null
     ) {
         if (null === $lexer) {
-            $lexer = new Lexer();
+            $lexer = new Lexer;
         }
 
         if (null === $parser) {
-            $parser = new TokenStreamParser();
+            $parser = new TokenStreamParser;
         }
 
         $this->lexer  = $lexer;
         $this->parser = $parser;
         $this->depth  = 0;
 
-        $this->lexer->on(
-            'token',
+        $this->lexer->setCallback(
             [$this->parser, 'feedToken']
         );
 
