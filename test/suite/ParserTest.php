@@ -2,8 +2,8 @@
 namespace Icecave\Duct;
 
 use Exception;
-use Phake;
 use PHPUnit_Framework_TestCase;
+use Phake;
 
 class ParserTest extends PHPUnit_Framework_TestCase
 {
@@ -28,21 +28,21 @@ class ParserTest extends PHPUnit_Framework_TestCase
             Phake::verify($this->parser)->values()
         );
 
-        $this->assertEquals(array($expected), $result);
+        $this->assertEquals([$expected], $result);
 
-        $this->assertEquals(array(), $this->parser->values());
+        $this->assertEquals([], $this->parser->values());
     }
 
     public function parseData()
     {
-        return array(
-            array('{}'),
-            array('[]'),
-            array('{ "a" : 1, "b" : 2, "c" : 3 }'),
-            array('{ "a" : 1, "nested" : { "b" : 2, "c" : 3, "d" : 4 }, "e" : 5 }'),
-            array('[ 1, 2, 3 ]'),
-            array('[ 1, [ 2, 3, 4 ], 5 ]'),
-        );
+        return [
+            ['{}'],
+            ['[]'],
+            ['{ "a" : 1, "b" : 2, "c" : 3 }'],
+            ['{ "a" : 1, "nested" : { "b" : 2, "c" : 3, "d" : 4 }, "e" : 5 }'],
+            ['[ 1, 2, 3 ]'],
+            ['[ 1, [ 2, 3, 4 ], 5 ]'],
+        ];
     }
 
     public function testParseObjectAsAssociativeArray()
@@ -62,9 +62,9 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $result = $this->parser->parse($json);
 
         $this->assertEquals(
-            array(
-                json_decode($json, true)
-            ),
+            [
+                json_decode($json, true),
+            ],
             $result
         );
     }
@@ -75,7 +75,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
         $result = $parser->parse('[1, 2, 3]');
 
-        $this->assertSame(array(array(1, 2, 3)), $result);
+        $this->assertSame([[1, 2, 3]], $result);
     }
 
     public function testFeedFailure()

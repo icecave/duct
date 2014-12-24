@@ -99,7 +99,7 @@ class TokenStreamParser extends EventEmitter
             case TokenType::NULL_LITERAL:
             case TokenType::NUMBER_LITERAL:
                 $this->endValue();
-                $this->emit('value', array($token->value()));
+                $this->emit('value', [$token->value()]);
                 break;
 
             default:
@@ -132,7 +132,7 @@ class TokenStreamParser extends EventEmitter
         }
 
         $this->setState(ParserState::OBJECT_KEY_SEPARATOR);
-        $this->emit('object-key', array($token->value()));
+        $this->emit('object-key', [$token->value()]);
     }
 
     /**

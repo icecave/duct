@@ -2,8 +2,8 @@
 namespace Icecave\Duct;
 
 use Icecave\Duct\Detail\Exception\ParserException;
-use Phake;
 use PHPUnit_Framework_TestCase;
+use Phake;
 
 class EventedParserTest extends PHPUnit_Framework_TestCase
 {
@@ -11,9 +11,9 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
     {
         $this->parser = Phake::partialMock(__NAMESPACE__ . '\EventedParser');
 
-        $this->callbackArguments = array();
+        $this->callbackArguments = [];
 
-        $self = $this;
+        $self           = $this;
         $this->callback = function () use ($self) {
             $self->callbackArguments[] = func_get_args();
         };
@@ -25,7 +25,7 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
 
         Phake::inOrder(
             Phake::verify($this->parser)->emit('document-open'),
-            Phake::verify($this->parser)->emit('value', array(10)),
+            Phake::verify($this->parser)->emit('value', [10]),
             Phake::verify($this->parser)->emit('document-close')
         );
     }
@@ -37,14 +37,14 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
         Phake::inOrder(
             Phake::verify($this->parser)->emit('document-open'),
             Phake::verify($this->parser)->emit('array-open'),
-            Phake::verify($this->parser)->emit('value', array(1)),
-            Phake::verify($this->parser)->emit('value', array(2)),
+            Phake::verify($this->parser)->emit('value', [1]),
+            Phake::verify($this->parser)->emit('value', [2]),
             Phake::verify($this->parser)->emit('object-open'),
-            Phake::verify($this->parser)->emit('object-key', array('foo')),
-            Phake::verify($this->parser)->emit('value', array('bar')),
+            Phake::verify($this->parser)->emit('object-key', ['foo']),
+            Phake::verify($this->parser)->emit('value', ['bar']),
             Phake::verify($this->parser)->emit('object-close'),
-            Phake::verify($this->parser)->emit('value', array(3)),
-            Phake::verify($this->parser)->emit('value', array(4)),
+            Phake::verify($this->parser)->emit('value', [3]),
+            Phake::verify($this->parser)->emit('value', [4]),
             Phake::verify($this->parser)->emit('array-close'),
             Phake::verify($this->parser)->emit('document-close')
         );
@@ -69,9 +69,9 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
         $arguments = null;
         Phake::verify($this->parser)->emit('error', Phake::capture($arguments));
 
-        $expected = array(
-            new ParserException('Unexpected token "NUMBER_LITERAL" in state "OBJECT_KEY".')
-        );
+        $expected = [
+            new ParserException('Unexpected token "NUMBER_LITERAL" in state "OBJECT_KEY".'),
+        ];
 
         $this->assertEquals($expected, $arguments);
     }
@@ -86,7 +86,7 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
 
         Phake::inOrder(
             Phake::verify($this->parser)->emit('document-open'),
-            Phake::verify($this->parser)->emit('value', array(10)),
+            Phake::verify($this->parser)->emit('value', [10]),
             Phake::verify($this->parser)->emit('document-close')
         );
     }
@@ -99,9 +99,9 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
         $arguments = null;
         Phake::verify($this->parser)->emit('error', Phake::capture($arguments));
 
-        $expected = array(
-            new ParserException('Unexpected token "NUMBER_LITERAL" in state "OBJECT_KEY".')
-        );
+        $expected = [
+            new ParserException('Unexpected token "NUMBER_LITERAL" in state "OBJECT_KEY".'),
+        ];
 
         $this->assertEquals($expected, $arguments);
     }
@@ -110,15 +110,15 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
     {
         $this->parser->on('foo', $this->callback);
 
-        $this->parser->emit('foo', array(1, 2));
-        $this->parser->emit('foo', array(3, 4));
+        $this->parser->emit('foo', [1, 2]);
+        $this->parser->emit('foo', [3, 4]);
 
         $this->assertSame(
             $this->callbackArguments,
-            array(
-                array(1, 2),
-                array(3, 4)
-            )
+            [
+                [1, 2],
+                [3, 4],
+            ]
         );
     }
 
@@ -126,14 +126,14 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
     {
         $this->parser->once('foo', $this->callback);
 
-        $this->parser->emit('foo', array(1, 2));
-        $this->parser->emit('foo', array(3, 4));
+        $this->parser->emit('foo', [1, 2]);
+        $this->parser->emit('foo', [3, 4]);
 
         $this->assertSame(
             $this->callbackArguments,
-            array(
-                array(1, 2)
-            )
+            [
+                [1, 2],
+            ]
         );
     }
 
@@ -146,7 +146,7 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame(
             $this->callbackArguments,
-            array()
+            []
         );
     }
 
@@ -159,7 +159,7 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame(
             $this->callbackArguments,
-            array()
+            []
         );
     }
 
@@ -172,7 +172,7 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame(
             $this->callbackArguments,
-            array()
+            []
         );
     }
 
@@ -184,6 +184,6 @@ class EventedParserTest extends PHPUnit_Framework_TestCase
 
         $result = $this->parser->listeners('foo');
 
-        $this->assertSame(array($callback), $result);
+        $this->assertSame([$callback], $result);
     }
 }

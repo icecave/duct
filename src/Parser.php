@@ -3,7 +3,6 @@ namespace Icecave\Duct;
 
 use Exception;
 use Icecave\Duct\Detail\Lexer;
-use Icecave\Duct\Detail\ParserTrait;
 use Icecave\Duct\Detail\TokenStreamParser;
 use Icecave\Duct\Exception\SyntaxExceptionInterface;
 use SplStack;
@@ -35,10 +34,10 @@ class Parser implements ParserInterface
         }
 
         $this->produceAssociativeArrays = $produceAssociativeArrays;
-        $this->lexer  = $lexer;
-        $this->parser = $parser;
-        $this->values = array();
-        $this->stack = new SplStack();
+        $this->lexer                    = $lexer;
+        $this->parser                   = $parser;
+        $this->values                   = [];
+        $this->stack                    = new SplStack();
 
         $this->lexer->on(
             'token',
@@ -55,7 +54,7 @@ class Parser implements ParserInterface
         $this->parser->on(
             'array-open',
             function () {
-                $this->push(array());
+                $this->push([]);
             }
         );
 
@@ -70,7 +69,7 @@ class Parser implements ParserInterface
             'object-open',
             function () {
                 if ($this->produceAssociativeArrays) {
-                    $this->push(array());
+                    $this->push([]);
                 } else {
                     $this->push(new stdClass());
                 }
@@ -182,8 +181,8 @@ class Parser implements ParserInterface
      */
     public function values()
     {
-        $values = $this->values;
-        $this->values = array();
+        $values       = $this->values;
+        $this->values = [];
 
         return $values;
     }
@@ -217,9 +216,9 @@ class Parser implements ParserInterface
      */
     private function push($value)
     {
-        $context = new stdClass();
+        $context        = new stdClass();
         $context->value = $value;
-        $context->key = null;
+        $context->key   = null;
 
         $this->stack->push($context);
     }

@@ -27,9 +27,9 @@ class Lexer extends EventEmitter
      */
     public function reset()
     {
-        $this->state = LexerState::BEGIN;
-        $this->inputBuffer = '';
-        $this->tokenBuffer = '';
+        $this->state         = LexerState::BEGIN;
+        $this->inputBuffer   = '';
+        $this->tokenBuffer   = '';
         $this->unicodeBuffer = '';
     }
 
@@ -132,22 +132,22 @@ class Lexer extends EventEmitter
             $this->state = LexerState::STRING_VALUE;
         } elseif ('0' === $char) {
             $this->tokenBuffer = $char;
-            $this->state = LexerState::NUMBER_VALUE_LEADING_ZERO;
+            $this->state       = LexerState::NUMBER_VALUE_LEADING_ZERO;
         } elseif ('-' === $char) {
             $this->tokenBuffer = $char;
-            $this->state = LexerState::NUMBER_VALUE_NEGATIVE;
+            $this->state       = LexerState::NUMBER_VALUE_NEGATIVE;
         } elseif (ctype_digit($char)) {
             $this->tokenBuffer = $char;
-            $this->state = LexerState::NUMBER_VALUE;
+            $this->state       = LexerState::NUMBER_VALUE;
         } elseif ('t' === $char) {
             $this->tokenBuffer = $char;
-            $this->state = LexerState::TRUE_VALUE;
+            $this->state       = LexerState::TRUE_VALUE;
         } elseif ('f' === $char) {
             $this->tokenBuffer = $char;
-            $this->state = LexerState::FALSE_VALUE;
+            $this->state       = LexerState::FALSE_VALUE;
         } elseif ('n' === $char) {
             $this->tokenBuffer = $char;
-            $this->state = LexerState::NULL_VALUE;
+            $this->state       = LexerState::NULL_VALUE;
         } elseif (false !== strpos('{}[]:,', $char)) {
             $this->emitSpecial($char);
         } elseif (!$this->isWhitespace($char)) {
@@ -178,7 +178,7 @@ class Lexer extends EventEmitter
     {
         if ('u' === $char) {
             $this->unicodeBuffer = '';
-            $this->state = LexerState::STRING_VALUE_UNICODE;
+            $this->state         = LexerState::STRING_VALUE_UNICODE;
         } elseif (null !== $this->unicodeHighSurrogate) {
             throw new Exception\LexerException('Missing low surrogate for unicode surrogate pair.');
         } elseif (array_key_exists($char, self::$escapeSequences)) {
@@ -376,9 +376,9 @@ class Lexer extends EventEmitter
      */
     private function emitSpecial($char)
     {
-        $this->emit('token', array(Token::createSpecial($char)));
+        $this->emit('token', [Token::createSpecial($char)]);
         $this->tokenBuffer = '';
-        $this->state = LexerState::BEGIN;
+        $this->state       = LexerState::BEGIN;
     }
 
     /**
@@ -386,9 +386,9 @@ class Lexer extends EventEmitter
      */
     private function emitLiteral($value)
     {
-        $this->emit('token', array(Token::createLiteral($value)));
+        $this->emit('token', [Token::createLiteral($value)]);
         $this->tokenBuffer = '';
-        $this->state = LexerState::BEGIN;
+        $this->state       = LexerState::BEGIN;
     }
 
     /**
@@ -442,7 +442,7 @@ class Lexer extends EventEmitter
         );
     }
 
-    private static $escapeSequences = array(
+    private static $escapeSequences = [
         'b'  => "\x08",
         'f'  => "\f",
         'n'  => "\n",
@@ -451,7 +451,7 @@ class Lexer extends EventEmitter
         '"'  => '"',
         '/'  => '/',
         '\\' => '\\',
-    );
+    ];
 
     private $encoding;
     private $state;

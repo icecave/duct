@@ -1,11 +1,10 @@
 <?php
 namespace Icecave\Duct;
 
-use Evenement\EventEmitterTrait;
 use Evenement\EventEmitterInterface;
+use Evenement\EventEmitterTrait;
 use Exception;
 use Icecave\Duct\Detail\Lexer;
-use Icecave\Duct\Detail\ParserTrait;
 use Icecave\Duct\Detail\TokenStreamParser;
 use Icecave\Duct\Exception\SyntaxExceptionInterface;
 
@@ -48,10 +47,10 @@ class EventedParser implements ParserInterface, EventEmitterInterface
             function ($value) {
                 if (0 === $this->depth) {
                     $this->emit('document-open');
-                    $this->emit('value', array($value));
+                    $this->emit('value', [$value]);
                     $this->emit('document-close');
                 } else {
-                    $this->emit('value', array($value));
+                    $this->emit('value', [$value]);
                 }
             }
         );
@@ -103,7 +102,7 @@ class EventedParser implements ParserInterface, EventEmitterInterface
         $this->parser->on(
             'object-key',
             function ($value) {
-                $this->emit('object-key', array($value));
+                $this->emit('object-key', [$value]);
             }
         );
     }
@@ -147,7 +146,7 @@ class EventedParser implements ParserInterface, EventEmitterInterface
             $this->lexer->feed($buffer);
         } catch (Exception $e) {
             $this->reset();
-            $this->emit('error', array($e));
+            $this->emit('error', [$e]);
         }
     }
 
@@ -163,7 +162,7 @@ class EventedParser implements ParserInterface, EventEmitterInterface
             $this->parser->finalize();
         } catch (Exception $e) {
             $this->reset();
-            $this->emit('error', array($e));
+            $this->emit('error', [$e]);
         }
     }
 
