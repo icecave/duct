@@ -16,8 +16,7 @@ class LexerTest extends PHPUnit_Framework_TestCase
         $this->lexer  = new Lexer();
         $this->tokens = &$tokens;
 
-        $this->lexer->on(
-            'token',
+        $this->lexer->setCallback(
             function ($token) use (&$tokens) {
                 $tokens[] = $token;
             }
@@ -28,48 +27,48 @@ class LexerTest extends PHPUnit_Framework_TestCase
     {
         $this->lexer->feed(' 1 ');
 
-        $this->assertSame(TokenType::NUMBER_LITERAL(), end($this->tokens)->type());
-        $this->assertSame(1, end($this->tokens)->value());
+        $this->assertSame(TokenType::NUMBER_LITERAL, end($this->tokens)->type);
+        $this->assertSame(1, end($this->tokens)->value);
     }
 
     public function testFeedEmitsMultipleIntegers()
     {
         $this->lexer->feed(' 1 2 ');
 
-        $this->assertSame(1, $this->tokens[0]->value());
-        $this->assertSame(2, $this->tokens[1]->value());
+        $this->assertSame(1, $this->tokens[0]->value);
+        $this->assertSame(2, $this->tokens[1]->value);
     }
 
     public function testFeedIntegerThenNonInteger()
     {
         $this->lexer->feed(' 1{ ');
 
-        $this->assertSame(1, $this->tokens[0]->value());
-        $this->assertSame('{', $this->tokens[1]->value());
+        $this->assertSame(1, $this->tokens[0]->value);
+        $this->assertSame('{', $this->tokens[1]->value);
     }
 
     public function testFeedZeroIntegerThenNonInteger()
     {
         $this->lexer->feed(' 0{ ');
 
-        $this->assertSame(0, $this->tokens[0]->value());
-        $this->assertSame('{', $this->tokens[1]->value());
+        $this->assertSame(0, $this->tokens[0]->value);
+        $this->assertSame('{', $this->tokens[1]->value);
     }
 
     public function testFeedFloatThenNonInteger()
     {
         $this->lexer->feed(' 1.1{ ');
 
-        $this->assertSame(1.1, $this->tokens[0]->value());
-        $this->assertSame('{', $this->tokens[1]->value());
+        $this->assertSame(1.1, $this->tokens[0]->value);
+        $this->assertSame('{', $this->tokens[1]->value);
     }
 
     public function testFeedExponentThenNonInteger()
     {
         $this->lexer->feed(' 1e5{ ');
 
-        $this->assertSame(1e5, $this->tokens[0]->value());
-        $this->assertSame('{', $this->tokens[1]->value());
+        $this->assertSame(1e5, $this->tokens[0]->value);
+        $this->assertSame('{', $this->tokens[1]->value);
     }
 
     public function testFeedFailsOnInvalidBeginningCharacter()
@@ -164,7 +163,7 @@ class LexerTest extends PHPUnit_Framework_TestCase
 
         $this->lexer->feed("\xb6\"");
 
-        $this->assertSame("\xc3\xb6", end($this->tokens)->value());
+        $this->assertSame("\xc3\xb6", end($this->tokens)->value);
     }
 
     /**
@@ -202,73 +201,73 @@ class LexerTest extends PHPUnit_Framework_TestCase
 
         $this->assertSame(1, count($this->tokens));
         $this->assertEquals($expectedToken, end($this->tokens));
-        $this->assertSame($expectedToken->value(), end($this->tokens)->value());
+        $this->assertSame($expectedToken->value, end($this->tokens)->value);
     }
 
     public function singleTokens()
     {
         return [
-            ['{',                new Token(TokenType::BRACE_OPEN(), '{')],
-            ['}',                new Token(TokenType::BRACE_CLOSE(), '}')],
-            ['[',                new Token(TokenType::BRACKET_OPEN(), '[')],
-            [']',                new Token(TokenType::BRACKET_CLOSE(), ']')],
-            [':',                new Token(TokenType::COLON(), ':')],
-            [',',                new Token(TokenType::COMMA(), ',')],
+            ['{',                new Token(TokenType::BRACE_OPEN, '{')],
+            ['}',                new Token(TokenType::BRACE_CLOSE, '}')],
+            ['[',                new Token(TokenType::BRACKET_OPEN, '[')],
+            [']',                new Token(TokenType::BRACKET_CLOSE, ']')],
+            [':',                new Token(TokenType::COLON, ':')],
+            [',',                new Token(TokenType::COMMA, ',')],
 
-            ['true',             new Token(TokenType::BOOLEAN_LITERAL(), true)],
-            ['false',            new Token(TokenType::BOOLEAN_LITERAL(), false)],
-            ['null',             new Token(TokenType::NULL_LITERAL(), null)],
+            ['true',             new Token(TokenType::BOOLEAN_LITERAL, true)],
+            ['false',            new Token(TokenType::BOOLEAN_LITERAL, false)],
+            ['null',             new Token(TokenType::NULL_LITERAL, null)],
 
-            ['0',                new Token(TokenType::NUMBER_LITERAL(), 0)],
-            ['-0',               new Token(TokenType::NUMBER_LITERAL(), 0)],
-            ['1',                new Token(TokenType::NUMBER_LITERAL(), 1)],
-            ['-1',               new Token(TokenType::NUMBER_LITERAL(), -1)],
-            ['12345',            new Token(TokenType::NUMBER_LITERAL(), 12345)],
-            ['-12345',           new Token(TokenType::NUMBER_LITERAL(), -12345)],
+            ['0',                new Token(TokenType::NUMBER_LITERAL, 0)],
+            ['-0',               new Token(TokenType::NUMBER_LITERAL, 0)],
+            ['1',                new Token(TokenType::NUMBER_LITERAL, 1)],
+            ['-1',               new Token(TokenType::NUMBER_LITERAL, -1)],
+            ['12345',            new Token(TokenType::NUMBER_LITERAL, 12345)],
+            ['-12345',           new Token(TokenType::NUMBER_LITERAL, -12345)],
 
-            ['0.0',              new Token(TokenType::NUMBER_LITERAL(), 0.0)],
-            ['-0.0',             new Token(TokenType::NUMBER_LITERAL(), 0.0)],
-            ['1.1',              new Token(TokenType::NUMBER_LITERAL(), 1.1)],
-            ['-1.1',             new Token(TokenType::NUMBER_LITERAL(), -1.1)],
-            ['123.123',          new Token(TokenType::NUMBER_LITERAL(), 123.123)],
-            ['-123.123',         new Token(TokenType::NUMBER_LITERAL(), -123.123)],
+            ['0.0',              new Token(TokenType::NUMBER_LITERAL, 0.0)],
+            ['-0.0',             new Token(TokenType::NUMBER_LITERAL, 0.0)],
+            ['1.1',              new Token(TokenType::NUMBER_LITERAL, 1.1)],
+            ['-1.1',             new Token(TokenType::NUMBER_LITERAL, -1.1)],
+            ['123.123',          new Token(TokenType::NUMBER_LITERAL, 123.123)],
+            ['-123.123',         new Token(TokenType::NUMBER_LITERAL, -123.123)],
 
-            ['0e5',              new Token(TokenType::NUMBER_LITERAL(), 0e5)],
-            ['0E5',              new Token(TokenType::NUMBER_LITERAL(), 0e5)],
+            ['0e5',              new Token(TokenType::NUMBER_LITERAL, 0e5)],
+            ['0E5',              new Token(TokenType::NUMBER_LITERAL, 0e5)],
 
-            ['1e5',              new Token(TokenType::NUMBER_LITERAL(), 1e5)],
-            ['1E5',              new Token(TokenType::NUMBER_LITERAL(), 1e5)],
-            ['1e10',             new Token(TokenType::NUMBER_LITERAL(), 1e10)],
-            ['1E10',             new Token(TokenType::NUMBER_LITERAL(), 1e10)],
+            ['1e5',              new Token(TokenType::NUMBER_LITERAL, 1e5)],
+            ['1E5',              new Token(TokenType::NUMBER_LITERAL, 1e5)],
+            ['1e10',             new Token(TokenType::NUMBER_LITERAL, 1e10)],
+            ['1E10',             new Token(TokenType::NUMBER_LITERAL, 1e10)],
 
-            ['1e+5',             new Token(TokenType::NUMBER_LITERAL(), 1e5)],
-            ['1E+5',             new Token(TokenType::NUMBER_LITERAL(), 1e5)],
-            ['1e+10',            new Token(TokenType::NUMBER_LITERAL(), 1e10)],
-            ['1E+10',            new Token(TokenType::NUMBER_LITERAL(), 1e10)],
+            ['1e+5',             new Token(TokenType::NUMBER_LITERAL, 1e5)],
+            ['1E+5',             new Token(TokenType::NUMBER_LITERAL, 1e5)],
+            ['1e+10',            new Token(TokenType::NUMBER_LITERAL, 1e10)],
+            ['1E+10',            new Token(TokenType::NUMBER_LITERAL, 1e10)],
 
-            ['1e-5',             new Token(TokenType::NUMBER_LITERAL(), 1e-5)],
-            ['1E-5',             new Token(TokenType::NUMBER_LITERAL(), 1e-5)],
-            ['1e-10',            new Token(TokenType::NUMBER_LITERAL(), 1e-10)],
-            ['1E-10',            new Token(TokenType::NUMBER_LITERAL(), 1e-10)],
+            ['1e-5',             new Token(TokenType::NUMBER_LITERAL, 1e-5)],
+            ['1E-5',             new Token(TokenType::NUMBER_LITERAL, 1e-5)],
+            ['1e-10',            new Token(TokenType::NUMBER_LITERAL, 1e-10)],
+            ['1E-10',            new Token(TokenType::NUMBER_LITERAL, 1e-10)],
 
-            ['0.1e10',           new Token(TokenType::NUMBER_LITERAL(), 0.1e10)],
-            ['0.1E10',           new Token(TokenType::NUMBER_LITERAL(), 0.1e10)],
+            ['0.1e10',           new Token(TokenType::NUMBER_LITERAL, 0.1e10)],
+            ['0.1E10',           new Token(TokenType::NUMBER_LITERAL, 0.1e10)],
 
-            ['""',               new Token(TokenType::STRING_LITERAL(), '')],
-            ['"foo"',            new Token(TokenType::STRING_LITERAL(), 'foo')],
-            ['"foo bar"',        new Token(TokenType::STRING_LITERAL(), 'foo bar')],
+            ['""',               new Token(TokenType::STRING_LITERAL, '')],
+            ['"foo"',            new Token(TokenType::STRING_LITERAL, 'foo')],
+            ['"foo bar"',        new Token(TokenType::STRING_LITERAL, 'foo bar')],
 
-            ['"\\""',            new Token(TokenType::STRING_LITERAL(), '"')],
-            ['"\\\\"',           new Token(TokenType::STRING_LITERAL(), '\\')],
-            ['"\\/"',            new Token(TokenType::STRING_LITERAL(), '/')],
-            ['"\\b"',            new Token(TokenType::STRING_LITERAL(), "\x08")],
-            ['"\\f"',            new Token(TokenType::STRING_LITERAL(), "\f")],
-            ['"\\n"',            new Token(TokenType::STRING_LITERAL(), "\n")],
-            ['"\\r"',            new Token(TokenType::STRING_LITERAL(), "\r")],
-            ['"\\t"',            new Token(TokenType::STRING_LITERAL(), "\t")],
+            ['"\\""',            new Token(TokenType::STRING_LITERAL, '"')],
+            ['"\\\\"',           new Token(TokenType::STRING_LITERAL, '\\')],
+            ['"\\/"',            new Token(TokenType::STRING_LITERAL, '/')],
+            ['"\\b"',            new Token(TokenType::STRING_LITERAL, "\x08")],
+            ['"\\f"',            new Token(TokenType::STRING_LITERAL, "\f")],
+            ['"\\n"',            new Token(TokenType::STRING_LITERAL, "\n")],
+            ['"\\r"',            new Token(TokenType::STRING_LITERAL, "\r")],
+            ['"\\t"',            new Token(TokenType::STRING_LITERAL, "\t")],
 
-            ['"\\u00a9"',        new Token(TokenType::STRING_LITERAL(), json_decode('"\\u00a9"'))],
-            ['"\\ud834\\udD1E"', new Token(TokenType::STRING_LITERAL(), json_decode('"\\ud834\\udD1E"'))],
+            ['"\\u00a9"',        new Token(TokenType::STRING_LITERAL, json_decode('"\\u00a9"'))],
+            ['"\\ud834\\udD1E"', new Token(TokenType::STRING_LITERAL, json_decode('"\\ud834\\udD1E"'))],
         ];
     }
 }

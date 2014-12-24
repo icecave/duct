@@ -25,8 +25,8 @@
         "evenement/evenement": "~2"
     },
     "require-dev": {
-        "icecave/archer": "~1",
-        "athletic/athletic": "~0.1"
+        "athletic/athletic": "~0.1",
+        "icecave/archer": "~1"
     },
     "autoload": {
         "psr-4": {
@@ -40,7 +40,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-develop": "1.0.x-dev"
+            "dev-develop": "2.0.x-dev"
         }
     }
 }

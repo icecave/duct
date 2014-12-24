@@ -17,9 +17,15 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
 
         foreach ($tokens as $token) {
             if (is_string($token) && 1 === strlen($token)) {
-                $result[] = Token::createSpecial($token);
+                $result[] = new Token($token, $token);
+            } elseif (is_integer($token) || is_float($token)) {
+                $result[] = new Token(TokenType::NUMBER_LITERAL, $token);
+            } elseif (is_bool($token)) {
+                $result[] = new Token(TokenType::BOOLEAN_LITERAL, $token);
+            } elseif (is_null($token)) {
+                $result[] = new Token(TokenType::NULL_LITERAL, null);
             } else {
-                $result[] = Token::createLiteral($token);
+                $result[] = new Token(TokenType::STRING_LITERAL, strval($token));
             }
         }
 
@@ -83,7 +89,7 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
     {
         $tokens = $this->createTokens([$token]);
 
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Unexpected token "' . $tokens[0]->type() . '".');
+        $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Unexpected token "' . TokenType::memberByValue($tokens[0]->type) . '".');
         $this->parser->feed($tokens);
     }
 

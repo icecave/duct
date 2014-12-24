@@ -8,7 +8,7 @@ use Eloquent\Enumeration\AbstractEnumeration;
  */
 class ParserState extends AbstractEnumeration
 {
-    const BEGIN = 0;
+    const BEGIN = 1;
 
     const ARRAY_START           = 10;
     const ARRAY_VALUE           = 11;

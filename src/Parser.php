@@ -26,21 +26,22 @@ class Parser implements ParserInterface
         TokenStreamParser $parser = null
     ) {
         if (null === $lexer) {
-            $lexer = new Lexer();
+            $lexer = new Lexer;
         }
 
         if (null === $parser) {
-            $parser = new TokenStreamParser();
+            $parser = new TokenStreamParser;
         }
 
         $this->produceAssociativeArrays = $produceAssociativeArrays;
         $this->lexer                    = $lexer;
         $this->parser                   = $parser;
         $this->values                   = [];
-        $this->stack                    = new SplStack();
+        $this->previousContexts         = [];
+        $this->currentKey               = null;
+        $this->currentValue             = null;
 
-        $this->lexer->on(
-            'token',
+        $this->lexer->setCallback(
             [$this->parser, 'feedToken']
         );
 
@@ -71,7 +72,7 @@ class Parser implements ParserInterface
                 if ($this->produceAssociativeArrays) {
                     $this->push([]);
                 } else {
-                    $this->push(new stdClass());
+                    $this->push(new stdClass);
                 }
             }
         );
@@ -86,7 +87,7 @@ class Parser implements ParserInterface
         $this->parser->on(
             'object-key',
             function ($value) {
-                $this->stack->top()->key = $value;
+                $this->currentKey = $value;
             }
         );
     }
@@ -138,6 +139,11 @@ class Parser implements ParserInterface
     {
         $this->lexer->reset();
         $this->parser->reset();
+
+        $this->values           = [];
+        $this->previousContexts = [];
+        $this->currentKey       = null;
+        $this->currentValue     = null;
     }
 
     /**
@@ -194,17 +200,15 @@ class Parser implements ParserInterface
      */
     private function handleValue($value)
     {
-        if ($this->stack->isEmpty()) {
+        if (null === $this->currentValue) {
             $this->values[] = $value;
         } else {
-            $context = $this->stack->top();
-
-            if (null === $context->key) {
-                $context->value[] = $value;
+            if (null === $this->currentKey) {
+                $this->currentValue[] = $value;
             } elseif ($this->produceAssociativeArrays) {
-                $context->value[$context->key] = $value;
+                $this->currentValue[$this->currentKey] = $value;
             } else {
-                $context->value->{$context->key} = $value;
+                $this->currentValue->{$this->currentKey} = $value;
             }
         }
     }
@@ -216,11 +220,12 @@ class Parser implements ParserInterface
      */
     private function push($value)
     {
-        $context        = new stdClass();
-        $context->value = $value;
-        $context->key   = null;
+        if ($this->currentValue) {
+            $this->previousContexts[] = [$this->currentKey, $this->currentValue];
+        }
 
-        $this->stack->push($context);
+        $this->currentKey   = null;
+        $this->currentValue = $value;
     }
 
     /**
@@ -228,14 +233,18 @@ class Parser implements ParserInterface
      */
     private function pop()
     {
-        $context = $this->stack->pop();
+        $value = $this->currentValue;
 
-        $this->handleValue($context->value);
+        list($this->currentKey, $this->currentValue) = array_pop($this->previousContexts);
+
+        $this->handleValue($value);
     }
 
     private $produceAssociativeArrays;
     private $lexer;
     private $parser;
     private $values;
-    private $stack;
+    private $previousContexts;
+    private $currentKey;
+    private $currentValue;
 }
