@@ -1,0 +1,41 @@
+#!/usr/bin/env php
+<?php
+require dirname(__DIR__) . '/vendor/autoload.php';
+
+/**
+ * This example shows how to use the evented parser to incrementally parse a file.
+ */
+
+// Create the parser ...
+$parser = new Icecave\Duct\EventedParser;
+
+// Setup an output function to print nested output ...
+$indent = 0;
+$print  = function ($text, $indent) {
+    $args = array_slice(func_get_args(), 2);
+    echo str_repeat('  ', $indent);
+    vprintf('- ' . $text . PHP_EOL, $args);
+};
+
+// Wire up handlers to each of the events ...
+$parser->on('document-open',  function ()           use ($print, &$indent) { $print('Document opened', $indent++); });
+$parser->on('document-close', function ()           use ($print, &$indent) { $print('Document closed', --$indent); echo PHP_EOL; });
+$parser->on('array-open',     function ()           use ($print, &$indent) { $print('Array opened',    $indent++); });
+$parser->on('array-close',    function ()           use ($print, &$indent) { $print('Array closed',    --$indent); });
+$parser->on('object-open',    function ()           use ($print, &$indent) { $print('Object open',     $indent++); });
+$parser->on('object-close',   function ()           use ($print, &$indent) { $print('Object closed',   --$indent); });
+$parser->on('object-key',     function ($key)       use ($print, &$indent) { $print('Object key: %s',  $indent, $key); });
+$parser->on('value',          function ($value)     use ($print, &$indent) { $print('Value: %s',       $indent, $value); });
+$parser->on('error',          function ($exception) use ($print, &$indent) { throw $exception; });
+
+// Open the JSON stream ...
+$file = fopen(__DIR__ . '/input.json', 'r');
+
+// Feed JSON data to the parser ...
+while (!feof($file)) {
+    $buffer = fread($file, 64);
+    printf('(Read %d bytes)' . PHP_EOL, strlen($buffer));
+    $parser->feed($buffer);
+}
+
+echo 'Done' . PHP_EOL;

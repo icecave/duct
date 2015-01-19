@@ -1,0 +1,28 @@
+#!/usr/bin/env php
+<?php
+require dirname(__DIR__) . '/vendor/autoload.php';
+
+/**
+ * This example shows how to use the parser to incrementally parse a file.
+ */
+
+// Create the parser ...
+$parser = new Icecave\Duct\Parser;
+
+// Open the JSON stream ...
+$file = fopen(__DIR__ . '/input.json', 'r');
+
+// Feed JSON data to the parser ...
+while (!feof($file)) {
+    $buffer = fread($file, 64);
+    printf('(Read %d bytes)' . PHP_EOL, strlen($buffer));
+
+    $parser->feed($buffer);
+
+    // Extract any complete values ...
+    foreach ($parser->values() as $value) {
+        printf('Parsed value: %s' . PHP_EOL, json_encode($value));
+    }
+}
+
+echo 'Done' . PHP_EOL;
