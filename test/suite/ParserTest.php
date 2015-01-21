@@ -42,6 +42,25 @@ class ParserTest extends PHPUnit_Framework_TestCase
             ['{ "a" : 1, "nested" : { "b" : 2, "c" : 3, "d" : 4 }, "e" : 5 }'],
             ['[ 1, 2, 3 ]'],
             ['[ 1, [ 2, 3, 4 ], 5 ]'],
+            ['{ "nested" : [ { "a" : 1, "b" : 2 } ] }']
+        ];
+    }
+
+    /**
+     * @dataProvider outerArrayParseData
+     * @group regression
+     * @link https://github.com/IcecaveStudios/duct/issues/10
+     */
+    public function testParseOuterArray($json)
+    {
+        $this->testParse($json);
+    }
+
+    public function outerArrayParseData()
+    {
+        return [
+            ['[{}]'],
+            ['[[]]'],
         ];
     }
 

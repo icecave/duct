@@ -5,7 +5,6 @@ use Exception;
 use Icecave\Duct\Detail\Lexer;
 use Icecave\Duct\Detail\TokenStreamParser;
 use Icecave\Duct\Exception\SyntaxExceptionInterface;
-use SplStack;
 use stdClass;
 
 /**
@@ -220,7 +219,7 @@ class Parser implements ParserInterface
      */
     private function push($value)
     {
-        if ($this->currentValue) {
+        if (null !== $this->currentValue) {
             $this->previousContexts[] = [$this->currentKey, $this->currentValue];
         }
 

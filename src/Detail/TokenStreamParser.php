@@ -3,8 +3,6 @@ namespace Icecave\Duct\Detail;
 
 use Evenement\EventEmitter;
 use Icecave\Duct\Detail\Exception\ParserException;
-use SplStack;
-use stdClass;
 
 /**
  * Streaming token parser.
@@ -25,7 +23,7 @@ class TokenStreamParser extends EventEmitter
      */
     public function reset()
     {
-        $this->state = null;
+        $this->state          = null;
         $this->previousStates = [];
     }
 
@@ -86,13 +84,13 @@ class TokenStreamParser extends EventEmitter
         switch ($token->type) {
             case TokenType::BRACE_OPEN:
                 $this->previousStates[] = $this->state;
-                $this->state = ParserState::OBJECT_START;
+                $this->state            = ParserState::OBJECT_START;
                 $this->emit('object-open');
                 break;
 
             case TokenType::BRACKET_OPEN:
                 $this->previousStates[] = $this->state;
-                $this->state = ParserState::ARRAY_START;
+                $this->state            = ParserState::ARRAY_START;
                 $this->emit('array-open');
                 break;
 
