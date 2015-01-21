@@ -375,7 +375,7 @@ class Lexer
 
     /**
      * @param integer $type
-     * @param string $value
+     * @param string  $value
      */
     private function emitLiteral($type, $value)
     {

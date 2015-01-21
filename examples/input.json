@@ -1,0 +1,29 @@
+{
+    "id" : "1",
+    "name" : "Alice",
+    "items" : [
+        "spatula",
+        "potato",
+        "figurine"
+    ]
+}
+
+{
+    "id" : "2",
+    "name" : "Bob",
+    "items" : [
+        "flower",
+        "flour",
+        "scourer"
+    ]
+}
+
+{
+    "id" : "3",
+    "name" : "Chuck",
+    "items" : [
+        "sword",
+        "steak",
+        "money"
+    ]
+}

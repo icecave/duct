@@ -1,5 +1,9 @@
 # Duct Changelog
 
+### 2.0.1 (2015-01-21)
+
+* **[FIXED]** Fixed issue when parsing objects or arrays nested inside an outer array ([#10](https://github.com/IcecaveStudios/duct/issues/10))
+
 ### 2.0.0 (2014-12-24)
 
 * **[BC]** Updated to [igorw/evenement](https://github.com/igorw/evenement) version 2 (affects public interface of `EventedParser`)
