@@ -1,5 +1,9 @@
 # Duct Changelog
 
+### 2.0.2 (2015-04-23)
+
+* **[FIXED]** Fixed off-by-one error when detecting Unicode surrogates (thanks Konrad Abmeier)
+
 ### 2.0.1 (2015-01-21)
 
 * **[FIXED]** Fixed issue when parsing objects or arrays nested inside an outer array ([#10](https://github.com/IcecaveStudios/duct/issues/10))

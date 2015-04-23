@@ -202,14 +202,14 @@ class Lexer
             $codepoint = hexdec($this->unicodeBuffer);
 
             // Store high surrogate for combination later if is high surrogate...
-            if ($codepoint >= 0xd800 && $codepoint < 0xdbff) {
+            if ($codepoint >= 0xd800 && $codepoint <= 0xdbff) {
                 if (null !== $this->unicodeHighSurrogate) {
                     throw new LexerException('Multiple high surrogates for unicode surrogate pair.');
                 }
                 $this->unicodeHighSurrogate = $codepoint;
 
             // Combine high + low surrogate if is low surrogate ...
-            } elseif ($codepoint >= 0xdc00 && $codepoint < 0xdfff) {
+            } elseif ($codepoint >= 0xdc00 && $codepoint <= 0xdfff) {
                 if (null === $this->unicodeHighSurrogate) {
                     throw new LexerException('Missing high surrogate for unicode surrogate pair.');
                 }
