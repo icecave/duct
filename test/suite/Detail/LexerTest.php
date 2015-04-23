@@ -267,7 +267,8 @@ class LexerTest extends PHPUnit_Framework_TestCase
             ['"\\t"',            new Token(TokenType::STRING_LITERAL, "\t")],
 
             ['"\\u00a9"',        new Token(TokenType::STRING_LITERAL, json_decode('"\\u00a9"'))],
-            ['"\\ud834\\udD1E"', new Token(TokenType::STRING_LITERAL, json_decode('"\\ud834\\udD1E"'))],
+            ['"\\ud834\\udd1e"', new Token(TokenType::STRING_LITERAL, json_decode('"\\ud834\\udd1e"'))],
+            ['"\\udbff\\udfff"', new Token(TokenType::STRING_LITERAL, json_decode('"\\udbff\\udfff"'))],
         ];
     }
 }
