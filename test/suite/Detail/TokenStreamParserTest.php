@@ -1,10 +1,10 @@
 <?php
 namespace Icecave\Duct\Detail;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Phake;
 
-class TokenStreamParserTest extends PHPUnit_Framework_TestCase
+class TokenStreamParserTest extends TestCase
 {
     public function setUp()
     {
@@ -37,7 +37,7 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
         $tokens = $this->createTokens(['{']);
         $this->parser->feed($tokens);
 
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Token stream ended unexpectedly.');
+        $this->expectException(__NAMESPACE__ . '\Exception\ParserException', 'Token stream ended unexpectedly.');
         $this->parser->finalize();
     }
 
@@ -46,7 +46,7 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
         $tokens = $this->createTokens(['[']);
         $this->parser->feed($tokens);
 
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Token stream ended unexpectedly.');
+        $this->expectException(__NAMESPACE__ . '\Exception\ParserException', 'Token stream ended unexpectedly.');
         $this->parser->finalize();
     }
 
@@ -54,7 +54,7 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
     {
         $tokens = $this->createTokens(['{', 1]);
 
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Unexpected token "NUMBER_LITERAL" in state "OBJECT_KEY".');
+        $this->expectException(__NAMESPACE__ . '\Exception\ParserException', 'Unexpected token "NUMBER_LITERAL" in state "OBJECT_KEY".');
         $this->parser->feed($tokens);
     }
 
@@ -62,7 +62,7 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
     {
         $tokens = $this->createTokens(['{', "foo", ',']);
 
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Unexpected token "COMMA" in state "OBJECT_KEY_SEPARATOR".');
+        $this->expectException(__NAMESPACE__ . '\Exception\ParserException', 'Unexpected token "COMMA" in state "OBJECT_KEY_SEPARATOR".');
         $this->parser->feed($tokens);
     }
 
@@ -70,7 +70,7 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
     {
         $tokens = $this->createTokens(['{', "foo", ':', "bar", ':']);
 
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Unexpected token "COLON" in state "OBJECT_VALUE_SEPARATOR".');
+        $this->expectException(__NAMESPACE__ . '\Exception\ParserException', 'Unexpected token "COLON" in state "OBJECT_VALUE_SEPARATOR".');
         $this->parser->feed($tokens);
     }
 
@@ -78,7 +78,7 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
     {
         $tokens = $this->createTokens(['[', "foo", ':']);
 
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Unexpected token "COLON" in state "ARRAY_VALUE_SEPARATOR".');
+        $this->expectException(__NAMESPACE__ . '\Exception\ParserException', 'Unexpected token "COLON" in state "ARRAY_VALUE_SEPARATOR".');
         $this->parser->feed($tokens);
     }
 
@@ -89,7 +89,7 @@ class TokenStreamParserTest extends PHPUnit_Framework_TestCase
     {
         $tokens = $this->createTokens([$token]);
 
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\ParserException', 'Unexpected token "' . TokenType::memberByValue($tokens[0]->type) . '".');
+        $this->expectException(__NAMESPACE__ . '\Exception\ParserException', 'Unexpected token "' . TokenType::memberByValue($tokens[0]->type) . '".');
         $this->parser->feed($tokens);
     }
 

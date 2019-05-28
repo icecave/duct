@@ -1,13 +1,13 @@
 <?php
 namespace Icecave\Duct\Detail;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers Icecave\Duct\Detail\Token
  * @covers Icecave\Duct\Detail\Lexer
  */
-class LexerTest extends PHPUnit_Framework_TestCase
+class LexerTest extends TestCase
 {
     public function setUp()
     {
@@ -73,85 +73,85 @@ class LexerTest extends PHPUnit_Framework_TestCase
 
     public function testFeedFailsOnInvalidBeginningCharacter()
     {
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\LexerException', 'Unexpected character: "x".');
+        $this->expectException(__NAMESPACE__ . '\Exception\LexerException', 'Unexpected character: "x".');
         $this->lexer->feed('x');
     }
 
     public function testFeedFailsOnInvalidEscapeSequence()
     {
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\LexerException', 'Invalid escape sequence.');
+        $this->expectException(__NAMESPACE__ . '\Exception\LexerException', 'Invalid escape sequence.');
         $this->lexer->feed('"\\q"');
     }
 
     public function testFeedFailsOnInvalidUnicodeEscapeSequence()
     {
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\LexerException', 'Invalid escape sequence.');
+        $this->expectException(__NAMESPACE__ . '\Exception\LexerException', 'Invalid escape sequence.');
         $this->lexer->feed('"\\uq"');
     }
 
     public function testFeedFailsOnNonDigitAfterNegativeSign()
     {
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\LexerException', 'Expected digit after negative sign.');
+        $this->expectException(__NAMESPACE__ . '\Exception\LexerException', 'Expected digit after negative sign.');
         $this->lexer->feed('-q');
     }
 
     public function testFeedFailsOnNonDigitAfterDecimalPoint()
     {
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\LexerException', 'Expected digit after decimal point.');
+        $this->expectException(__NAMESPACE__ . '\Exception\LexerException', 'Expected digit after decimal point.');
         $this->lexer->feed('1.q');
     }
 
     public function testFeedFailsOnNonDigitAfterExponentE()
     {
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\LexerException', 'Expected digit or +/- as exponent.');
+        $this->expectException(__NAMESPACE__ . '\Exception\LexerException', 'Expected digit or +/- as exponent.');
         $this->lexer->feed('1eq');
     }
 
     public function testFeedFailsOnMispelledTrue()
     {
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\LexerException', 'Expected "true", got "trX".');
+        $this->expectException(__NAMESPACE__ . '\Exception\LexerException', 'Expected "true", got "trX".');
         $this->lexer->feed('trX');
     }
 
     public function testFeedFailsOnMispelledFalse()
     {
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\LexerException', 'Expected "false", got "faX".');
+        $this->expectException(__NAMESPACE__ . '\Exception\LexerException', 'Expected "false", got "faX".');
         $this->lexer->feed('faX');
     }
 
     public function testFeedFailsOnMispelledNull()
     {
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\LexerException', 'Expected "null", got "nuX".');
+        $this->expectException(__NAMESPACE__ . '\Exception\LexerException', 'Expected "null", got "nuX".');
         $this->lexer->feed('nuX');
     }
 
     public function testFeedFailsOnMultipleHighSurrogates()
     {
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\LexerException', 'Multiple high surrogates for unicode surrogate pair.');
+        $this->expectException(__NAMESPACE__ . '\Exception\LexerException', 'Multiple high surrogates for unicode surrogate pair.');
         $this->lexer->feed('"\\ud834\\ud834"');
     }
 
     public function testFeedFailsOnMissingHighSurrogate()
     {
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\LexerException', 'Missing high surrogate for unicode surrogate pair.');
+        $this->expectException(__NAMESPACE__ . '\Exception\LexerException', 'Missing high surrogate for unicode surrogate pair.');
         $this->lexer->feed('"\\udD1E"');
     }
 
     public function testFeedFailsOnMissingLowSurrogateEndString()
     {
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\LexerException', 'Missing low surrogate for unicode surrogate pair.');
+        $this->expectException(__NAMESPACE__ . '\Exception\LexerException', 'Missing low surrogate for unicode surrogate pair.');
         $this->lexer->feed('"\\ud834"');
     }
 
     public function testFeedFailsOnMissingLowSurrogateRegularCharacter()
     {
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\LexerException', 'Missing low surrogate for unicode surrogate pair.');
+        $this->expectException(__NAMESPACE__ . '\Exception\LexerException', 'Missing low surrogate for unicode surrogate pair.');
         $this->lexer->feed('"\\ud834_"');
     }
 
     public function testFeedFailsOnMissingLowSurrogateRegularNonUnicodeEscape()
     {
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\LexerException', 'Missing low surrogate for unicode surrogate pair.');
+        $this->expectException(__NAMESPACE__ . '\Exception\LexerException', 'Missing low surrogate for unicode surrogate pair.');
         $this->lexer->feed('"\\ud834\t"');
     }
 
@@ -173,7 +173,7 @@ class LexerTest extends PHPUnit_Framework_TestCase
     {
         $this->lexer->feed($literal);
 
-        $this->setExpectedException(__NAMESPACE__ . '\Exception\LexerException', 'Character stream ended while scanning literal value.');
+        $this->expectException(__NAMESPACE__ . '\Exception\LexerException', 'Character stream ended while scanning literal value.');
         $this->lexer->finalize();
     }
 

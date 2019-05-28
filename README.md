@@ -1,13 +1,12 @@
 # Duct
 
-[![Build Status]](https://travis-ci.org/IcecaveStudios/duct)
-[![Test Coverage]](https://coveralls.io/r/IcecaveStudios/duct?branch=develop)
-[![SemVer]](http://semver.org)
+[![Build Status](http://img.shields.io/travis/icecave/duct/master.svg?style=flat-square)](https://travis-ci.org/icecave/duct)
+[![Code Coverage](https://img.shields.io/codecov/c/github/icecave/duct/master.svg?style=flat-square)](https://codecov.io/github/icecave/duct)
+[![Latest Version](http://img.shields.io/packagist/v/icecave/duct.svg?style=flat-square&label=semver)](https://semver.org)
 
 **Duct** is a PHP library for incrementally parsing continuous streams of JSON values.
 
-* Install via [Composer](http://getcomposer.org) package [icecave/duct](https://packagist.org/packages/icecave/duct)
-* Read the [API documentation](http://icecavestudios.github.io/duct/artifacts/documentation/api/)
+    composer require icecave/duct
 
 **Duct** is designed to parse sequential JSON values from data streams, without framing or demarcation outside of the
 JSON specification.
@@ -93,14 +92,3 @@ the following events are emitted as the buffer is parsed.
  * **object-key** (string $key): emitted when an object key is encountered
  * **value** (mixed $value): emitted whenever a scalar or null is encountered, including inside objects and arrays
  * **error** (Exception $error): emitted when a syntax error is encountered
-
-## Contact us
-
-* Follow [@IcecaveStudios](https://twitter.com/IcecaveStudios) on Twitter
-* Visit the [Icecave Studios website](http://icecave.com.au)
-* Join `#icecave` on [irc.freenode.net](http://webchat.freenode.net?channels=icecave)
-
-<!-- references -->
-[Build Status]: http://img.shields.io/travis/IcecaveStudios/duct/develop.svg?style=flat-square
-[Test Coverage]: http://img.shields.io/coveralls/IcecaveStudios/duct/develop.svg?style=flat-square
-[SemVer]: http://img.shields.io/:semver-2.0.2-brightgreen.svg?style=flat-square

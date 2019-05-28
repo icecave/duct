@@ -10,37 +10,31 @@
         "evented",
         "react"
     ],
-    "homepage": "https://github.com/IcecaveStudios/duct",
+    "homepage": "https://github.com/icecave/duct",
     "license": "MIT",
     "authors": [
         {
             "name": "James Harris",
-            "email": "james.harris@icecave.com.au",
+            "email": "mailjamesharris@gmail.com",
             "homepage": "https://github.com/jmalloc"
         }
     ],
     "require": {
-        "php": ">=5.4",
+        "php": "^7.1",
         "eloquent/enumeration": "~5",
         "evenement/evenement": "~2"
     },
     "require-dev": {
         "athletic/athletic": "~0.1",
-        "icecave/archer": "~1"
+        "phpunit/phpunit": "~7",
+        "phake/phake": "~3"
     },
-    "autoload": {
-        "psr-4": {
-            "Icecave\\Duct\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Icecave\\Duct\\": "test/benchmarks"
-        }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-develop": "2.0.x-dev"
+    "autoload": { "psr-4": { "Icecave\\Duct\\": "src" } },
+    "autoload-dev": { "psr-4": { "Icecave\\Duct\\": "test/benchmarks" } },
+    "config": {
+        "sort-packages": true,
+        "platform": {
+            "php": "7.1"
         }
     }
 }

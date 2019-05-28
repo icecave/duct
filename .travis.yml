@@ -1,18 +1,23 @@
+sudo: false
 language: php
-
-php: ["5.4", "5.5", "5.6", "hhvm", "hhvm-nightly"]
-
+php:
+- '7.1'
+- '7.2'
+- '7.3'
+- nightly
 matrix:
-    allow_failures: [{"php": "hhvm"}, {"php": "hhvm-nightly"}]
-    fast_finish: true
-
+  fast_finish: true
+  allow_failures:
+  - php: nightly
+before_install:
+- phpenv config-rm xdebug.ini || true
+- "[[ $GITHUB_TOKEN ]] && composer config --global github-oauth.github.com $GITHUB_TOKEN"
+install: composer install --no-interaction
+script: phpdbg -qrr vendor/bin/phpunit
+after_script: bash <(curl -s https://codecov.io/bash)
 env:
   global:
-    - ARCHER_PUBLISH_VERSION=5.6
-    - secure: "ej7vR8/Y0dA4EGu2k+kQSW4TPfg0OmRtnh0Dh9u2LeSzmxoATLL86qrgYRk9J8nEpdLEUN+VCaydzlLQrCxlyaVQd/ewLPv4lVU1gT2nprYzJX3nz8Os3/TaFUfLmsTXU7DHXI4WvFrmSvqCb4mN3ueYhplO/OZtLGjYRcGH1X4="
-
-install:
-  - ./.travis.install
-
-script:
-  - ./vendor/bin/archer travis:build
+    secure: eW6TNirA70ZLEmFENol2les1AyU3Ewwv8f6mO1Tbe7zpfEwV5pnQUKSXJpmMlGkpMDNcBx3ESzBFHqcqIQCVeGrRMYFLfAk33AYisDWSqdXO2wiM6kfD00eprLDNqUR8/TVcp36XKziKvh5jbObTmcKDIA1NO6/7zMzTarB5EXA=
+cache:
+  directories:
+  - "$HOME/.composer/cache/files"

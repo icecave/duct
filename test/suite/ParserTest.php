@@ -2,10 +2,10 @@
 namespace Icecave\Duct;
 
 use Exception;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Phake;
 
-class ParserTest extends PHPUnit_Framework_TestCase
+class ParserTest extends TestCase
 {
     public function setUp()
     {
@@ -99,7 +99,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function testFeedFailure()
     {
-        $this->setExpectedException('Icecave\Duct\Detail\Exception\ParserException', 'Unexpected token "BRACKET_CLOSE".');
+        $this->expectException('Icecave\Duct\Detail\Exception\ParserException', 'Unexpected token "BRACKET_CLOSE".');
 
         try {
             $this->parser->feed(']');
@@ -111,7 +111,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
     public function testFinalizeFailure()
     {
-        $this->setExpectedException('Icecave\Duct\Detail\Exception\ParserException', 'Unexpected token "NUMBER_LITERAL" in state "OBJECT_KEY".');
+        $this->expectException('Icecave\Duct\Detail\Exception\ParserException', 'Unexpected token "NUMBER_LITERAL" in state "OBJECT_KEY".');
 
         try {
             $this->parser->feed('{ 1');

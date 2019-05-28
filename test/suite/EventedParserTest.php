@@ -2,10 +2,10 @@
 namespace Icecave\Duct;
 
 use Icecave\Duct\Detail\Exception\ParserException;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Phake;
 
-class EventedParserTest extends PHPUnit_Framework_TestCase
+class EventedParserTest extends TestCase
 {
     public function setUp()
     {
