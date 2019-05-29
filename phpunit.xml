@@ -1,5 +1,5 @@
 <phpunit
-    bootstrap="test/bootstrap.php"
+    bootstrap="vendor/autoload.php"
     colors="true"
     beStrictAboutChangesToGlobalState="true"
     beStrictAboutOutputDuringTests="true"
